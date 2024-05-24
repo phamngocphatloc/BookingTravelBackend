@@ -1,0 +1,35 @@
+package com.example.BookingTravelBackend.service.impls;
+
+import com.example.BookingTravelBackend.Repository.TouristAttractionRepsitory;
+import com.example.BookingTravelBackend.entity.TouristAttraction;
+import com.example.BookingTravelBackend.payload.respone.TouristAttractionRespone;
+import com.example.BookingTravelBackend.service.TouristAttractionService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class TouristAttractionServiceImpls implements TouristAttractionService {
+
+    @Autowired
+    TouristAttractionRepsitory tourDao;
+
+    @Override
+    public List<TouristAttractionRespone> SelectAll() {
+        List<TouristAttractionRespone> list = new ArrayList<>();
+        tourDao.findAll().stream().forEach(item -> {
+            list.add(new TouristAttractionRespone(item));
+        });
+
+        return list;
+    }
+
+    @Override
+    public TouristAttraction selectByName(String name) {
+        return tourDao.findByNameLike(name);
+    }
+}

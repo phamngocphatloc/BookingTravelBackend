@@ -1,0 +1,45 @@
+package com.example.BookingTravelBackend.entity;
+import com.example.BookingTravelBackend.entity.Role;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
+
+@Entity
+@Setter
+@Getter
+@Table (name = "Users")
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "UserId")
+    private int id;
+    @Column (name = "fullName", columnDefinition = "nvarchar(50)", length = 255)
+    private String fullName;
+    @Column(name = "Email", nullable = false, unique = true, length = 50)
+    private String email;
+    @Column(name = "Phone", nullable = false, unique = true, length = 50)
+    private String phone;
+    @Column(name = "Password", nullable = false)
+    private String password;
+    @ManyToOne
+    @JoinColumn(name = "RoleId")
+    private Role role;
+    @Column(name = "Address", columnDefinition = "nvarchar(500)", nullable = false, length = 500)
+    private String address;
+    @Column(name = "City",columnDefinition = "nvarchar(50)", nullable = false, length = 50)
+    private String city;
+    @Column(name = "District", columnDefinition = "nvarchar(50)", nullable = false, length = 50)
+    private String district;
+    @Column(name = "Ward",columnDefinition = "nvarchar(50)", nullable = false, length = 50)
+    private String ward;
+
+    @OneToOne (mappedBy = "userToken")
+    private VerificationToken Token;
+
+    @Column (name = "Verify")
+    private boolean verify;
+
+
+}
