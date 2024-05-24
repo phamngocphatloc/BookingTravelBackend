@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
 @RequiredArgsConstructor
 @Getter
 public class HotelRespone {
@@ -26,6 +26,8 @@ public class HotelRespone {
 
     private String status;
 
+    private int price;
+
 
     public HotelRespone (Hotel hotel){
         this.HotelId = hotel.getHotelId();
@@ -40,6 +42,20 @@ public class HotelRespone {
         hotel.getListRooms().stream().forEach(item -> {
             listRooms.add(new RoomRespone(item));
         });
+
+        List<RoomRespone> listRoom = listRooms;
+
+        Collections.sort(listRoom, new Comparator<RoomRespone>() {
+            @Override
+            public int compare(RoomRespone o1, RoomRespone o2) {
+                return o1.getPrice() - o2.getPrice();
+            }
+        });
+        if (!listRoom.isEmpty()) {
+            this.price = listRoom.get(0).getPrice();
+        }else{
+            this.price = 0;
+        }
     }
 
 
