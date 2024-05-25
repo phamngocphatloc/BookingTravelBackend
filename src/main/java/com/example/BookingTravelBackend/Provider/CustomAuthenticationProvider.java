@@ -38,9 +38,12 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                     email,
                     null,
                     listRoles);
+            if (user.isVerify()==false){
+                throw new RuntimeException("Tài Khoản Chưa Xác Minh");
+            }
             return token;
         }
-        throw new RuntimeException("Wrong email or password");
+        throw new RuntimeException("Sai Tài Khoản Hoặc Mật Khẩu");
     }
 
     @Override
