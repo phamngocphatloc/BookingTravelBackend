@@ -50,6 +50,8 @@ public class UserServiceImpls implements UserService {
 
     @Override
     public JwtResponse login(LoginRequest loginRequest) {
+
+
         UsernamePasswordAuthenticationToken authen = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
                 loginRequest.getPassword());
         Authentication authentication = authenticationManager.authenticate(authen);
@@ -65,13 +67,20 @@ public class UserServiceImpls implements UserService {
         String encryptedPassword = passwordEncoder.encode(userRequest.getPassword());
         Role role = roleRepository.findByRoleName("ROLE_USER");
         User users = mapUserRequestToUser(userRequest, role, encryptedPassword);
+
+        if (!userRepository.findByEmail(users.getEmail()).isEmpty()){
+            throw new IllegalStateException("Email Đã Tồn Tại");
+        }
+        if (!userRepository.findByPhone(users.getPhone()).isEmpty()){
+            throw new IllegalStateException("Số Điện Thoại Đã Tồn Tại");
+        }
         users.setVerify(false);
         userRepository.save(users);
         VerificationToken token = tokenService.createVerificationToken(users);
         String recipientAddress = users.getEmail();
         String subject = "Account Verification";
-        String confirmationUrl = "/api/auth/verify?token=" + token.getToken();
-        String message = "Click the link to verify your account: " + "http://localhost:8080" + confirmationUrl;
+        String confirmationUrl = "#!/verify?token=" + token.getToken();
+        String message = "Click the link to verify your account: " + "http://localhost:5500/" + confirmationUrl;
         try {
             emailService.sendEmail(recipientAddress, subject, message);
         }catch (Exception e){
