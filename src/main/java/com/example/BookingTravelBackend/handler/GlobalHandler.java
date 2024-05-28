@@ -28,9 +28,13 @@ public class GlobalHandler {
     }
 
     @ExceptionHandler(NotFoundException.class)
-    ProblemDetail handleNotFoundException(NotFoundException exc) {
-        ProblemDetail problemDetail = generateProblemDetail(HttpStatus.BAD_REQUEST, exc.getMessage());
-        return problemDetail;
+    public ResponseEntity<HttpRespone> handleNotFoundException(NotFoundException exc) {
+        HttpRespone response = new HttpRespone(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                exc.getMessage(),
+                null
+        );
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private ProblemDetail generateProblemDetail(HttpStatus httpStatus, String errorMessage) {

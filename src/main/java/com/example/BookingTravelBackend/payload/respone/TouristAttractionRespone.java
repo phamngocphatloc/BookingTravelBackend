@@ -9,6 +9,7 @@ public class TouristAttractionRespone {
     private String name;
 
 
+
     public TouristAttractionRespone (TouristAttraction tour){
         this.id = tour.getId();
         this.name = tour.getName();
