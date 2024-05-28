@@ -2,6 +2,7 @@ package com.example.BookingTravelBackend.controllers;
 
 import com.example.BookingTravelBackend.entity.TouristAttraction;
 import com.example.BookingTravelBackend.payload.respone.HttpRespone;
+import com.example.BookingTravelBackend.payload.respone.TouristAttractionTopRespone;
 import com.example.BookingTravelBackend.service.TouristAttractionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,5 +24,11 @@ public class TouristAttractionController {
     @GetMapping ("/get_attraction")
     public ResponseEntity<HttpRespone> getAttract (){
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", tourService.SelectAll()));
+    }
+
+    @GetMapping ("/get_top_tour_attraction")
+    public ResponseEntity<HttpRespone> getTopAttraction (){
+        List<TouristAttractionTopRespone> listTopAttraction = tourService.findTouristAttractionWithTotalRoomsBooked();
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",listTopAttraction));
     }
 }

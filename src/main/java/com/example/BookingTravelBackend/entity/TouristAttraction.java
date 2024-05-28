@@ -21,6 +21,9 @@ public class TouristAttraction {
     @Column (name = "Name", columnDefinition = "nvarchar(255)")
     private String name;
 
+    @Column (name = "img")
+    private String img;
+
     @OneToMany (mappedBy = "TouristAttraction")
     private List<Hotel> hotels;
 }
