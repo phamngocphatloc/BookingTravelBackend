@@ -4,6 +4,7 @@ import com.example.BookingTravelBackend.Repository.HotelRepository;
 import com.example.BookingTravelBackend.entity.Hotel;
 import com.example.BookingTravelBackend.entity.TouristAttraction;
 import com.example.BookingTravelBackend.payload.respone.HotelRespone;
+import com.example.BookingTravelBackend.payload.respone.HotelServiceRespone;
 import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
 import com.example.BookingTravelBackend.service.HotelService;
 import com.example.BookingTravelBackend.service.RoomService;
@@ -40,5 +41,32 @@ public class HotelServiceImpl implements HotelService {
             });
         });
         return new PaginationResponse(pageNum,pageSize,pageHotel.getTotalElements(),pageHotel.isLast(),pageHotel.getTotalPages(),listHotel);
+    }
+
+    @Override
+    public List<HotelServiceRespone> selectServiceHotelFree() {
+        List<HotelServiceRespone> listResponse = new ArrayList<>();
+        hotelRepository.selectServiceHotelFree().stream().forEach(item -> {
+            listResponse.add(new HotelServiceRespone(item));
+        });
+        return listResponse;
+    }
+
+    @Override
+    public List<HotelServiceRespone> selectServiceHotelLuxry() {
+        List<HotelServiceRespone> listResponse = new ArrayList<>();
+        hotelRepository.selectServiceHotelLuxury().stream().forEach(item -> {
+            listResponse.add(new HotelServiceRespone(item));
+        });
+        return listResponse;
+    }
+
+    @Override
+    public List<HotelServiceRespone> selectServiceHotelVip() {
+        List<HotelServiceRespone> listResponse = new ArrayList<>();
+        hotelRepository.selectServiceHotelVip().stream().forEach(item -> {
+            listResponse.add(new HotelServiceRespone(item));
+        });
+        return listResponse;
     }
 }
