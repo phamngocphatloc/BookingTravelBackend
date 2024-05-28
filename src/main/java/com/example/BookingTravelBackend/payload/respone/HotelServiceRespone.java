@@ -21,4 +21,10 @@ public class HotelServiceRespone {
         this.servicePrice = service.getServicePrice();
     }
 
+    public HotelServiceRespone (Object[] service){
+        this.id = (int) service[0];
+        this.serviceName = (String) service[1];
+        this.servicePrice = (int) service[2];
+    }
+
 }
