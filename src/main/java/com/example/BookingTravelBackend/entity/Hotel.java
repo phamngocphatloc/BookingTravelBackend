@@ -19,7 +19,7 @@ public class Hotel {
     @Column (name = "Address",columnDefinition = "nvarchar(255)")
     private String address;
 
-    @OneToMany (mappedBy = "hotelImage", fetch = FetchType.EAGER)
+    @OneToMany (mappedBy = "hotelImage", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     List<ImageDesbrice> images;
 
     @Column (name = "describe", columnDefinition = "nvarchar(255)")
@@ -34,7 +34,7 @@ public class Hotel {
     @JoinColumn (name = "TouristAttactionId")
     private TouristAttraction TouristAttraction;
 
-    @OneToMany (mappedBy = "hotelRoom", fetch = FetchType.EAGER)
+    @OneToMany (mappedBy = "hotelRoom", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Room> listRooms;
 
 }

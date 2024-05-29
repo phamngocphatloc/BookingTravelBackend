@@ -18,4 +18,5 @@ public interface UserService {
     Boolean changePassword(ChangePasswordRequest changePasswordRequest);
 
     void update(int id, UserInfoRequest userInfoRequest);
+
 }

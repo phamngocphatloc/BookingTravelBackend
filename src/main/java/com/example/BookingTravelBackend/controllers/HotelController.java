@@ -2,6 +2,7 @@ package com.example.BookingTravelBackend.controllers;
 
 import com.example.BookingTravelBackend.Repository.HotelRepository;
 import com.example.BookingTravelBackend.entity.TouristAttraction;
+import com.example.BookingTravelBackend.payload.Request.HotelRequest;
 import com.example.BookingTravelBackend.payload.respone.HotelServiceRespone;
 import com.example.BookingTravelBackend.payload.respone.HttpRespone;
 import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
@@ -22,7 +23,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class HotelController {
     private final HotelService hotelService;
-    private final HotelRepository hotelRepository;
     private final TouristAttractionService touristAttractionService;
     @GetMapping ("/getHotel")
     public ResponseEntity<HttpRespone> getHotel (@RequestParam (value = "search", defaultValue = "") String search,
@@ -51,5 +51,11 @@ public class HotelController {
                 throw new IllegalStateException("Vui Lòng Chọn Loại Hợp Lệ");
         }
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",listService));
+    }
+
+    @PostMapping ("/addHotel")
+    public ResponseEntity<HttpRespone> addHotel (@RequestBody HotelRequest hotelRequest){
+        hotelService.addHotel(hotelRequest);
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",hotelRequest));
     }
 }
