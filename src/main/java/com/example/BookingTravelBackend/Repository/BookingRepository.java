@@ -10,16 +10,16 @@ import java.util.List;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking,Integer> {
-    @Query (value = "SELECT * \n" +
-            "FROM booking \n" +
-            "WHERE booking.room_id IN (\n" +
-            "    SELECT room.room_id \n" +
-            "    FROM hotel \n" +
-            "    JOIN room ON hotel.hotel_id = room.hotel_id \n" +
-            "    WHERE hotel.hotel_id = ?1\n" +
-            ") \n" +
-            "AND ?2 BETWEEN booking.check_in AND booking.check_out\n" +
-            "AND booking.check_out != ?2\n" +
-            "AND status = 'active';", nativeQuery = true)
+    @Query (value = "SELECT b.booking_id,b.check_in,b.check_out,b.room_id,b.status,b.user_id\n" +
+            "FROM booking b\n" +
+            "JOIN room r ON b.room_id = r.room_id\n" +
+            "JOIN hotel h ON r.hotel_id = h.hotel_id\n" +
+            "WHERE h.hotel_id = ?1\n" +
+            "AND (\n" +
+            "    (?2 BETWEEN b.check_in AND b.check_out)\n" +
+            "    OR (?3 BETWEEN b.check_in AND b.check_out)\n" +
+            "    OR (?2 <= b.check_in AND ?3 >= b.check_out)\n" +
+            ")\n" +
+            "AND b.status = 'active';", nativeQuery = true)
     public List<Booking> listBookingByCheckinCheckout (int HotelId, Date checkin, Date Checkout);
 }

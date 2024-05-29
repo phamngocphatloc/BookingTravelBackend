@@ -2,6 +2,7 @@ package com.example.BookingTravelBackend.controllers;
 
 import com.example.BookingTravelBackend.payload.respone.HttpRespone;
 import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
+import com.example.BookingTravelBackend.payload.respone.PostResponse;
 import com.example.BookingTravelBackend.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,5 +23,11 @@ public class PostController {
                                         @RequestParam ("pageNum")int pageNum){
         PaginationResponse paginationResponse = postService.findAllPost(search,pageNum,6);
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",paginationResponse));
+    }
+
+    @GetMapping ("/getPostById")
+    public ResponseEntity<HttpRespone> getPostById (@RequestParam ("id") int id){
+        PostResponse response = new PostResponse(postService.findById(id));
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", response));
     }
 }

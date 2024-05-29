@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post,Integer> {
-    @Query (value = "select * from post where post.post_title like N'%?1%' or ?1 = ''",nativeQuery = true)
+    @Query (value = "select * from post where post.post_title like ?1 or ?1 = ''",nativeQuery = true)
     public Page<Post> findPostBySearch (String search, Pageable pageable);
 }
