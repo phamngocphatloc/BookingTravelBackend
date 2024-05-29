@@ -32,4 +32,9 @@ public class PostServiceImpls implements PostService {
         PaginationResponse pagePostResponse = new PaginationResponse(pageNum,pageSize,pagePost.getTotalElements(),pagePost.isLast(),pagePost.getTotalPages(),listPostResponse);
         return pagePostResponse;
     }
+
+    @Override
+    public Post findById(int id) {
+        return postRepository.findById(id).get();
+    }
 }
