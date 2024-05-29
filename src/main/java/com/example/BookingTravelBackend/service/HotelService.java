@@ -1,6 +1,7 @@
 package com.example.BookingTravelBackend.service;
 
 import com.example.BookingTravelBackend.entity.TouristAttraction;
+import com.example.BookingTravelBackend.payload.Request.HotelRequest;
 import com.example.BookingTravelBackend.payload.respone.HotelServiceRespone;
 import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
 
@@ -12,4 +13,5 @@ public interface HotelService {
     public List<HotelServiceRespone> selectServiceHotelFree();
     public List<HotelServiceRespone> selectServiceHotelLuxry();
     public List<HotelServiceRespone> selectServiceHotelVip();
+    public void addHotel (HotelRequest hotelRequest);
 }

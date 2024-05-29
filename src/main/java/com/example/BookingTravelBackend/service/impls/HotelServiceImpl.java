@@ -1,8 +1,11 @@
 package com.example.BookingTravelBackend.service.impls;
 
 import com.example.BookingTravelBackend.Repository.HotelRepository;
+import com.example.BookingTravelBackend.Repository.TouristAttractionRepsitory;
 import com.example.BookingTravelBackend.entity.Hotel;
+import com.example.BookingTravelBackend.entity.ImageDesbrice;
 import com.example.BookingTravelBackend.entity.TouristAttraction;
+import com.example.BookingTravelBackend.payload.Request.HotelRequest;
 import com.example.BookingTravelBackend.payload.respone.HotelRespone;
 import com.example.BookingTravelBackend.payload.respone.HotelServiceRespone;
 import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
@@ -23,6 +26,7 @@ import java.util.List;
 public class HotelServiceImpl implements HotelService {
     private final HotelRepository hotelRepository;
     private final RoomService roomService;
+    private final TouristAttractionRepsitory touristAttractionRepsitory;
     @Override
     public PaginationResponse selectHotelByTour(TouristAttraction tour, int pageNum, int pageSize, Date checkIn, Date checkOut) {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
@@ -68,5 +72,20 @@ public class HotelServiceImpl implements HotelService {
             listResponse.add(new HotelServiceRespone(item));
         });
         return listResponse;
+    }
+
+    @Override
+    public void addHotel(HotelRequest hotelRequest) {
+        Hotel hotel = new Hotel();
+        hotel.setAddress(hotelRequest.getAddress());
+        hotel.setDescribe(hotelRequest.getDescribe());
+        List<ImageDesbrice> listImageDesbrices = new ArrayList<>();
+        hotelRequest.getImages().stream().forEach(item -> {
+            listImageDesbrices.add(item.getImageDesbrice(hotel));
+        });
+        hotel.setImages(listImageDesbrices);
+        TouristAttraction tour = touristAttractionRepsitory.findByNameLike(hotelRequest.getTourAttractionName());
+        hotel.setTouristAttraction(tour);
+        hotelRepository.save(hotel);
     }
 }
