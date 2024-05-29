@@ -30,7 +30,7 @@ public class UserController {
 
     private final VerificationTokenService tokenService;
     @PostMapping("login")
-    public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<JwtResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         JwtResponse jwtResponse = userService.login(loginRequest);
         return ResponseEntity.status(HttpStatus.OK).body(jwtResponse);
     }

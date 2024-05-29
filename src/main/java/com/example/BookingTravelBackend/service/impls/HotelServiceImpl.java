@@ -85,6 +85,9 @@ public class HotelServiceImpl implements HotelService {
         });
         hotel.setImages(listImageDesbrices);
         TouristAttraction tour = touristAttractionRepsitory.findByNameLike(hotelRequest.getTourAttractionName());
+        if (tour == null){
+            throw  new IllegalStateException("Không Tìm Thấy Địa Điểm Này");
+        }
         hotel.setTouristAttraction(tour);
         hotelRepository.save(hotel);
     }

@@ -8,6 +8,7 @@ import com.example.BookingTravelBackend.payload.respone.HttpRespone;
 import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
 import com.example.BookingTravelBackend.service.HotelService;
 import com.example.BookingTravelBackend.service.TouristAttractionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +55,7 @@ public class HotelController {
     }
 
     @PostMapping ("/addHotel")
-    public ResponseEntity<HttpRespone> addHotel (@RequestBody HotelRequest hotelRequest){
+    public ResponseEntity<HttpRespone> addHotel (@Valid @RequestBody HotelRequest hotelRequest){
         hotelService.addHotel(hotelRequest);
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",hotelRequest));
     }
