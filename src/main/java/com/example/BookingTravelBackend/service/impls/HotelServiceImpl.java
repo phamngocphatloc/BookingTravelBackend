@@ -91,4 +91,18 @@ public class HotelServiceImpl implements HotelService {
         hotel.setTouristAttraction(tour);
         hotelRepository.save(hotel);
     }
+
+    @Override
+    public HotelRespone selectById(int id, Date checkIn, Date checkOut) {
+        Hotel hotel = hotelRepository.findById(id).get();
+        HotelRespone response = new HotelRespone(hotel);
+        roomService.CheckRoomNotYet(response,checkIn,checkOut);
+        response.setStatus("full");
+        response.getListRooms().stream().forEach(itemRoom -> {
+            if (itemRoom.getStatus().equalsIgnoreCase("notyet")){
+                response.setStatus("still");
+            }
+        });
+        return response;
+    }
 }

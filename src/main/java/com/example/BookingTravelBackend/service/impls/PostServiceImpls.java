@@ -24,7 +24,7 @@ public class PostServiceImpls implements PostService {
     @Override
     public PaginationResponse findAllPost(String search, int pageNum, int pageSize) {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
-        Page<Post> pagePost = postRepository.findPostBySearch(search,pageable);
+        Page<Post> pagePost = postRepository.findPostBySearch("%"+search+"%",pageable);
         List<PostResponse> listPostResponse = new ArrayList<>();
         pagePost.getContent().stream().forEach(item -> {
             listPostResponse.add(new PostResponse(item));
