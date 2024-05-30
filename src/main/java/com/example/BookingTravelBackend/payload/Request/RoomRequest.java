@@ -4,12 +4,14 @@ import com.example.BookingTravelBackend.entity.Hotel;
 import com.example.BookingTravelBackend.entity.Room;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
 @Getter
 @Setter
+@Data
 public class RoomRequest {
     @NotNull(message = "vui lòng nhập Số Người")
     private int numberOfPeople;
