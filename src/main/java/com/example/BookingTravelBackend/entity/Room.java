@@ -21,7 +21,7 @@ public class Room {
     private int id;
     @Column (name = "NumberOfPeople")
     private int numberOfPeople;
-    @ManyToMany (fetch = FetchType.EAGER)
+    @ManyToMany (fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable (joinColumns = @JoinColumn (name = "RoomId"), inverseJoinColumns = @JoinColumn (name = "BedId"))
     private List<Bed> Bed;
     @Column (name = "TypeRoom")

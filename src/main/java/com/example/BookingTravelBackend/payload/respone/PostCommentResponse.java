@@ -1,9 +1,6 @@
 package com.example.BookingTravelBackend.payload.respone;
 
 import com.example.BookingTravelBackend.entity.CommentPost;
-import com.example.BookingTravelBackend.entity.Post;
-import com.example.BookingTravelBackend.entity.User;
-import jakarta.persistence.*;
 import lombok.Getter;
 
 @Getter

@@ -1,13 +1,15 @@
 package com.example.BookingTravelBackend.controllers;
 
-import com.example.BookingTravelBackend.Repository.HotelRepository;
 import com.example.BookingTravelBackend.entity.TouristAttraction;
 import com.example.BookingTravelBackend.payload.Request.HotelRequest;
+import com.example.BookingTravelBackend.payload.Request.HotelServiceRequest;
+import com.example.BookingTravelBackend.payload.Request.RoomRequest;
 import com.example.BookingTravelBackend.payload.respone.HotelRespone;
 import com.example.BookingTravelBackend.payload.respone.HotelServiceRespone;
 import com.example.BookingTravelBackend.payload.respone.HttpRespone;
 import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
 import com.example.BookingTravelBackend.service.HotelService;
+import com.example.BookingTravelBackend.service.RoomService;
 import com.example.BookingTravelBackend.service.TouristAttractionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,8 @@ import java.util.Optional;
 public class HotelController {
     private final HotelService hotelService;
     private final TouristAttractionService touristAttractionService;
+
+    private final RoomService roomService;
     @GetMapping ("/getHotel")
     public ResponseEntity<HttpRespone> getHotel (@RequestParam (value = "search", defaultValue = "") String search,
                                                  @RequestParam ("pagenum") Optional<Integer> pageNum,
@@ -67,5 +71,17 @@ public class HotelController {
                                                      @RequestParam (value = "checkOut")Date checkOut){
         HotelRespone response = hotelService.selectById(id,checkIn,checkOut);
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "Success", response));
+    }
+
+    @PostMapping ("/addRoom")
+    public ResponseEntity<HttpRespone> addRoom (@Valid @RequestBody RoomRequest roomRequest){
+        roomService.addRoom(roomRequest);
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",roomRequest));
+    }
+
+    @PostMapping("/addService")
+    public ResponseEntity<HttpRespone> addService (@Valid @RequestBody HotelServiceRequest Request){
+        hotelService.addHotelService(Request);
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",Request));
     }
 }

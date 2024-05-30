@@ -2,7 +2,6 @@ package com.example.BookingTravelBackend.payload.Request;
 
 import com.example.BookingTravelBackend.entity.Hotel;
 import com.example.BookingTravelBackend.entity.ImageDesbrice;
-import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
 

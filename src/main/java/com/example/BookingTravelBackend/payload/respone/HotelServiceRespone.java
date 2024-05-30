@@ -1,11 +1,8 @@
 package com.example.BookingTravelBackend.payload.respone;
 
-import com.example.BookingTravelBackend.entity.Hotel;
 import com.example.BookingTravelBackend.entity.HotelService;
-    import jakarta.persistence.*;
 import lombok.Getter;
 
-import java.util.List;
 @Getter
 public class HotelServiceRespone {
 

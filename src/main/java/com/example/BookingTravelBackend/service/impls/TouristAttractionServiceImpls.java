@@ -6,7 +6,6 @@ import com.example.BookingTravelBackend.payload.respone.TouristAttractionRespone
 import com.example.BookingTravelBackend.payload.respone.TouristAttractionTopRespone;
 import com.example.BookingTravelBackend.service.TouristAttractionService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

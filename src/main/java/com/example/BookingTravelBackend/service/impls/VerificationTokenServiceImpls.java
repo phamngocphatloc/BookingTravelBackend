@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
-import java.util.UUID;
 
 @Service
 public class VerificationTokenServiceImpls implements VerificationTokenService {

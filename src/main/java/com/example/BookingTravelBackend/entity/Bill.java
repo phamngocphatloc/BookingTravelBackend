@@ -30,7 +30,7 @@ public class Bill {
     @Column (name = "price")
     private int price;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn (name = "BookingId")
     private Booking booking;
 
