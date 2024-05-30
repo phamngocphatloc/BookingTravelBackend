@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Entity
 @Getter
 @Setter
@@ -29,6 +31,9 @@ public class Bill {
 
     @Column (name = "price")
     private int price;
+
+    @Column(name = "created_at")
+    private Date createdAt;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn (name = "BookingId")
