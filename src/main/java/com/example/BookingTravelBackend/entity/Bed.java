@@ -18,6 +18,6 @@ public class Bed {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private int bedId;
 
-    @Column (name = "BedName")
+    @Column (name = "BedName", columnDefinition = "nvarchar(255)")
     private String bedName;
 }

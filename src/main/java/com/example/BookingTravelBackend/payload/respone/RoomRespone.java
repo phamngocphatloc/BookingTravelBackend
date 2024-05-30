@@ -1,13 +1,10 @@
 package com.example.BookingTravelBackend.payload.respone;
 
-import com.example.BookingTravelBackend.entity.Bed;
-import com.example.BookingTravelBackend.entity.Hotel;
+
 import com.example.BookingTravelBackend.entity.Room;
-import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 @Getter
 public class RoomRespone {

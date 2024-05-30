@@ -3,9 +3,7 @@ package com.example.BookingTravelBackend.payload.respone;
 import com.example.BookingTravelBackend.entity.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
-import java.util.List;
 
 @Getter
 @RequiredArgsConstructor

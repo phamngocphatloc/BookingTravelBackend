@@ -4,12 +4,14 @@ import com.example.BookingTravelBackend.entity.Role;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 
 @Setter
 @Getter
+@Data
 public class UserRequest {
     private Integer id;
     @NotEmpty (message = "Vui Lòng Nhập FullName")

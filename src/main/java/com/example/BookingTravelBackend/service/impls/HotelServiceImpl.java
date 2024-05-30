@@ -1,16 +1,19 @@
 package com.example.BookingTravelBackend.service.impls;
 
 import com.example.BookingTravelBackend.Repository.HotelRepository;
+import com.example.BookingTravelBackend.Repository.HotelServiceRepository;
 import com.example.BookingTravelBackend.Repository.TouristAttractionRepsitory;
 import com.example.BookingTravelBackend.entity.Hotel;
 import com.example.BookingTravelBackend.entity.ImageDesbrice;
 import com.example.BookingTravelBackend.entity.TouristAttraction;
 import com.example.BookingTravelBackend.payload.Request.HotelRequest;
+import com.example.BookingTravelBackend.payload.Request.HotelServiceRequest;
 import com.example.BookingTravelBackend.payload.respone.HotelRespone;
 import com.example.BookingTravelBackend.payload.respone.HotelServiceRespone;
 import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
 import com.example.BookingTravelBackend.service.HotelService;
 import com.example.BookingTravelBackend.service.RoomService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +30,7 @@ public class HotelServiceImpl implements HotelService {
     private final HotelRepository hotelRepository;
     private final RoomService roomService;
     private final TouristAttractionRepsitory touristAttractionRepsitory;
+    private final HotelServiceRepository hotelServiceRepository;
     @Override
     public PaginationResponse selectHotelByTour(TouristAttraction tour, int pageNum, int pageSize, Date checkIn, Date checkOut) {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
@@ -104,5 +108,17 @@ public class HotelServiceImpl implements HotelService {
             }
         });
         return response;
+    }
+
+    @Override
+    @Transactional
+    public void addHotelService(HotelServiceRequest request) {
+        com.example.BookingTravelBackend.entity.HotelService service = hotelServiceRepository.findByServiceName(request.getService());
+        if (service==null){
+            throw new IllegalStateException("Không Tìm Thấy Service");
+        }
+        Hotel hotel = hotelRepository.findById(request.getHotelId()).get();
+        hotel.getListService().add(service);
+        hotelRepository.save(hotel);
     }
 }
