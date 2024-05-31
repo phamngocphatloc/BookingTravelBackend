@@ -143,6 +143,8 @@ public class UserServiceImpls implements UserService {
         user.setCity(userInfoRequest.getCity());
         user.setDistrict(userInfoRequest.getDistrict());
         user.setWard(userInfoRequest.getWard());
+        user.setAvatar(user.getAvatar());
+        user.setFullName(userInfoRequest.getFullname());
         userRepository.save(user);
     }
 }

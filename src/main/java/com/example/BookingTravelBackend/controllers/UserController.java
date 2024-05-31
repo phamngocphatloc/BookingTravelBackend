@@ -64,8 +64,8 @@ public class UserController {
         }
     }
 
-    @PutMapping("update/{id}")
-    public ResponseEntity<HttpRespone> update(@PathVariable("id") int id, @RequestBody UserInfoRequest userInfoRequest){
+    @PutMapping("update")
+    public ResponseEntity<HttpRespone> update(@RequestBody UserInfoRequest userInfoRequest){
         try{
             User user = userService.findById(userInfoRequest.getUserId());
 
