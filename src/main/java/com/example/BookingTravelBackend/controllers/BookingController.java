@@ -3,8 +3,6 @@ package com.example.BookingTravelBackend.controllers;
 import com.example.BookingTravelBackend.Configuration.VnpayConfig;
 import com.example.BookingTravelBackend.entity.Bill;
 import com.example.BookingTravelBackend.payload.Request.BillRequest;
-import com.example.BookingTravelBackend.payload.Request.BookingRequest;
-import com.example.BookingTravelBackend.payload.respone.BillResponse;
 import com.example.BookingTravelBackend.payload.respone.HttpRespone;
 import com.example.BookingTravelBackend.service.BillService;
 import jakarta.mail.MessagingException;
@@ -44,9 +42,7 @@ public class BookingController {
                                                  @RequestParam("vnp_TransactionStatus") String status,
                                                  @RequestParam("vnp_TxnRef") String txnref,
                                                  @RequestParam("vnp_SecureHash") String hash,
-                                                 @RequestParam(name = "vnp_BankTranNo", defaultValue = "") String tranno,
-                                                 Model model,
-                                                 HttpSession session) throws UnsupportedEncodingException, MessagingException {
+                                                 @RequestParam(name = "vnp_BankTranNo", defaultValue = "") String tranno) throws UnsupportedEncodingException {
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Amount", amount);
         vnp_Params.put("vnp_BankCode", bankcode);
@@ -61,7 +57,7 @@ public class BookingController {
         if (!tranno.equalsIgnoreCase("")) {
             vnp_Params.put("vnp_BankTranNo", tranno);
         }
-        List fieldNames = new ArrayList(vnp_Params.keySet());
+        List<String> fieldNames = new ArrayList(vnp_Params.keySet());
         Collections.sort(fieldNames);
         StringBuilder hashData = new StringBuilder();
         StringBuilder query = new StringBuilder();
@@ -89,6 +85,9 @@ public class BookingController {
         System.out.println(vnp_SecureHash);
         System.out.println(hash);
         Bill order = billService.findById(id);
+        if (order.getBooking().getStatus().equalsIgnoreCase("active") || order.getBooking().getStatus().equalsIgnoreCase("cancel")){
+            return ResponseEntity.status(HttpStatus.OK).body(new HttpRespone(HttpStatus.OK.value(),"success","Đơn Hàng Đã Được Xử Lý"));
+        }
         if (vnp_SecureHash.equalsIgnoreCase(hash) && order.getId() == Integer.parseInt(txnref)) {
             if (status.equalsIgnoreCase("00")) {
 
