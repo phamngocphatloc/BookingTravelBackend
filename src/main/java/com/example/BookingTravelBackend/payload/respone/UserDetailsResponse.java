@@ -16,7 +16,7 @@ public class UserDetailsResponse {
     private String district;
     private String ward;
 
-    private String fullName;
+    private String fullname;
 
     private String role;
 
@@ -32,7 +32,7 @@ public class UserDetailsResponse {
         this.city = user.getCity();
         this.district = user.getDistrict();
         this.ward = user.getWard();
-        this.fullName = user.getFullName();
+        this.fullname = user.getFullName();
         this.role = user.getRole().getRoleName();
         this.verify = user.isVerify();
         this.avatar = user.getAvatar();
