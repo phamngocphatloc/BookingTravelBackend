@@ -39,5 +39,8 @@ public class User {
     @Column (name = "Verify")
     private boolean verify;
 
+    @Column (name = "avatar")
+    private String avatar;
+
 
 }

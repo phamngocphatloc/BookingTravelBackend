@@ -22,6 +22,7 @@ public class UserDetailsResponse {
 
     private boolean verify;
 
+    private String avatar;
 
     public UserDetailsResponse(User user) {
         this.userId = user.getId();
@@ -34,5 +35,6 @@ public class UserDetailsResponse {
         this.fullName = user.getFullName();
         this.role = user.getRole().getRoleName();
         this.verify = user.isVerify();
+        this.avatar = user.getAvatar();
     }
 }

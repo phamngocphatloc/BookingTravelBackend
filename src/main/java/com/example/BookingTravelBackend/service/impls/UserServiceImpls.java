@@ -71,6 +71,8 @@ public class UserServiceImpls implements UserService {
             throw new IllegalStateException("Số Điện Thoại Đã Tồn Tại");
         }
         users.setVerify(false);
+        //set avatar mac dinh
+        users.setAvatar("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRMjq1f6zrvoO_vb_oRwMOsWm59Ux_7Ky9FQ&s");
         userRepository.save(users);
         VerificationToken token = tokenService.createVerificationToken(users);
         String recipientAddress = users.getEmail();
