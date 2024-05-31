@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -29,11 +30,11 @@ public class Post {
     @Column (name = "Content", columnDefinition = "nvarchar(2500)")
     private String content;
     @OneToMany (mappedBy = "commentPost", fetch = FetchType.EAGER)
-    private List<CommentPost> comments;
+    private List<CommentPost> comments = new ArrayList<>();
     @ManyToOne
     @JoinColumn (name = "userPost")
     private User userPost;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn (name ="CategoryId")
     private CategoryBlog category;
 }

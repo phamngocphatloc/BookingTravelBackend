@@ -1,10 +1,16 @@
 package com.example.BookingTravelBackend.service.impls;
 
+import com.example.BookingTravelBackend.Repository.CategoryRepository;
 import com.example.BookingTravelBackend.Repository.PostRepository;
+import com.example.BookingTravelBackend.Repository.UserRepository;
+import com.example.BookingTravelBackend.entity.CategoryBlog;
 import com.example.BookingTravelBackend.entity.Post;
+import com.example.BookingTravelBackend.entity.User;
+import com.example.BookingTravelBackend.payload.Request.PostRequest;
 import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
 import com.example.BookingTravelBackend.payload.respone.PostResponse;
 import com.example.BookingTravelBackend.service.PostService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +24,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostServiceImpls implements PostService {
     private final PostRepository postRepository;
-
+    private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
     @Override
     public PaginationResponse findAllPost(String search, int pageNum, int pageSize) {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
@@ -34,5 +41,19 @@ public class PostServiceImpls implements PostService {
     @Override
     public Post findById(int id) {
         return postRepository.findById(id).get();
+    }
+
+    @Override
+    @Transactional
+    public PostResponse AddPost(PostRequest postRequest) {
+        Post post= new Post();
+        post.setDatePost(postRequest.getDatePost());
+        post.setPostImg(postRequest.getPostImg());
+        post.setPostTitle(postRequest.getPostTitle());
+        post.setContent(postRequest.getContent());
+        post.setCategory(categoryRepository.findByCategoryName("%"+postRequest.getCategoryName()+"%"));
+        User user = userRepository.findById(postRequest.getUserId()).get();
+        post.setUserPost(user);
+        return new PostResponse(postRepository.save(post));
     }
 }
