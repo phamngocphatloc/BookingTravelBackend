@@ -5,6 +5,7 @@ import com.example.BookingTravelBackend.entity.Booking;
 import com.example.BookingTravelBackend.entity.User;
 import com.example.BookingTravelBackend.payload.Request.BillRequest;
 import com.example.BookingTravelBackend.payload.respone.BillResponse;
+import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
 
 import java.util.List;
 
@@ -15,5 +16,7 @@ public interface BillService {
     public void updateStatusBill (Bill bill, String status);
 
     public void cancelUnpaidOrders();
-    public List<BillResponse> selectBillByUser (User user);
+    public PaginationResponse selectBillByUser (User user, int pageNum);
+
+    public BillResponse selectBillById (int id);
 }
