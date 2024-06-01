@@ -14,4 +14,9 @@ public interface BillRepository extends JpaRepository<Bill,Integer> {
             "FROM bill join booking on bill.booking_id = booking.booking_id \n" +
             "WHERE booking.status = 'Pending' and created_at < ?1",nativeQuery = true)
     List<Bill> findByStatusPendingAndCreatedAtBefore(Date time);
+
+    @Query (value = "select bill.bill_id,bill.booking_id,bill.created_at,bill.first_name,bill.last_name,bill.phone,bill.price\n" +
+            "from booking b join users u on b.user_id = u.user_id join bill on bill.booking_id = b.booking_id \n" +
+            "where u.user_id = ?1", nativeQuery = true)
+    public List<Bill> findBookingByUser (int userId);
 }

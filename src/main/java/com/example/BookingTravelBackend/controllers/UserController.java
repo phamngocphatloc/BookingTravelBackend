@@ -1,13 +1,13 @@
 package com.example.BookingTravelBackend.controllers;
 
+import com.example.BookingTravelBackend.entity.Bill;
 import com.example.BookingTravelBackend.entity.User;
 import com.example.BookingTravelBackend.payload.Request.ChangePasswordRequest;
 import com.example.BookingTravelBackend.payload.Request.LoginRequest;
 import com.example.BookingTravelBackend.payload.Request.UserInfoRequest;
 import com.example.BookingTravelBackend.payload.Request.UserRequest;
-import com.example.BookingTravelBackend.payload.respone.JwtResponse;
-import com.example.BookingTravelBackend.payload.respone.RoleResponse;
-import com.example.BookingTravelBackend.payload.respone.UserDetailsResponse;
+import com.example.BookingTravelBackend.payload.respone.*;
+import com.example.BookingTravelBackend.service.BillService;
 import com.example.BookingTravelBackend.service.UserService;
 import com.example.BookingTravelBackend.service.VerificationTokenService;
 import jakarta.transaction.Transactional;
@@ -19,7 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.BookingTravelBackend.payload.respone.HttpRespone;
+import java.util.List;
 
 @RestController
 @RequestMapping("auth")
@@ -29,6 +29,7 @@ public class UserController {
     private final UserService userService;
 
     private final VerificationTokenService tokenService;
+    private final BillService billService;
     @PostMapping("login")
     public ResponseEntity<JwtResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         JwtResponse jwtResponse = userService.login(loginRequest);
@@ -98,6 +99,16 @@ public class UserController {
         RoleResponse role = new RoleResponse(user.getEmail(),user.getRole().getRoleName());
         return ResponseEntity.status(HttpStatus.OK).body(new UserDetailsResponse(user));
     }
+
+    @GetMapping ("getbill")
+    public ResponseEntity<HttpRespone> getBill (){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User principal = (User) authentication.getPrincipal();
+        User userLogin = userService.findById(principal.getId());
+        List<BillResponse> response = billService.selectBillByUser(userLogin);
+        return ResponseEntity.status(HttpStatus.OK).body(new HttpRespone(HttpStatus.OK.value(),"success",response));
+    }
+
 
 
 
