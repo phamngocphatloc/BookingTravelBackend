@@ -1,5 +1,6 @@
 package com.example.BookingTravelBackend.Repository;
 
+import com.example.BookingTravelBackend.entity.Bill;
 import com.example.BookingTravelBackend.entity.Booking;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,4 +23,6 @@ public interface BookingRepository extends JpaRepository<Booking,Integer> {
             ")\n" +
             "AND b.status = 'active';", nativeQuery = true)
     public List<Booking> listBookingByCheckinCheckout (int HotelId, Date checkin, Date Checkout);
+
+
 }

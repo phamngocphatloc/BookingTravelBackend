@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -66,5 +67,15 @@ public class BillServiceImpl implements BillService {
         for (Bill bill : bills) {
             updateStatusBill(bill,"Cancel");
         }
+    }
+
+    @Override
+    public List<BillResponse> selectBillByUser(User user) {
+        List<Bill> listBill = billRepository.findBookingByUser(user.getId());
+        List<BillResponse> listResponse = new ArrayList<>();
+        listBill.stream().forEach(item -> {
+            listResponse.add(new BillResponse(item));
+        });
+        return listResponse;
     }
 }
