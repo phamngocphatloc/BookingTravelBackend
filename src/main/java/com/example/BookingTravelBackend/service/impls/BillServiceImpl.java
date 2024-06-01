@@ -1,9 +1,6 @@
 package com.example.BookingTravelBackend.service.impls;
 
-import com.example.BookingTravelBackend.Repository.BillRepository;
-import com.example.BookingTravelBackend.Repository.HotelRepository;
-import com.example.BookingTravelBackend.Repository.RoomRepository;
-import com.example.BookingTravelBackend.Repository.UserRepository;
+import com.example.BookingTravelBackend.Repository.*;
 import com.example.BookingTravelBackend.entity.Bill;
 import com.example.BookingTravelBackend.entity.Booking;
 import com.example.BookingTravelBackend.entity.Room;
@@ -24,8 +21,20 @@ public class BillServiceImpl implements BillService {
     private final BillRepository billRepository;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
     @Override
     public BillResponse Booking(BillRequest request) {
+        Room r = roomRepository.findById(request.getBooking().getRoomBookingId()).get();
+        List<Booking> listOrder = bookingRepository.listBookingByCheckinCheckout(r.getHotelRoom().getHotelId(),request.getBooking().getCheckIn(), request.getBooking().getCheckOut());
+
+        if (!listOrder.isEmpty()){
+            listOrder.stream().forEach(item -> {
+                if (item.getRoomBooking().getId() == request.getBooking().getRoomBookingId()){
+                    throw new IllegalStateException("Phòng Này Đã Được Đặt");
+                }
+            });
+        }
+
         Bill bill = new Bill();
         bill.setPrice(request.getPrice());
         bill.setPhone(request.getPhone());
