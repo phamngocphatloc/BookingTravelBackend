@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("auth")
@@ -101,11 +102,11 @@ public class UserController {
     }
 
     @GetMapping ("getbill")
-    public ResponseEntity<HttpRespone> getBill (){
+    public ResponseEntity<HttpRespone> getBill (@RequestParam("page")Optional<Integer> page){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User principal = (User) authentication.getPrincipal();
         User userLogin = userService.findById(principal.getId());
-        List<BillResponse> response = billService.selectBillByUser(userLogin);
+        PaginationResponse response = billService.selectBillByUser(userLogin,page.orElse(0));
         return ResponseEntity.status(HttpStatus.OK).body(new HttpRespone(HttpStatus.OK.value(),"success",response));
     }
 

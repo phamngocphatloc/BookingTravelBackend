@@ -7,9 +7,15 @@ import com.example.BookingTravelBackend.entity.Room;
 import com.example.BookingTravelBackend.entity.User;
 import com.example.BookingTravelBackend.payload.Request.BillRequest;
 import com.example.BookingTravelBackend.payload.respone.BillResponse;
+import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
 import com.example.BookingTravelBackend.service.BillService;
+import com.example.BookingTravelBackend.util.HandleSort;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -79,12 +85,21 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public List<BillResponse> selectBillByUser(User user) {
-        List<Bill> listBill = billRepository.findBookingByUser(user.getId());
+    public PaginationResponse selectBillByUser(User user, int pageNum) {
+        Sort sort = HandleSort.buildSortProperties("bill_id", "desc");
+        Pageable pageable = PageRequest.of(pageNum, 10,sort);
+        Page<Bill> pageBill = billRepository.findBookingByUser(user.getId(),pageable);
         List<BillResponse> listResponse = new ArrayList<>();
-        listBill.stream().forEach(item -> {
+        pageBill.getContent().stream().forEach(item -> {
             listResponse.add(new BillResponse(item));
         });
-        return listResponse;
+        PaginationResponse paginationResponse = new PaginationResponse(pageNum,pageBill.getSize(),pageBill.getTotalElements(),pageBill.isLast(),pageBill.getTotalPages(),listResponse);
+        return paginationResponse;
+    }
+
+    @Override
+    public BillResponse selectBillById(int id) {
+        BillResponse response = new BillResponse(findById(id));
+        return response;
     }
 }
