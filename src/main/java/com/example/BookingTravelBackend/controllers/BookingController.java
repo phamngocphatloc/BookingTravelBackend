@@ -1,6 +1,7 @@
 package com.example.BookingTravelBackend.controllers;
 
 import com.example.BookingTravelBackend.Configuration.VnpayConfig;
+import com.example.BookingTravelBackend.Configuration.WebConfig;
 import com.example.BookingTravelBackend.entity.Bill;
 import com.example.BookingTravelBackend.payload.Request.BillRequest;
 import com.example.BookingTravelBackend.payload.respone.HttpRespone;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -30,19 +32,19 @@ public class BookingController {
     }
 
     @GetMapping("/paying/{id}")
-    public ResponseEntity<HttpRespone> paying(@PathVariable("id") int id,
-                                                 @RequestParam("vnp_Amount") String amount,
-                                                 @RequestParam("vnp_BankCode") String bankcode,
-                                                 @RequestParam("vnp_CardType") String cardtype,
-                                                 @RequestParam("vnp_OrderInfo") String orderInfo,
-                                                 @RequestParam("vnp_PayDate") String date,
-                                                 @RequestParam("vnp_ResponseCode") String code,
-                                                 @RequestParam("vnp_TmnCode") String tmncode,
-                                                 @RequestParam("vnp_TransactionNo") String transactionno,
-                                                 @RequestParam("vnp_TransactionStatus") String status,
-                                                 @RequestParam("vnp_TxnRef") String txnref,
-                                                 @RequestParam("vnp_SecureHash") String hash,
-                                                 @RequestParam(name = "vnp_BankTranNo", defaultValue = "") String tranno) throws UnsupportedEncodingException {
+    public RedirectView paying(@PathVariable("id") int id,
+                               @RequestParam("vnp_Amount") String amount,
+                               @RequestParam("vnp_BankCode") String bankcode,
+                               @RequestParam("vnp_CardType") String cardtype,
+                               @RequestParam("vnp_OrderInfo") String orderInfo,
+                               @RequestParam("vnp_PayDate") String date,
+                               @RequestParam("vnp_ResponseCode") String code,
+                               @RequestParam("vnp_TmnCode") String tmncode,
+                               @RequestParam("vnp_TransactionNo") String transactionno,
+                               @RequestParam("vnp_TransactionStatus") String status,
+                               @RequestParam("vnp_TxnRef") String txnref,
+                               @RequestParam("vnp_SecureHash") String hash,
+                               @RequestParam(name = "vnp_BankTranNo", defaultValue = "") String tranno) throws UnsupportedEncodingException {
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Amount", amount);
         vnp_Params.put("vnp_BankCode", bankcode);
@@ -86,7 +88,7 @@ public class BookingController {
         System.out.println(hash);
         Bill order = billService.findById(id);
         if (order.getBooking().getStatus().equalsIgnoreCase("active") || order.getBooking().getStatus().equalsIgnoreCase("cancel")){
-            return ResponseEntity.status(HttpStatus.OK).body(new HttpRespone(HttpStatus.OK.value(),"success","Đơn Hàng Đã Được Xử Lý"));
+            return new RedirectView(WebConfig.url+"/#!/booking/"+id);
         }
         if (vnp_SecureHash.equalsIgnoreCase(hash) && order.getId() == Integer.parseInt(txnref)) {
             if (status.equalsIgnoreCase("00")) {
@@ -94,13 +96,13 @@ public class BookingController {
                 billService.updateStatusBill(order,"active");
 
 
-                return ResponseEntity.status(HttpStatus.OK).body(new HttpRespone(HttpStatus.OK.value(),"success","Thanh Toán Thành Công"));
+                return new RedirectView(WebConfig.url+"/#!/booking/"+id);
             } else {
                 billService.updateStatusBill(order,"cancel");
-                return ResponseEntity.status(HttpStatus.OK).body(new HttpRespone(HttpStatus.OK.value(),"success","Hủy Thành Công"));
+                return new RedirectView(WebConfig.url+"/#!/booking/"+id);
             }
         } else {
-            return ResponseEntity.status(HttpStatus.OK).body(new HttpRespone(HttpStatus.OK.value(),"success","https://sandbox.vnpayment.vn/paymentv2/Payment/Error.html?code=70"));
+            return new RedirectView("https://sandbox.vnpayment.vn/paymentv2/Payment/Error.html?code=70");
         }
     }
 
