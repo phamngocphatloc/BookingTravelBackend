@@ -110,6 +110,19 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(new HttpRespone(HttpStatus.OK.value(),"success",response));
     }
 
+    @GetMapping ("getBillUser/{id}")
+    public ResponseEntity<HttpRespone> getBillById (@PathVariable ("id") int id){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User principal = (User) authentication.getPrincipal();
+        User userLogin = userService.findById(principal.getId());
+        BillResponse response = billService.selectBillById(id);
+        if (userLogin.getId() == response.getBooking().getUserBooking().getUserId()){
+            return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", response));
+        }else{
+            return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "không tìm thấy id này trong tài khoản", null));
+        }
+    }
+
 
 
 
