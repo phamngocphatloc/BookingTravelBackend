@@ -26,7 +26,7 @@ public class PaymentVnpayController {
     @GetMapping("/createPaymentVnpay")
     public ResponseEntity<?> createPayment(HttpServletRequest request, @RequestParam("bId") int bid) throws UnsupportedEncodingException {
         Bill order = billService.findById(bid);
-        String vnp_Returnurl = WebConfig.url+"/#!paying/"+bid;
+        String vnp_Returnurl = WebConfig.url+"/paying/"+bid;
         if (order != null && order.getBooking().getStatus().equalsIgnoreCase("pending")) {
             long amount = (long)order.getPrice()* 100;
             System.out.println(amount);
