@@ -121,4 +121,24 @@ public class HotelServiceImpl implements HotelService {
         hotel.getListService().add(service);
         hotelRepository.save(hotel);
     }
+
+    @Override
+    public PaginationResponse selectHotelByCheckInCheckOut(int pageNum, int pageSize, Date checkIn, Date checkOut) {
+        Pageable pageable = PageRequest.of(pageNum, pageSize);
+        Page<Hotel> pageHotel = hotelRepository.findAll(pageable);
+        List<HotelRespone> listHotel = new ArrayList<>();
+        for (Hotel hotel : pageHotel.getContent()){
+            listHotel.add(roomService.CheckRoomNotYet(new HotelRespone(hotel),checkIn,checkOut));
+        }
+
+        listHotel.stream().forEach(item -> {
+            item.setStatus("full");
+            item.getListRooms().stream().forEach(itemRoom -> {
+                if (itemRoom.getStatus().equalsIgnoreCase("notyet")){
+                    item.setStatus("still");
+                }
+            });
+        });
+        return new PaginationResponse(pageNum,pageSize,pageHotel.getTotalElements(),pageHotel.isLast(),pageHotel.getTotalPages(),listHotel);
+    }
 }
