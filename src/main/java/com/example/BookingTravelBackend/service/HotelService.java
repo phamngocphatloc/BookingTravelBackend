@@ -18,4 +18,5 @@ public interface HotelService {
     public void addHotel (HotelRequest hotelRequest);
     public HotelRespone selectById(int id, Date checkIn, Date checkOut);
     public void addHotelService (HotelServiceRequest request);
+    public PaginationResponse selectHotelByCheckInCheckOut (int pageNum, int pageSize, Date checkIn, Date checkOut);
 }
