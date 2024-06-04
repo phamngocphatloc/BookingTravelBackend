@@ -28,11 +28,15 @@ public class ReviewServiceImpls implements ReviewService {
 
     @Override
     public ReviewRespone Comment(ReviewRequest request, User user) {
-        ReviewHotel rv = new ReviewHotel();
-        rv.setReview(request.getReview());
-        rv.setRate(request.getRate());
-        rv.setUserReview(user);
-        ReviewHotel response =  reviewHotelRepository.save(rv);
-        return new ReviewRespone(rv);
+        if (reviewHotelRepository.selectByUser(user.getId()).isEmpty()) {
+            ReviewHotel rv = new ReviewHotel();
+            rv.setReview(request.getReview());
+            rv.setRate(request.getRate());
+            rv.setUserReview(user);
+            ReviewHotel response = reviewHotelRepository.save(rv);
+            return new ReviewRespone(rv);
+        }else{
+            throw new IllegalArgumentException("Bạn Đã Review Rồi");
+        }
     }
 }
