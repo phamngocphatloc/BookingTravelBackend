@@ -1,7 +1,11 @@
 package com.example.BookingTravelBackend.payload.respone;
 
 import com.example.BookingTravelBackend.entity.ReviewHotel;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class ReviewRespone {
     private int id;
 
