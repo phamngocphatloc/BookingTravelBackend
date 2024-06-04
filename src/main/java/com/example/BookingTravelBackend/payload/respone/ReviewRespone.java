@@ -18,6 +18,7 @@ public class ReviewRespone {
     public ReviewRespone (ReviewHotel rv){
         this.id = rv.getId();
         this.review = rv.getReview();
+        this.rate = rv.getRate();
         this.userReview = new UserDetailsResponse(rv.getUserReview());
     }
 }

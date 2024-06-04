@@ -11,5 +11,5 @@ import java.util.Optional;
 @Repository
 public interface ReviewHotelRepository extends JpaRepository<ReviewHotel,Integer> {
     @Query (value = "select * from review_hotel where user_id = ?1",nativeQuery = true)
-    public Optional<User> selectByUser (int userId);
+    public Optional<ReviewHotel> selectByUser (int userId);
 }
