@@ -21,7 +21,7 @@ public interface BookingRepository extends JpaRepository<Booking,Integer> {
             "    OR (?3 BETWEEN b.check_in AND b.check_out)\n" +
             "    OR (?2 <= b.check_in AND ?3 >= b.check_out)\n" +
             ")\n" +
-            "AND b.status = 'active';", nativeQuery = true)
+            "AND (b.status = 'active' or b.status = 'pending');", nativeQuery = true)
     public List<Booking> listBookingByCheckinCheckout (int HotelId, Date checkin, Date Checkout);
 
 
