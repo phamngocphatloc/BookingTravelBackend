@@ -29,7 +29,7 @@ public class Post {
     private Date datePost;
     @Column (name = "Content", columnDefinition = "nvarchar(2500)")
     private String content;
-    @OneToMany (mappedBy = "commentPost", fetch = FetchType.EAGER)
+    @OneToMany (mappedBy = "commentPost", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<CommentPost> comments = new ArrayList<>();
     @ManyToOne
     @JoinColumn (name = "userPost")
