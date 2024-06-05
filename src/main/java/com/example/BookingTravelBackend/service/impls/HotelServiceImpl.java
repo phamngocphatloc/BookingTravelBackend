@@ -7,6 +7,7 @@ import com.example.BookingTravelBackend.entity.Hotel;
 import com.example.BookingTravelBackend.entity.ImageDesbrice;
 import com.example.BookingTravelBackend.entity.TouristAttraction;
 import com.example.BookingTravelBackend.payload.Request.HotelRequest;
+import com.example.BookingTravelBackend.payload.Request.HotelRequestEdit;
 import com.example.BookingTravelBackend.payload.Request.HotelServiceRequest;
 import com.example.BookingTravelBackend.payload.respone.HotelRespone;
 import com.example.BookingTravelBackend.payload.respone.HotelServiceRespone;
@@ -140,5 +141,36 @@ public class HotelServiceImpl implements HotelService {
             });
         });
         return new PaginationResponse(pageNum,pageSize,pageHotel.getTotalElements(),pageHotel.isLast(),pageHotel.getTotalPages(),listHotel);
+    }
+
+    @Override
+    @Transactional
+    public HotelRespone editHotel(HotelRequestEdit request) {
+        Hotel hotel = hotelRepository.findById(request.getHotelId()).get();
+        hotel.setAddress(request.getAddress());
+        hotel.setDescribe(request.getDescribe());
+        Hotel savedHotel = hotelRepository.save(hotel);
+        return new HotelRespone(savedHotel);
+    }
+
+    @Override
+    @Transactional
+    public void deleteHotel(int hotelId) {
+        Hotel hotel = hotelRepository.findById(hotelId).get();
+        hotelRepository.delete(hotel);
+    }
+
+    @Override
+    public List<HotelRespone> listHotel() {
+        List<HotelRespone> list = new ArrayList<>();
+        hotelRepository.findAll().stream().forEach(item -> {
+            list.add(new HotelRespone(item));
+        });
+        return list;
+    }
+
+    @Override
+    public HotelRespone selectHotelId(int hotelId) {
+        return new HotelRespone(hotelRepository.findById(hotelId).get());
     }
 }
