@@ -50,7 +50,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(HttpMethod.GET, "/booking/bill/**").hasAnyRole(Constant.ROLE_ADMIN)
                         .requestMatchers(HttpMethod.POST, "/hotel/**").hasRole(Constant.ROLE_ADMIN)
-                        .requestMatchers(HttpMethod.POST, "/post/addPost").hasRole(Constant.ROLE_ADMIN)
+                        .requestMatchers("/admin/**").hasRole(Constant.ROLE_ADMIN)
                         .requestMatchers("/auth/authorization").authenticated()
                         .anyRequest().permitAll())
                 .httpBasic(Customizer.withDefaults())

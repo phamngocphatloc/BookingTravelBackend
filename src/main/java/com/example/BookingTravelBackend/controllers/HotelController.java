@@ -93,13 +93,6 @@ public class HotelController {
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "Success", page));
     }
 
-    @GetMapping ("/getAllHotelAdmin")
-    public ResponseEntity<HttpRespone> getHotelAdmin (@RequestParam ("pagenum") Optional<Integer> pageNum,
-                                                                  @RequestParam (value = "checkIn")Date checkIn,
-                                                                  @RequestParam (value = "checkOut")Date checkOut){
-        PaginationResponse page = hotelService.selectHotelByCheckInCheckOut(pageNum.orElse(0),1000000,checkIn,checkOut);
-        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "Success", page));
-    }
 
 
 

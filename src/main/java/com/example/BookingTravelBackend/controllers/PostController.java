@@ -35,11 +35,6 @@ public class PostController {
         PostResponse response = new PostResponse(postService.findById(id));
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", response));
     }
-    @PostMapping("/addPost")
-    public ResponseEntity<HttpRespone> addPost (@RequestBody PostRequest postRequest){
-        PostResponse response = postService.AddPost(postRequest);
-        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", response));
-    }
 
     @PostMapping("/comment")
     public ResponseEntity<HttpRespone> commentPost (@RequestBody CommentRequest request){
