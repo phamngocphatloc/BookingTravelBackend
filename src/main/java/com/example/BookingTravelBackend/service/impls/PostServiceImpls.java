@@ -1,12 +1,16 @@
 package com.example.BookingTravelBackend.service.impls;
 
 import com.example.BookingTravelBackend.Repository.CategoryRepository;
+import com.example.BookingTravelBackend.Repository.CommentPostRepository;
 import com.example.BookingTravelBackend.Repository.PostRepository;
 import com.example.BookingTravelBackend.Repository.UserRepository;
 import com.example.BookingTravelBackend.entity.CategoryBlog;
+import com.example.BookingTravelBackend.entity.CommentPost;
 import com.example.BookingTravelBackend.entity.Post;
 import com.example.BookingTravelBackend.entity.User;
+import com.example.BookingTravelBackend.payload.Request.CommentRequest;
 import com.example.BookingTravelBackend.payload.Request.PostRequest;
+import com.example.BookingTravelBackend.payload.respone.CommentPostResponse;
 import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
 import com.example.BookingTravelBackend.payload.respone.PostResponse;
 import com.example.BookingTravelBackend.service.PostService;
@@ -26,6 +30,7 @@ public class PostServiceImpls implements PostService {
     private final PostRepository postRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+    private final CommentPostRepository commentPostRepository;
     @Override
     public PaginationResponse findAllPost(String search, int pageNum, int pageSize) {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
@@ -55,5 +60,18 @@ public class PostServiceImpls implements PostService {
         User user = userRepository.findById(postRequest.getUserId()).get();
         post.setUserPost(user);
         return new PostResponse(postRepository.save(post));
+    }
+
+    @Override
+    public CommentPostResponse CommentPost(CommentRequest request, User user) {
+        System.out.println("PostId: "+request.getPostid());
+        Post post = postRepository.findById(request.getPostid()).get();
+
+        CommentPost comment = new CommentPost();
+        comment.setComment(request.getComment());
+        comment.setCommentPost(post);
+        comment.setUser(user);
+        CommentPostResponse response = new CommentPostResponse(commentPostRepository.save(comment));
+        return response;
     }
 }
