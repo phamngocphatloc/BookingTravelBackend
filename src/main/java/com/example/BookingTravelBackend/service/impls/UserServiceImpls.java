@@ -1,5 +1,6 @@
 package com.example.BookingTravelBackend.service.impls;
 
+import com.example.BookingTravelBackend.Configuration.WebConfig;
 import com.example.BookingTravelBackend.Repository.RoleRepository;
 import com.example.BookingTravelBackend.Repository.UserRepository;
 import com.example.BookingTravelBackend.entity.Role;
@@ -78,7 +79,7 @@ public class UserServiceImpls implements UserService {
         String recipientAddress = users.getEmail();
         String subject = "Account Verification";
         String confirmationUrl = "#!/verify?token=" + token.getToken();
-        String message = "Click the link to verify your account: " + "http://localhost:5500/" + confirmationUrl;
+        String message = "Click the link to verify your account: " + WebConfig.url+"/" + confirmationUrl;
         try {
             emailService.sendEmail(recipientAddress, subject, message);
         }catch (Exception e){
