@@ -36,7 +36,7 @@ public class HotelController {
                                                  @RequestParam (value = "checkIn")Date checkIn,
                                                  @RequestParam (value = "checkOut")Date checkOut){
         TouristAttraction tour = touristAttractionService.selectByName(search);
-        PaginationResponse page = hotelService.selectHotelByTour(tour,pageNum.orElse(0),8,checkIn,checkOut);
+        PaginationResponse page = hotelService.selectHotelByTour(tour,pageNum.orElse(0),6,checkIn,checkOut);
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "Success", page));
     }
 
@@ -89,7 +89,7 @@ public class HotelController {
     public ResponseEntity<HttpRespone> getHotelByCheckInCheckOut (@RequestParam ("pagenum") Optional<Integer> pageNum,
                                                  @RequestParam (value = "checkIn")Date checkIn,
                                                  @RequestParam (value = "checkOut")Date checkOut){
-        PaginationResponse page = hotelService.selectHotelByCheckInCheckOut(pageNum.orElse(0),8,checkIn,checkOut);
+        PaginationResponse page = hotelService.selectHotelByCheckInCheckOut(pageNum.orElse(0),6,checkIn,checkOut);
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "Success", page));
     }
 

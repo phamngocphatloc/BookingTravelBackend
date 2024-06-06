@@ -4,6 +4,7 @@ import com.example.BookingTravelBackend.entity.Hotel;
 import com.example.BookingTravelBackend.payload.Request.HotelRequestEdit;
 import com.example.BookingTravelBackend.payload.Request.PostRequest;
 import com.example.BookingTravelBackend.payload.respone.*;
+import com.example.BookingTravelBackend.service.BillService;
 import com.example.BookingTravelBackend.service.HotelService;
 import com.example.BookingTravelBackend.service.PostService;
 import com.example.BookingTravelBackend.service.RoomService;
@@ -24,6 +25,7 @@ public class AdminController {
     private final PostService postService;
     private final HotelService hotelService;
     private final RoomService roomService;
+    private final BillService billService;
     @PostMapping("/addPost")
     public ResponseEntity<HttpRespone> addPost (@RequestBody PostRequest postRequest){
         PostResponse response = postService.AddPost(postRequest);
@@ -58,5 +60,13 @@ public class AdminController {
     public ResponseEntity<HttpRespone> getHotelById (@RequestParam int hotelId){
         HotelRespone hotel = hotelService.selectHotelId(hotelId);
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success",hotel));
+    }
+
+    @GetMapping ("getRevenue")
+    public ResponseEntity<HttpRespone> getRevenue (@RequestParam(value = "hotelId", defaultValue = "0") int hotelId,
+                                                   @RequestParam Date dateFrom,
+                                                   @RequestParam Date dateTo){
+        List<RevenueResponse> response = billService.getRevenua(hotelId,dateFrom,dateTo);
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",response));
     }
 }

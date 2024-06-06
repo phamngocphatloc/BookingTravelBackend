@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public interface BillRepository extends JpaRepository<Bill,Integer> {
@@ -21,4 +22,18 @@ public interface BillRepository extends JpaRepository<Bill,Integer> {
             "from bill bi join booking b on bi.booking_id = b.booking_id join users u on b.user_id = u.user_id \n" +
             "where u.user_id = ?1", nativeQuery = true)
     public Page<Bill> findBookingByUser (int userId, Pageable page);
+
+    @Query (value = "SELECT hotel.hotel_id, \n" +
+            "       hotel.address, \n" +
+            "       hotel.describe, \n" +
+            "       SUM(bill.price) AS 'total_price'\n" +
+            "FROM hotel \n" +
+            "FULL OUTER JOIN room ON hotel.hotel_id = room.hotel_id \n" +
+            "FULL OUTER JOIN booking ON room.room_id = booking.room_id\n" +
+            "FULL OUTER JOIN bill ON booking.booking_id = bill.booking_id\n" +
+            "WHERE booking.status = 'active' and\n" +
+            "(hotel.hotel_id = ?1 or ?1 = 0)\n" +
+            "  AND bill.created_at between ?2 AND ?3\n" +
+            "GROUP BY hotel.hotel_id, hotel.address, hotel.describe;\n", nativeQuery = true)
+    public List<Object[]> selectRevenueByHotelAndDate (int hotelId,Date dateFrom, Date dateTo);
 }
