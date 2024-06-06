@@ -6,7 +6,9 @@ import com.example.BookingTravelBackend.entity.User;
 import com.example.BookingTravelBackend.payload.Request.BillRequest;
 import com.example.BookingTravelBackend.payload.respone.BillResponse;
 import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
+import com.example.BookingTravelBackend.payload.respone.RevenueResponse;
 
+import java.util.Date;
 import java.util.List;
 
 public interface BillService {
@@ -19,4 +21,6 @@ public interface BillService {
     public PaginationResponse selectBillByUser (User user, int pageNum);
 
     public BillResponse selectBillById (int id);
+
+    public List<RevenueResponse> getRevenua (int hotelId, Date dateFrom, Date dateTo);
 }

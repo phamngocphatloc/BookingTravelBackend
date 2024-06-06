@@ -8,6 +8,7 @@ import com.example.BookingTravelBackend.entity.User;
 import com.example.BookingTravelBackend.payload.Request.BillRequest;
 import com.example.BookingTravelBackend.payload.respone.BillResponse;
 import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
+import com.example.BookingTravelBackend.payload.respone.RevenueResponse;
 import com.example.BookingTravelBackend.service.BillService;
 import com.example.BookingTravelBackend.util.HandleSort;
 import jakarta.transaction.Transactional;
@@ -101,5 +102,14 @@ public class BillServiceImpl implements BillService {
     public BillResponse selectBillById(int id) {
         BillResponse response = new BillResponse(findById(id));
         return response;
+    }
+
+    @Override
+    public List<RevenueResponse> getRevenua(int hotelId, Date dateFrom, Date dateTo) {
+        List<RevenueResponse> list = new ArrayList<>();
+        billRepository.selectRevenueByHotelAndDate(hotelId,dateFrom,dateTo).stream().forEach(item -> {
+            list.add(new RevenueResponse(item,dateFrom,dateTo));
+        });
+        return list;
     }
 }
