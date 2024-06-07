@@ -23,4 +23,7 @@ public interface BillService {
     public BillResponse selectBillById (int id);
 
     public List<RevenueResponse> getRevenua (int hotelId, Date dateFrom, Date dateTo);
+
+    public List<BillResponse> selectBillByStatus(String status, int hotelId);
+    public void updateStatusBill (String status, int billId);
 }

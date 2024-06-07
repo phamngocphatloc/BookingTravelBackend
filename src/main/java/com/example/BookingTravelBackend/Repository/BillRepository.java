@@ -23,17 +23,34 @@ public interface BillRepository extends JpaRepository<Bill,Integer> {
             "where u.user_id = ?1", nativeQuery = true)
     public Page<Bill> findBookingByUser (int userId, Pageable page);
 
-    @Query (value = "SELECT hotel.hotel_id, \n" +
-            "       hotel.address, \n" +
-            "       hotel.describe, \n" +
-            "       SUM(bill.price) AS 'total_price'\n" +
-            "FROM hotel \n" +
-            "FULL OUTER JOIN room ON hotel.hotel_id = room.hotel_id \n" +
-            "FULL OUTER JOIN booking ON room.room_id = booking.room_id\n" +
-            "FULL OUTER JOIN bill ON booking.booking_id = bill.booking_id\n" +
-            "WHERE booking.status = 'active' and\n" +
-            "(hotel.hotel_id = ?1 or ?1 = 0)\n" +
-            "  AND bill.created_at between ?2 AND ?3\n" +
-            "GROUP BY hotel.hotel_id, hotel.address, hotel.describe;\n", nativeQuery = true)
+    @Query (value = "SELECT \n" +
+            "    hotel.hotel_id,\n" +
+            "    hotel.address,\n" +
+            "    hotel.describe,\n" +
+            "    COALESCE(SUM(bill.price), 0) AS total_price\n" +
+            "FROM \n" +
+            "    hotel\n" +
+            "LEFT JOIN \n" +
+            "    room ON hotel.hotel_id = room.hotel_id\n" +
+            "LEFT JOIN \n" +
+            "    booking ON room.room_id = booking.room_id\n" +
+            "LEFT JOIN \n" +
+            "    bill ON booking.booking_id = bill.booking_id\n" +
+            "        AND bill.created_at BETWEEN ?2 AND ?3\n" +
+            "WHERE \n" +
+            "    (booking.status = 'active' OR booking.status = 'success') \n" +
+            "    AND (hotel.hotel_id = ?1 OR ?1 = 0)\n" +
+            "GROUP BY \n" +
+            "    hotel.hotel_id, hotel.address, hotel.describe;", nativeQuery = true)
     public List<Object[]> selectRevenueByHotelAndDate (int hotelId,Date dateFrom, Date dateTo);
+
+
+    @Query (value = "select b.bill_id,b.booking_id,b.created_at,b.first_name,b.last_name,b.price,b.phone \n" +
+            "from bill b join booking \n" +
+            "on b.booking_id = booking.booking_id join room \n" +
+            "on booking.room_id = room.room_id join hotel \n" +
+            "on room.hotel_id = hotel.hotel_id \n" +
+            "where booking.status = ?1 and (hotel.hotel_id = ?2 or ?2 = 0)",nativeQuery = true)
+    public List<Bill> selectBillByStatusAndHotel (String status, int hotelId);
+
 }

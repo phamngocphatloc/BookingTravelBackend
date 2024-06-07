@@ -9,6 +9,7 @@ import com.example.BookingTravelBackend.entity.Booking;
 import com.example.BookingTravelBackend.entity.Hotel;
 import com.example.BookingTravelBackend.entity.Room;
 import com.example.BookingTravelBackend.payload.Request.RoomRequest;
+import com.example.BookingTravelBackend.payload.respone.BedRespone;
 import com.example.BookingTravelBackend.payload.respone.HotelRespone;
 import com.example.BookingTravelBackend.service.RoomService;
 import jakarta.transaction.Transactional;
@@ -73,6 +74,15 @@ public class RoomServiceImpl implements RoomService {
         Room r = room.getRoom(hotel);
         r.getBed().add(bed);
         roomRepository.save(r);
+    }
+
+    @Override
+    public List<BedRespone> selectAllBed() {
+        List<BedRespone> list = new ArrayList<>();
+        bedRepository.findAll().stream().forEach(item -> {
+            list.add(new BedRespone(item));
+        });
+        return list;
     }
 
 

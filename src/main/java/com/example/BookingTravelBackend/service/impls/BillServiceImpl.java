@@ -112,4 +112,21 @@ public class BillServiceImpl implements BillService {
         });
         return list;
     }
+
+    @Override
+    public List<BillResponse> selectBillByStatus(String status, int hotelId) {
+        List<BillResponse> response = new ArrayList<>();
+        billRepository.selectBillByStatusAndHotel(status,hotelId).stream().forEach(item -> {
+            response.add(new BillResponse(item));
+        });
+        return response;
+    }
+
+    @Override
+    @Transactional
+    public void updateStatusBill(String status, int billId) {
+        Bill bill = billRepository.findById(billId).get();
+        bill.getBooking().setStatus(status);
+        billRepository.save(bill);
+    }
 }

@@ -69,4 +69,15 @@ public class AdminController {
         List<RevenueResponse> response = billService.getRevenua(hotelId,dateFrom,dateTo);
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",response));
     }
+
+    @GetMapping ("/getBillByStatus")
+    public ResponseEntity<HttpRespone> getBillByStatus (@RequestParam String status, @RequestParam(defaultValue = "0") int hotelId){
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", billService.selectBillByStatus(status,hotelId)));
+    }
+
+    @PutMapping ("/updateBillStatus")
+    public ResponseEntity<HttpRespone> updateBillByStatus (@RequestParam String status, @RequestParam int billId){
+        billService.updateStatusBill(status,billId);
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", billService.selectBillById(billId)));
+    }
 }

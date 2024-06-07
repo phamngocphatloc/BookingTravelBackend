@@ -88,8 +88,9 @@ public class HotelController {
     @GetMapping ("/getAllHotel")
     public ResponseEntity<HttpRespone> getHotelByCheckInCheckOut (@RequestParam ("pagenum") Optional<Integer> pageNum,
                                                  @RequestParam (value = "checkIn")Date checkIn,
-                                                 @RequestParam (value = "checkOut")Date checkOut){
-        PaginationResponse page = hotelService.selectHotelByCheckInCheckOut(pageNum.orElse(0),6,checkIn,checkOut);
+                                                 @RequestParam (value = "checkOut")Date checkOut,
+                                                                  @RequestParam (value = "pageSize",defaultValue = "6") int pageSize){
+        PaginationResponse page = hotelService.selectHotelByCheckInCheckOut(pageNum.orElse(0),pageSize,checkIn,checkOut);
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "Success", page));
     }
 
