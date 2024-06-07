@@ -6,6 +6,9 @@ import com.example.BookingTravelBackend.payload.Request.LoginRequest;
 import com.example.BookingTravelBackend.payload.Request.UserInfoRequest;
 import com.example.BookingTravelBackend.payload.Request.UserRequest;
 import com.example.BookingTravelBackend.payload.respone.JwtResponse;
+import com.example.BookingTravelBackend.payload.respone.UserDetailsResponse;
+
+import java.util.List;
 
 public interface UserService {
     JwtResponse login(LoginRequest loginRequest);
@@ -18,5 +21,7 @@ public interface UserService {
     Boolean changePassword(ChangePasswordRequest changePasswordRequest);
 
     void update(int id, UserInfoRequest userInfoRequest);
+
+    public List<UserDetailsResponse> selectAll ();
 
 }

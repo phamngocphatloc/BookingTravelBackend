@@ -4,10 +4,7 @@ import com.example.BookingTravelBackend.entity.Hotel;
 import com.example.BookingTravelBackend.payload.Request.HotelRequestEdit;
 import com.example.BookingTravelBackend.payload.Request.PostRequest;
 import com.example.BookingTravelBackend.payload.respone.*;
-import com.example.BookingTravelBackend.service.BillService;
-import com.example.BookingTravelBackend.service.HotelService;
-import com.example.BookingTravelBackend.service.PostService;
-import com.example.BookingTravelBackend.service.RoomService;
+import com.example.BookingTravelBackend.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -26,6 +23,7 @@ public class AdminController {
     private final HotelService hotelService;
     private final RoomService roomService;
     private final BillService billService;
+    private final UserService userService;
     @PostMapping("/addPost")
     public ResponseEntity<HttpRespone> addPost (@RequestBody PostRequest postRequest){
         PostResponse response = postService.AddPost(postRequest);
@@ -79,5 +77,17 @@ public class AdminController {
     public ResponseEntity<HttpRespone> updateBillByStatus (@RequestParam String status, @RequestParam int billId){
         billService.updateStatusBill(status,billId);
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", billService.selectBillById(billId)));
+    }
+
+    @GetMapping ("/getBed")
+    public ResponseEntity<HttpRespone> getAllBed (){
+        List<BedRespone> response = roomService.selectAllBed();
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",response));
+    }
+
+    @GetMapping ("/getUser")
+    public ResponseEntity<HttpRespone> getAllUser (){
+        List<UserDetailsResponse> response = userService.selectAll();
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success",response));
     }
 }
