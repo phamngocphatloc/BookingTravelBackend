@@ -12,6 +12,7 @@ import com.example.BookingTravelBackend.payload.Request.LoginRequest;
 import com.example.BookingTravelBackend.payload.Request.UserInfoRequest;
 import com.example.BookingTravelBackend.payload.Request.UserRequest;
 import com.example.BookingTravelBackend.payload.respone.JwtResponse;
+import com.example.BookingTravelBackend.payload.respone.UserDetailsResponse;
 import com.example.BookingTravelBackend.service.EmailService;
 import com.example.BookingTravelBackend.service.JwtService;
 import com.example.BookingTravelBackend.service.UserService;
@@ -25,6 +26,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -147,5 +149,14 @@ public class UserServiceImpls implements UserService {
         user.setAvatar(userInfoRequest.getAvatar());
         user.setFullName(userInfoRequest.getFullname());
         userRepository.save(user);
+    }
+
+    @Override
+    public List<UserDetailsResponse> selectAll() {
+        List<UserDetailsResponse> response = new ArrayList<>();
+        userRepository.findAll().stream().forEach(item -> {
+            response.add(new UserDetailsResponse(item));
+        });
+        return response;
     }
 }
