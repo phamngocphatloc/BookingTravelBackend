@@ -8,9 +8,11 @@ import com.example.BookingTravelBackend.entity.Bed;
 import com.example.BookingTravelBackend.entity.Booking;
 import com.example.BookingTravelBackend.entity.Hotel;
 import com.example.BookingTravelBackend.entity.Room;
+import com.example.BookingTravelBackend.payload.Request.RoomEditRequest;
 import com.example.BookingTravelBackend.payload.Request.RoomRequest;
 import com.example.BookingTravelBackend.payload.respone.BedRespone;
 import com.example.BookingTravelBackend.payload.respone.HotelRespone;
+import com.example.BookingTravelBackend.payload.respone.RoomRespone;
 import com.example.BookingTravelBackend.service.RoomService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -83,6 +85,24 @@ public class RoomServiceImpl implements RoomService {
             list.add(new BedRespone(item));
         });
         return list;
+    }
+
+    @Override
+    @Transactional
+    public RoomRespone updateRoom(RoomEditRequest request) {
+        Room roomEdit = roomRepository.findById(request.getRoomId()).get();
+        roomEdit.setRoomName(request.getRoomName());
+        roomEdit.setTypeRoom(request.getTypeRoom());
+        roomEdit.setDescribe(request.getDescribe());
+        roomEdit.setPrice(request.getPrice());
+        roomEdit.setNumberOfPeople(request.getNumberOfPeople());
+        Room roomsaved = roomRepository.save(roomEdit);
+        return new RoomRespone(roomsaved);
+    }
+
+    @Override
+    public RoomRespone selectRoomById(int roomId) {
+        return new RoomRespone(roomRepository.findById(roomId).get());
     }
 
 

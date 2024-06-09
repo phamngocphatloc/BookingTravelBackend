@@ -17,6 +17,7 @@ import com.example.BookingTravelBackend.service.EmailService;
 import com.example.BookingTravelBackend.service.JwtService;
 import com.example.BookingTravelBackend.service.UserService;
 import com.example.BookingTravelBackend.service.VerificationTokenService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -158,5 +159,15 @@ public class UserServiceImpls implements UserService {
             response.add(new UserDetailsResponse(item));
         });
         return response;
+    }
+
+    @Override
+    @Transactional
+    public UserDetailsResponse updateAdmin(int userId, String roleName) {
+        User user = findById(userId);
+        Role role = roleRepository.findByRoleName(roleName);
+        user.setRole(role);
+        User userSaved = userRepository.save(user);
+        return new UserDetailsResponse(userSaved);
     }
 }

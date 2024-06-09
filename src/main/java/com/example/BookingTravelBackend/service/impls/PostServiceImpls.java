@@ -74,4 +74,13 @@ public class PostServiceImpls implements PostService {
         CommentPostResponse response = new CommentPostResponse(commentPostRepository.save(comment));
         return response;
     }
+
+    @Override
+    public List<PostResponse> getAllPost() {
+        List<PostResponse> response = new ArrayList<>();
+        postRepository.findAll().stream().forEach(item -> {
+            response.add(new PostResponse(item));
+        });
+        return response;
+    }
 }
