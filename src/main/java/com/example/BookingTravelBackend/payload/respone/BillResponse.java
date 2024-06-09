@@ -8,7 +8,8 @@ import java.util.Date;
 
 @Getter
 @Data
-public class BillResponse {
+public class
+BillResponse {
     private int id;
 
 
