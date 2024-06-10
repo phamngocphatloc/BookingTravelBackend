@@ -23,7 +23,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
 
-    private final int accessTokenDuration = 48 * 60 * 60 * 1000;
+    private final long accessTokenDuration = 30 * 24 * 60 * 60 * 1000L;
     @Value("${token.secrect.keys}")
     private String JWT_SECRET;
 
