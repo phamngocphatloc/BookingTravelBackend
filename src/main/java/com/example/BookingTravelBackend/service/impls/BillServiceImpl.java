@@ -31,7 +31,7 @@ public class BillServiceImpl implements BillService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     @Override
-    public BillResponse Booking(BillRequest request) {
+    public BillResponse Booking(BillRequest request, String status) {
         Room r = roomRepository.findById(request.getBooking().getRoomBookingId()).get();
         List<Booking> listOrder = bookingRepository.listBookingByCheckinCheckout(r.getHotelRoom().getHotelId(),request.getBooking().getCheckIn(), request.getBooking().getCheckOut());
 
@@ -53,7 +53,7 @@ public class BillServiceImpl implements BillService {
         User user = userRepository.findById(request.getBooking().getUserBookingId()).get();
         booking.setRoomBooking(roomBooking);
         booking.setUserBooking(user);
-        booking.setStatus("pending");
+        booking.setStatus(status);
         booking.setCheckIn(request.getBooking().getCheckIn());
         booking.setCheckOut(request.getBooking().getCheckOut());
         bill.setBooking(booking);

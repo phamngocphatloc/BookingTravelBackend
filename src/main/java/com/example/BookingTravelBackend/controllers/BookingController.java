@@ -28,7 +28,13 @@ public class BookingController {
     @PostMapping ("/book")
     public ResponseEntity<HttpRespone> Booking (@RequestBody BillRequest request){
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success",
-                billService.Booking(request)));
+                billService.Booking(request,"pending")));
+    }
+
+    @PostMapping ("/bookVistor")
+    public ResponseEntity<HttpRespone> BookingVistor (@RequestBody BillRequest request){
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success",
+                billService.Booking(request,"active")));
     }
 
     @GetMapping("/paying/{id}")

@@ -16,28 +16,26 @@ import java.util.Date;
 @Table (name = "Bill")
 public class Bill {
     @Id
-    @Column (name = "BillId")
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @Column(name = "BillId")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column (name = "FirstName",columnDefinition = "nvarchar(255)")
+    @Column(name = "FirstName", columnDefinition = "nvarchar(255)")
     private String firstName;
 
-    @Column (name = "LastName", columnDefinition = "nvarchar(255)")
+    @Column(name = "LastName", columnDefinition = "nvarchar(255)")
     private String lastName;
 
-    @Column (name = "phone")
+    @Column(name = "phone")
     private String phone;
 
-    @Column (name = "price")
+    @Column(name = "price")
     private int price;
 
     @Column(name = "created_at")
     private Date createdAt;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn (name = "BookingId")
+    @JoinColumn(name = "BookingId")
     private Booking booking;
-
-
 }
