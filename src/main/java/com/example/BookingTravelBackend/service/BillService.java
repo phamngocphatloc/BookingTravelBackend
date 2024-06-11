@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface BillService {
-    public BillResponse Booking (BillRequest request);
+    public BillResponse Booking (BillRequest request, String status);
     public Bill findById(int id);
 
     public void updateStatusBill (Bill bill, String status);
