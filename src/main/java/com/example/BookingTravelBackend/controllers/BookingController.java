@@ -31,11 +31,6 @@ public class BookingController {
                 billService.Booking(request,"pending")));
     }
 
-    @PostMapping ("/bookVistor")
-    public ResponseEntity<HttpRespone> BookingVistor (@RequestBody BillRequest request){
-        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success",
-                billService.Booking(request,"active")));
-    }
 
     @GetMapping("/paying/{id}")
     public RedirectView paying(@PathVariable("id") int id,

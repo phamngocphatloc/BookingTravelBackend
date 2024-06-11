@@ -1,6 +1,7 @@
 package com.example.BookingTravelBackend.controllers;
 
 import com.example.BookingTravelBackend.entity.Hotel;
+import com.example.BookingTravelBackend.payload.Request.BillRequest;
 import com.example.BookingTravelBackend.payload.Request.HotelRequestEdit;
 import com.example.BookingTravelBackend.payload.Request.PostRequest;
 import com.example.BookingTravelBackend.payload.Request.RoomEditRequest;
@@ -120,5 +121,10 @@ public class AdminController {
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",response));
     }
 
+    @PostMapping ("/bookVistor")
+    public ResponseEntity<HttpRespone> BookingVistor (@RequestBody BillRequest request){
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success",
+                billService.Booking(request,"active")));
+    }
 
 }
