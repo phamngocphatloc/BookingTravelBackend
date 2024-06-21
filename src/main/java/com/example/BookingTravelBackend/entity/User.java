@@ -3,6 +3,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity
 @Setter
@@ -41,6 +44,9 @@ public class User {
 
     @Column (name = "avatar")
     private String avatar;
+
+    @OneToMany (mappedBy = "userManager", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<PartnersManager> listPartnersManager = new ArrayList<>();
 
 
 }

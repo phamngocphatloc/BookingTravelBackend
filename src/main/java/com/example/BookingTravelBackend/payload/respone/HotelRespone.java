@@ -27,6 +27,8 @@ public class HotelRespone {
     private String status;
 
     private int price;
+    private HotelPartnersResponse Partner;
+
 
 
     public HotelRespone (Hotel hotel){
@@ -56,6 +58,8 @@ public class HotelRespone {
         }else{
             this.price = 0;
         }
+
+        this.Partner = new HotelPartnersResponse(hotel.getPartner());
     }
 
 
