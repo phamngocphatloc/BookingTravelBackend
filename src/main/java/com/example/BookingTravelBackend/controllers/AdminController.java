@@ -121,7 +121,7 @@ public class AdminController {
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",response));
     }
 
-    @PostMapping ("/bookVistor")
+    @PostMapping ("bookVistor")
     public ResponseEntity<HttpRespone> BookingVistor (@RequestBody BillRequest request){
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success",
                 billService.Booking(request,"active")));

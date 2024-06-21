@@ -37,4 +37,8 @@ public class Hotel {
     @OneToMany (mappedBy = "hotelRoom", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Room> listRooms;
 
+    @ManyToOne
+    @JoinColumn (name = "PartnersId")
+    private HotelPartners Partner;
+
 }
