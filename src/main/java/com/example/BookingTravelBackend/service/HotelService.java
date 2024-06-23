@@ -25,5 +25,5 @@ public interface HotelService {
     public void deleteHotel (int hotelId);
     public List<HotelRespone> listHotel ();
     public  HotelRespone selectHotelId (int hotelId);
-    public List<String> findHotelNameByTour (String tour);
+    public List<String> findHotelNameByTour(String tour, String hotelNaneFind);
 }
