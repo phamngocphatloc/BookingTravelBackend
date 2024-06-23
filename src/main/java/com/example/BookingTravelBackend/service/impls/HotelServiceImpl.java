@@ -177,7 +177,7 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public List<String> findHotelNameByTour(String tour) {
-        return hotelPartnersRepository.findHotelNameByTour("%"+tour+"%");
+    public List<String> findHotelNameByTour(String tour, String hotelNaneFind) {
+        return hotelPartnersRepository.findHotelNameByTour("%"+tour+"%", "%"+hotelNaneFind+"%");
     }
 }

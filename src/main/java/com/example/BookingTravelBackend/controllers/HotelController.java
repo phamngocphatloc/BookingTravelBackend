@@ -90,8 +90,8 @@ public class HotelController {
     }
 
     @GetMapping ("/get_hotel_name")
-    public ResponseEntity<HttpRespone> getHotelName (@RequestParam String tour){
-        List<String> listHotelName = hotelService.findHotelNameByTour(tour);
+    public ResponseEntity<HttpRespone> getHotelName (@RequestParam String tour,@RequestParam String find){
+        List<String> listHotelName = hotelService.findHotelNameByTour(tour,find);
         List< HotelNameResponse> responses = new ArrayList<>();
         listHotelName.stream().forEach(item -> {
             HotelNameResponse response = new HotelNameResponse();
