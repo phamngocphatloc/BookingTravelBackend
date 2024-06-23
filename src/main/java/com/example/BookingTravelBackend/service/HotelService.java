@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface HotelService {
-    public PaginationResponse selectHotelByTour(TouristAttraction tour, int pageNum, int pageSize, Date checkIn, Date checkOut);
+    public PaginationResponse selectHotelByTour(TouristAttraction tour, int pageNum, int pageSize,String hotelName, Date checkIn, Date checkOut);
     public List<HotelServiceRespone> selectServiceHotelFree();
     public List<HotelServiceRespone> selectServiceHotelLuxry();
     public List<HotelServiceRespone> selectServiceHotelVip();
@@ -25,4 +25,5 @@ public interface HotelService {
     public void deleteHotel (int hotelId);
     public List<HotelRespone> listHotel ();
     public  HotelRespone selectHotelId (int hotelId);
+    public List<String> findHotelNameByTour (String tour);
 }

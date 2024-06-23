@@ -1,5 +1,6 @@
 package com.example.BookingTravelBackend.service.impls;
 
+import com.example.BookingTravelBackend.Repository.HotelPartnersRepository;
 import com.example.BookingTravelBackend.Repository.HotelRepository;
 import com.example.BookingTravelBackend.Repository.HotelServiceRepository;
 import com.example.BookingTravelBackend.Repository.TouristAttractionRepsitory;
@@ -32,10 +33,11 @@ public class HotelServiceImpl implements HotelService {
     private final RoomService roomService;
     private final TouristAttractionRepsitory touristAttractionRepsitory;
     private final HotelServiceRepository hotelServiceRepository;
+    private final HotelPartnersRepository hotelPartnersRepository;
     @Override
-    public PaginationResponse selectHotelByTour(TouristAttraction tour, int pageNum, int pageSize, Date checkIn, Date checkOut) {
+    public PaginationResponse selectHotelByTour(TouristAttraction tour, int pageNum, int pageSize,String hotelName, Date checkIn, Date checkOut) {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
-        Page<Hotel> pageHotel = hotelRepository.findByTouristAttraction(tour.getName(),pageable);
+        Page<Hotel> pageHotel = hotelRepository.findByTouristAttraction(tour.getName(),"%"+hotelName+"%",pageable);
         List<HotelRespone> listHotel = new ArrayList<>();
         for (Hotel hotel : pageHotel.getContent()){
             listHotel.add(roomService.CheckRoomNotYet(new HotelRespone(hotel),checkIn,checkOut));
@@ -172,5 +174,10 @@ public class HotelServiceImpl implements HotelService {
     @Override
     public HotelRespone selectHotelId(int hotelId) {
         return new HotelRespone(hotelRepository.findById(hotelId).get());
+    }
+
+    @Override
+    public List<String> findHotelNameByTour(String tour) {
+        return hotelPartnersRepository.findHotelNameByTour("%"+tour+"%");
     }
 }
