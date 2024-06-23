@@ -4,10 +4,7 @@ import com.example.BookingTravelBackend.entity.TouristAttraction;
 import com.example.BookingTravelBackend.payload.Request.HotelRequest;
 import com.example.BookingTravelBackend.payload.Request.HotelServiceRequest;
 import com.example.BookingTravelBackend.payload.Request.RoomRequest;
-import com.example.BookingTravelBackend.payload.respone.HotelRespone;
-import com.example.BookingTravelBackend.payload.respone.HotelServiceRespone;
-import com.example.BookingTravelBackend.payload.respone.HttpRespone;
-import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
+import com.example.BookingTravelBackend.payload.respone.*;
 import com.example.BookingTravelBackend.service.HotelService;
 import com.example.BookingTravelBackend.service.RoomService;
 import com.example.BookingTravelBackend.service.TouristAttractionService;
@@ -17,10 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping ("/hotel")
@@ -32,11 +26,12 @@ public class HotelController {
     private final RoomService roomService;
     @GetMapping ("/getHotel")
     public ResponseEntity<HttpRespone> getHotel (@RequestParam (value = "search", defaultValue = "") String search,
+                                                 @RequestParam (value = "hotelName", defaultValue = "") String hotelName,
                                                  @RequestParam ("pagenum") Optional<Integer> pageNum,
                                                  @RequestParam (value = "checkIn")Date checkIn,
                                                  @RequestParam (value = "checkOut")Date checkOut){
         TouristAttraction tour = touristAttractionService.selectByName(search);
-        PaginationResponse page = hotelService.selectHotelByTour(tour,pageNum.orElse(0),6,checkIn,checkOut);
+        PaginationResponse page = hotelService.selectHotelByTour(tour,pageNum.orElse(0),6,hotelName,checkIn,checkOut);
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "Success", page));
     }
 
@@ -92,6 +87,18 @@ public class HotelController {
                                                                   @RequestParam (value = "pageSize",defaultValue = "6") int pageSize){
         PaginationResponse page = hotelService.selectHotelByCheckInCheckOut(pageNum.orElse(0),pageSize,checkIn,checkOut);
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "Success", page));
+    }
+
+    @GetMapping ("/get_hotel_name")
+    public ResponseEntity<HttpRespone> getHotelName (@RequestParam String tour){
+        List<String> listHotelName = hotelService.findHotelNameByTour(tour);
+        List< HotelNameResponse> responses = new ArrayList<>();
+        listHotelName.stream().forEach(item -> {
+            HotelNameResponse response = new HotelNameResponse();
+            response.setHotelName(item);
+            responses.add(response);
+        });
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",responses));
     }
 
 
