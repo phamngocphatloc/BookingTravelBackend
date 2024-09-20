@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name = "Restaurant")
 @Getter
@@ -20,4 +22,6 @@ public class Restaurant {
     private String restaurantName;
     @Column (name = "Active")
     private boolean active;
+    @OneToMany (mappedBy = "restaurantSell", fetch = FetchType.EAGER)
+    private List<Menu> listMenu;
 }

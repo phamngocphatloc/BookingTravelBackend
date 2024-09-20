@@ -26,7 +26,7 @@ public class Menu {
     private String imgProduct;
 
     @Column(name = "describe", columnDefinition = "nvarchar(255)")
-    private String description; // Thay đổi tên biến từ 'describe' thành 'description'
+    private String description;
 
     @Column(name = "price")
     private int price;
@@ -36,4 +36,8 @@ public class Menu {
 
     @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
     private List<MenuDetails> listItems;
+
+    @ManyToOne
+    @JoinColumn (name = "RestaurantId")
+    private Restaurant restaurantSell;
 }

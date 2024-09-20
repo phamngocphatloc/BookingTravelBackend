@@ -41,4 +41,7 @@ public class Hotel {
     @JoinColumn (name = "PartnersId")
     private HotelPartners Partner;
 
+    @OneToOne (mappedBy = "hotelRestaurant", fetch = FetchType.EAGER)
+    private Restaurant restaurant;
+
 }
