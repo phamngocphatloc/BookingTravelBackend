@@ -53,6 +53,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/admin/**").hasRole(Constant.ROLE_ADMIN)
                         .requestMatchers("/admin/**").hasRole(Constant.ROLE_HOTELMANAGER)
                         .requestMatchers("/auth/authorization").authenticated()
+                        .requestMatchers("/restaurant/**").authenticated()
                         .anyRequest().permitAll())
                 .httpBasic(Customizer.withDefaults())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
