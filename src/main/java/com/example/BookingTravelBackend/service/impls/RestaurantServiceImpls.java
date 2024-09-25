@@ -1,13 +1,7 @@
 package com.example.BookingTravelBackend.service.impls;
 
-import com.example.BookingTravelBackend.Repository.BillRepository;
-import com.example.BookingTravelBackend.Repository.MenuRepository;
-import com.example.BookingTravelBackend.Repository.RestaurantRepository;
-import com.example.BookingTravelBackend.Repository.UserRepository;
-import com.example.BookingTravelBackend.entity.Bill;
-import com.example.BookingTravelBackend.entity.Menu;
-import com.example.BookingTravelBackend.entity.Restaurant;
-import com.example.BookingTravelBackend.entity.User;
+import com.example.BookingTravelBackend.Repository.*;
+import com.example.BookingTravelBackend.entity.*;
 import com.example.BookingTravelBackend.payload.respone.MenuRestaurantResponse;
 import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
 import com.example.BookingTravelBackend.service.RestaurantService;
@@ -20,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -31,22 +26,30 @@ public class RestaurantServiceImpls implements RestaurantService {
     private final BillRepository billRepository;
     private final UserRepository userRepository;
     private final MenuRepository menuRepository;
+    private final RestaurantCartRepository restaurantCartRepository;
+    // Tạo một hàm để chỉ lấy phần ngày và bỏ qua phần thời gian
+    private Date removeTime(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
+    }
     @Override
     public PaginationResponse LoadProductByOrderId(int orderId, int pageNum, int pageSize) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User principal = (User) authentication.getPrincipal();
         User userLogin = userRepository.findById(principal.getId()).get();
         Bill bill = billRepository.findById(orderId).get();
-        Date checkIn = bill.getBooking().getCheckIn();
-        Date checkOut = bill.getBooking().getCheckOut();
-        // Lấy ngày hôm nay
-        Date today = new Date();
+        Date today = removeTime(new Date());
+        Date checkInWithoutTime = removeTime(bill.getBooking().getCheckIn());
+        Date checkOutWithoutTime = removeTime(bill.getBooking().getCheckOut());
 
-        // Kiểm tra nếu ngày hôm nay nằm trong khoảng từ checkIn đến checkOut
-        boolean isTodayInRange = today.compareTo(checkIn) >= 0 && today.compareTo(checkOut) <= 0;
+        boolean isTodayInRange = today.compareTo(checkInWithoutTime) >= 0 && today.compareTo(checkOutWithoutTime) <= 0;
 
         if (!isTodayInRange) {
-            // Thực hiện logic khi hôm nay không nằm trong khoảng từ checkIn đến checkOut
             throw new IllegalArgumentException ("Ngày Hôm Nay Không Có Mã Đơn Này.");
         }
 
@@ -64,7 +67,14 @@ public class RestaurantServiceImpls implements RestaurantService {
             throw new IllegalArgumentException ("Khách sạn này không có nhà hàng.");
         }
 
+
         Restaurant restaurant = bill.getBooking().getRoomBooking().getHotelRoom().getRestaurant();
+        if (restaurantCartRepository.findByUserAndBill(userLogin.getId(),bill.getId()).isEmpty()){
+            RestaurantCart cart = new RestaurantCart();
+            cart.setBill(bill);
+            cart.setUserCart(userLogin);
+            restaurantCartRepository.save(cart);
+        }
         Pageable pageable = PageRequest.of(pageNum, pageSize);
         Page<Menu> listMenu = menuRepository.findByRestaurant(restaurant.getId(), pageable);
         List<MenuRestaurantResponse> listMenuResponse = new ArrayList<>();
@@ -75,4 +85,5 @@ public class RestaurantServiceImpls implements RestaurantService {
 
         return pageResponse;
     }
+
 }

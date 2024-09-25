@@ -12,7 +12,7 @@ import lombok.Setter;
 @Data
 public class RestaurantOrderDetails {
     @Id
-    @Column(name = "CartDetailsId")
+    @Column(name = "OrderDetailsId")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column (name = "Quantity")

@@ -25,6 +25,6 @@ public class RestaurantCart {
     private User UserCart;
     @OneToMany (mappedBy = "ItemCart",
             fetch = FetchType.EAGER,
-            orphanRemoval = true)
+            orphanRemoval = true, cascade = CascadeType.ALL)
     Map<String,CartDetails> listItems;
 }
