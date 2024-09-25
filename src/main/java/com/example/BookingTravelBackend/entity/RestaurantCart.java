@@ -17,10 +17,10 @@ public class RestaurantCart {
     @Column(name = "CartId")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int cartId;
-    @OneToOne
+    @ManyToOne
     @JoinColumn (name = "BillId")
     private Bill bill;
-    @OneToOne
+    @ManyToOne
     @JoinColumn (name = "UserId")
     private User UserCart;
     @OneToMany (mappedBy = "ItemCart",
