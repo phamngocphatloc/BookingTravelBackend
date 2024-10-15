@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface RestaurantService {
     public PaginationResponse LoadProductByOrderId (int orderId, int pageSize, int pageNum);
+    public MenuRestaurantResponse findById (int billId, int foodId);
 }

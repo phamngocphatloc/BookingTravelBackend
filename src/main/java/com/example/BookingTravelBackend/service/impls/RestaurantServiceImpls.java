@@ -37,16 +37,15 @@ public class RestaurantServiceImpls implements RestaurantService {
         cal.set(Calendar.MILLISECOND, 0);
         return cal.getTime();
     }
-    @Override
-    public PaginationResponse LoadProductByOrderId(int orderId, int pageNum, int pageSize) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User principal = (User) authentication.getPrincipal();
-        User userLogin = userRepository.findById(principal.getId()).get();
+
+    public User ValiDateFormAndGetUserLogin (int orderId) {
         Bill bill = billRepository.findById(orderId).get();
         Date today = removeTime(new Date());
         Date checkInWithoutTime = removeTime(bill.getBooking().getCheckIn());
         Date checkOutWithoutTime = removeTime(bill.getBooking().getCheckOut());
-
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User principal = (User) authentication.getPrincipal();
+        User userLogin = userRepository.findById(principal.getId()).get();
         boolean isTodayInRange = today.compareTo(checkInWithoutTime) >= 0 && today.compareTo(checkOutWithoutTime) <= 0;
 
         if (!isTodayInRange) {
@@ -62,10 +61,17 @@ public class RestaurantServiceImpls implements RestaurantService {
             throw new IllegalArgumentException ("Đơn Hàng Không Hoạt Động");
         }
 
-        if (bill.getBooking().getRoomBooking().getHotelRoom().getRestaurant() == null){
+        if (bill.getBooking().getRoomBooking().getHotelRoom().getRestaurant() == null) {
             // Thực hiện logic khi Khách Sạn Chưa Có Nhà Hàng
-            throw new IllegalArgumentException ("Khách sạn này không có nhà hàng.");
+            throw new IllegalArgumentException ("Khách Sạn Không Có Nhà Hàng");
         }
+        return userLogin;
+    }
+
+    @Override
+    public PaginationResponse LoadProductByOrderId(int orderId, int pageNum, int pageSize) {
+        User userLogin = ValiDateFormAndGetUserLogin(orderId);
+        Bill bill = billRepository.findById(orderId).get();
 
 
         Restaurant restaurant = bill.getBooking().getRoomBooking().getHotelRoom().getRestaurant();
@@ -84,6 +90,13 @@ public class RestaurantServiceImpls implements RestaurantService {
         PaginationResponse pageResponse = new PaginationResponse(pageNum,pageSize,listMenu.getTotalElements(),listMenu.isLast(),listMenu.getTotalPages(),listMenuResponse);
 
         return pageResponse;
+    }
+
+    @Override
+    public MenuRestaurantResponse findById(int billId, int foodId) {
+        User userLogin = ValiDateFormAndGetUserLogin(billId);
+        MenuRestaurantResponse response = new MenuRestaurantResponse(menuRepository.findById(foodId).get());
+        return response;
     }
 
 }
