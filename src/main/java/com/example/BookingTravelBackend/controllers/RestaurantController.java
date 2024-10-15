@@ -17,4 +17,10 @@ public class RestaurantController {
         HttpRespone response = new HttpRespone(HttpStatus.OK.value(),"Success",restaurantService.LoadProductByOrderId(orderId,pageNum,pageSize));
         return response;
     }
+
+    @GetMapping ("/detail")
+    public HttpRespone getMenu (@RequestParam int orderId,@RequestParam  int foodId){
+        HttpRespone response = new HttpRespone(HttpStatus.OK.value(),"Success",restaurantService.findById(orderId,foodId));
+        return response;
+    }
 }
