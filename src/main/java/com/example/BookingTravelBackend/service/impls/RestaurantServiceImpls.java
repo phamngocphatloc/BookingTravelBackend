@@ -94,8 +94,14 @@ public class RestaurantServiceImpls implements RestaurantService {
 
     @Override
     public MenuRestaurantResponse findById(int billId, int foodId) {
+        Bill bill = billRepository.findById(billId).get();
+        Restaurant restaurant = bill.getBooking().getRoomBooking().getHotelRoom().getRestaurant();
         User userLogin = ValiDateFormAndGetUserLogin(billId);
-        MenuRestaurantResponse response = new MenuRestaurantResponse(menuRepository.findById(foodId).get());
+        Menu menu = menuRepository.findById(foodId).get();
+        if (menu.getRestaurantSell().getId() != restaurant.getId()) {
+            throw new IllegalArgumentException("Nhà Hàng Không Có Sản Phẩm Này");
+        }
+        MenuRestaurantResponse response = new MenuRestaurantResponse(menu);
         return response;
     }
 
