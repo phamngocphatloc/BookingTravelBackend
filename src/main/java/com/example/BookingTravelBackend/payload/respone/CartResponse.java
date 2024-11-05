@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class CartResponse {
     private int cartId;
     Map<String, CartDetailsResponse> listItems = new HashMap<>();
-
+    private int totalPrice = 0;
     public CartResponse (RestaurantCart cart){
         this.cartId = cart.getCartId();
         Map<String, CartDetails> items = cart.getListItems();
@@ -24,5 +24,9 @@ public class CartResponse {
                         Map.Entry::getKey,
                         entry -> new CartDetailsResponse(entry.getValue())
                 ));
+        // Calculate total price by summing up the price of each item
+        this.totalPrice = listItems.values().stream()
+                .mapToInt(CartDetailsResponse::getPrice) // Assuming CartDetailsResponse has getPrice() method
+                .sum();
     }
 }
