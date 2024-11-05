@@ -24,12 +24,8 @@ public class CartServiceImpls implements CartService {
     private final MenuDetailsRepository menuDetailsRepository;
     @Override
     public String addTocart(CartDetails item, int orderId) {
-        MenuDetails productDetails = null;
-        if (menuDetailsRepository.findMenuDetailsByMenuIdAndSize(item.getProduct().getId(),
+        if (menuDetailsRepository.findMenuDetailsByMenuIdAndSize(item.getProduct().getProduct().getId(),
                 item.getSize())!=null) {
-            productDetails = menuDetailsRepository.findMenuDetailsByMenuIdAndSize(
-                    item.getProduct().getId(),
-                    item.getSize());
         }else{
             return "Sản Phẩm Không Tồn Tại";
         }
@@ -78,12 +74,9 @@ public class CartServiceImpls implements CartService {
 
     @Override
     public String setQtyTocart(CartDetails item, int billId, int quantityset) {
-        MenuDetails productDetails = null;
-        if (menuDetailsRepository.findMenuDetailsByMenuIdAndSize(item.getProduct().getId(),
+        if (menuDetailsRepository.findMenuDetailsByMenuIdAndSize(item.getProduct().getProduct().getId(),
                 item.getSize())!=null) {
-            productDetails = menuDetailsRepository.findMenuDetailsByMenuIdAndSize(
-                    item.getProduct().getId(),
-                    item.getSize());
+
         }else{
             return "Sản Phẩm Không Tồn Tại";
         }
