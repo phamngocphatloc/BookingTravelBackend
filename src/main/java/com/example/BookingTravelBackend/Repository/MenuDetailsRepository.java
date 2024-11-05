@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface MenuDetailsRepository extends JpaRepository<MenuDetails,Integer> {
-    @Query (value = "select * from meun_details where menu_id = ?1 and size = ?2", nativeQuery = true)
+    @Query (value = "select * from menu_details where menu_id = ?1 and size = ?2", nativeQuery = true)
     MenuDetails findMenuDetailsByMenuIdAndSize (int menuId, String size);
 }
