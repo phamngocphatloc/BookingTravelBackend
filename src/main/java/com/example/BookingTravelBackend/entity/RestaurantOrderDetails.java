@@ -24,5 +24,5 @@ public class RestaurantOrderDetails {
     private RestaurantOrder ItemOrder;
     @ManyToOne
     @JoinColumn (name = "ProductId")
-    Menu product;
+    MenuDetails product;
 }

@@ -11,11 +11,12 @@ public class MenuDetailsResponse {
     private String name;
     private String size;
     private int price;
-
+    private int productId;
     public MenuDetailsResponse (MenuDetails menuDetails){
         this.id = menuDetails.getId();
         this.name = menuDetails.getName();
         this.size = menuDetails.getSize();
         this.price = menuDetails.getPrice();
+        this.productId = menuDetails.getProduct().getId();
     }
 }
