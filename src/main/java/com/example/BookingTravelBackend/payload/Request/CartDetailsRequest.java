@@ -1,7 +1,7 @@
 package com.example.BookingTravelBackend.payload.Request;
 
 import com.example.BookingTravelBackend.entity.CartDetails;
-import com.example.BookingTravelBackend.entity.Menu;
+import com.example.BookingTravelBackend.entity.MenuDetails;
 import com.example.BookingTravelBackend.entity.RestaurantCart;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -17,7 +17,7 @@ public class CartDetailsRequest {
     int productId;
     int quantitySet;
 
-    public CartDetails getDetails (Menu menu, RestaurantCart cart){
+    public CartDetails getDetails (MenuDetails menu, RestaurantCart cart){
         CartDetails cartDetails = new CartDetails();
         cartDetails.setAmount(amount);
         cartDetails.setSize(size);

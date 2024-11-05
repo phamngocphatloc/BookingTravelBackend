@@ -10,6 +10,8 @@ import com.example.BookingTravelBackend.payload.respone.addCartRespone;
 import com.example.BookingTravelBackend.service.CartService;
 import com.example.BookingTravelBackend.service.MenuService;
 import com.example.BookingTravelBackend.service.UserService;
+import com.example.BookingTravelBackend.service.menuDetailsService;
+import com.example.BookingTravelBackend.entity.MenuDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,8 @@ public class CartController {
     private final CartService cartService;
     private final UserService userService;
     private final MenuService menuService;
+    private final menuDetailsService menuDetailsService;
+
     @GetMapping ("/get_cart")
     public ResponseEntity<CartResponse> cart (@RequestParam int billId){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -38,7 +42,7 @@ public class CartController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User principal = (User) authentication.getPrincipal();
         User userLogin = userService.findById(principal.getId());
-        Menu menu = menuService.findById(cartDetailsRequest.getProductId());
+        MenuDetails menu = menuDetailsService.findByMenuIdAndSize(cartDetailsRequest.getProductId(),cartDetailsRequest.getSize());
         RestaurantCart cart = cartService.findCartByUserIdAndBillId(userLogin.getId(),billId);
         CartDetails item = cartDetailsRequest.getDetails(menu,cart);
         String staus = "";
@@ -59,7 +63,7 @@ public class CartController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User principal = (User) authentication.getPrincipal();
         User userLogin = userService.findById(principal.getId());
-        Menu menu = menuService.findById(cartDetailsRequest.getProductId());
+        MenuDetails menu = menuDetailsService.findByMenuIdAndSize(cartDetailsRequest.getProductId(),cartDetailsRequest.getSize());
         RestaurantCart cart = cartService.findCartByUserIdAndBillId(userLogin.getId(),billId);
         CartDetails item = cartDetailsRequest.getDetails(menu,cart);
         String staus = cartService.setQtyTocart(item,billId,cartDetailsRequest.getQuantitySet());
@@ -75,7 +79,7 @@ public class CartController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User principal = (User) authentication.getPrincipal();
         User userLogin = userService.findById(principal.getId());
-        Menu menu = menuService.findById(cartDetailsRequest.getProductId());
+        MenuDetails menu = menuDetailsService.findByMenuIdAndSize(cartDetailsRequest.getProductId(),cartDetailsRequest.getSize());
         RestaurantCart cart = cartService.findCartByUserIdAndBillId(userLogin.getId(),billId);
         String status = cartService.removeToCart(cartDetailsRequest.getDetails(menu,cart), billId);
         return ResponseEntity.status(HttpStatus.OK).body(status);
