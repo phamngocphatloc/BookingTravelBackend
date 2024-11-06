@@ -1,7 +1,6 @@
 package com.example.BookingTravelBackend.controllers;
 
 import com.example.BookingTravelBackend.entity.CartDetails;
-import com.example.BookingTravelBackend.entity.Menu;
 import com.example.BookingTravelBackend.entity.RestaurantCart;
 import com.example.BookingTravelBackend.entity.User;
 import com.example.BookingTravelBackend.payload.Request.CartDetailsRequest;

@@ -1,6 +1,5 @@
 package com.example.BookingTravelBackend.controllers;
 
-import com.example.BookingTravelBackend.entity.Hotel;
 import com.example.BookingTravelBackend.payload.Request.BillRequest;
 import com.example.BookingTravelBackend.payload.Request.HotelRequestEdit;
 import com.example.BookingTravelBackend.payload.Request.PostRequest;
@@ -9,14 +8,12 @@ import com.example.BookingTravelBackend.payload.respone.*;
 import com.example.BookingTravelBackend.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor

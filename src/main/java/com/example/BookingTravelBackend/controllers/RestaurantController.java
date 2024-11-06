@@ -2,7 +2,6 @@ package com.example.BookingTravelBackend.controllers;
 
 import com.example.BookingTravelBackend.Configuration.VnpayConfig;
 import com.example.BookingTravelBackend.Configuration.WebConfig;
-import com.example.BookingTravelBackend.entity.Bill;
 import com.example.BookingTravelBackend.payload.Request.OrderFoodRequest;
 import com.example.BookingTravelBackend.payload.respone.HttpRespone;
 import com.example.BookingTravelBackend.payload.respone.OrderFoodResponse;
@@ -34,7 +33,7 @@ public class RestaurantController {
 
     @GetMapping ("/detail")
     public HttpRespone getMenu (@RequestParam int orderId,@RequestParam  int foodId){
-        HttpRespone response = new HttpRespone(HttpStatus.OK.value(),"Success",new OrderFoodResponse(restaurantOrderService.findById(orderId)) );
+        HttpRespone response = new HttpRespone(HttpStatus.OK.value(),"Success",restaurantService.findById(orderId,foodId));
         return response;
     }
     @PostMapping("/order")
