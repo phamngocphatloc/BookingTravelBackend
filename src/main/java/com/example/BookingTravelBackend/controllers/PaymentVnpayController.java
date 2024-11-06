@@ -103,7 +103,7 @@ public class PaymentVnpayController {
                     System.out.println(v.getProduct().getPrice());
                 });
                 System.out.println(priceorder);
-                vnp_Returnurl = WebConfig.urlBackend+"/api/restaurant/paying/"+bid;
+                vnp_Returnurl = WebConfig.urlBackend+"/api/orderfood/paying/"+bid;
                 System.out.println(amount);
                 vnp_TxnRef = String.valueOf(order.getId());
                 vnp_Params.put("vnp_Amount", String.valueOf(amount));
