@@ -112,10 +112,10 @@ public class RestaurantController {
                 restaurantOrderService.updateStatusBill(order,"active");
 
 
-                return new RedirectView(WebConfig.url+"/#!/booking/"+id);
+                return new RedirectView(WebConfig.url+"/restaurant/#!/order-detail/"+id);
             } else {
                 restaurantOrderService.updateStatusBill(order,"cancel");
-                return new RedirectView(WebConfig.url+"/#!/booking/"+id);
+                return new RedirectView(WebConfig.url+"/restaurant/#!/order-detail/"+id);
             }
         } else {
             return new RedirectView("https://sandbox.vnpayment.vn/paymentv2/Payment/Error.html?code=70");
