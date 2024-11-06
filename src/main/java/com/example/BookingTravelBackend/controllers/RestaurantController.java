@@ -25,7 +25,7 @@ import java.util.*;
 public class RestaurantController {
     private final RestaurantService restaurantService;
     private final RestaurantOrderService restaurantOrderService;
-    @GetMapping ("/getmenu")
+    @GetMapping ("/restaurant/getmenu")
     public HttpRespone getMenu (@RequestParam int orderId,@RequestParam  int pageNum,@RequestParam int pageSize){
         HttpRespone response = new HttpRespone(HttpStatus.OK.value(),"Success",restaurantService.LoadProductByOrderId(orderId,pageNum,pageSize));
         return response;
