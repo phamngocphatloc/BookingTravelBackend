@@ -5,4 +5,5 @@ import com.example.BookingTravelBackend.entity.MenuDetails;
 
 public interface menuDetailsService {
     MenuDetails findByMenuIdAndSize (int menuId, String size);
+    MenuDetails findById (int id);
 }

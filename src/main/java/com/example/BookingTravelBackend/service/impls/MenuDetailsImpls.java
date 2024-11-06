@@ -14,4 +14,9 @@ public class MenuDetailsImpls implements menuDetailsService {
     public MenuDetails findByMenuIdAndSize(int menuId, String size) {
         return menuDetailsRepository.findMenuDetailsByMenuIdAndSize(menuId,size);
     }
+
+    @Override
+    public MenuDetails findById(int id) {
+        return menuDetailsRepository.findById(id).get();
+    }
 }
