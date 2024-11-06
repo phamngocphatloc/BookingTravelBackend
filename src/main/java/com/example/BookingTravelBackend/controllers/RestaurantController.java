@@ -47,6 +47,11 @@ public class RestaurantController {
         return new HttpRespone(HttpStatus.OK.value(), "Success", restaurantOrderService.OrderDetail(id,bId));
     }
 
+    @GetMapping ("/restaurant/list-order")
+    public HttpRespone ListOrder (@RequestParam ("billId") int billId){
+        return new HttpRespone(HttpStatus.OK.value(), "success",restaurantService.ListOrder(billId));
+    }
+
     @GetMapping("/orderfood/paying/{id}")
     public RedirectView paying(@PathVariable("id") int id,
                                @RequestParam("vnp_Amount") String amount,

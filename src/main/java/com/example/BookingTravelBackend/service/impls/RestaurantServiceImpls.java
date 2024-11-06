@@ -3,6 +3,7 @@ package com.example.BookingTravelBackend.service.impls;
 import com.example.BookingTravelBackend.Repository.*;
 import com.example.BookingTravelBackend.entity.*;
 import com.example.BookingTravelBackend.payload.respone.MenuRestaurantResponse;
+import com.example.BookingTravelBackend.payload.respone.OrderFoodResponse;
 import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
 import com.example.BookingTravelBackend.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
@@ -103,6 +104,17 @@ public class RestaurantServiceImpls implements RestaurantService {
         }
         MenuRestaurantResponse response = new MenuRestaurantResponse(menu);
         return response;
+    }
+
+    @Override
+    public List<OrderFoodResponse> ListOrder(int billId) {
+        User userLogin = ValiDateFormAndGetUserLogin(billId);
+        Bill bill = billRepository.findById(billId).get();
+        List<OrderFoodResponse> listOrder = new ArrayList<>();
+        bill.getListOrderFood().stream().forEach(item -> {
+            listOrder.add(new OrderFoodResponse(item));
+        });
+        return listOrder;
     }
 
 }
