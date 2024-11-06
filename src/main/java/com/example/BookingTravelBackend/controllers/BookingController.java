@@ -6,12 +6,9 @@ import com.example.BookingTravelBackend.entity.Bill;
 import com.example.BookingTravelBackend.payload.Request.BillRequest;
 import com.example.BookingTravelBackend.payload.respone.HttpRespone;
 import com.example.BookingTravelBackend.service.BillService;
-import jakarta.mail.MessagingException;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
