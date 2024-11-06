@@ -110,8 +110,6 @@ public class RestaurantController {
             if (status.equalsIgnoreCase("00")) {
 
                 restaurantOrderService.updateStatusBill(order,"active");
-
-
                 return new RedirectView(WebConfig.url+"/restaurant/#!/order-detail/"+id);
             } else {
                 restaurantOrderService.updateStatusBill(order,"cancel");
