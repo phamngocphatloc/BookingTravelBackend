@@ -105,7 +105,7 @@ public class RestaurantController {
         System.out.println(hash);
         RestaurantOrder order = restaurantOrderService.findById(id);
         if (order.getStatus().equalsIgnoreCase("active") || order.getStatus().equalsIgnoreCase("cancel")){
-            return new RedirectView(WebConfig.url+"/#!/restaurant/order/"+id);
+            return new RedirectView(WebConfig.url+"/restaurant/#!/order-detail/"+id);
         }
         if (vnp_SecureHash.equalsIgnoreCase(hash) && order.getId() == Integer.parseInt(txnref)) {
             if (status.equalsIgnoreCase("00")) {
