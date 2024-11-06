@@ -33,14 +33,21 @@ public class RestaurantOrder {
     @ManyToOne
     @JoinColumn (name = "BillId")
     Bill bill;
-    @OneToMany (mappedBy = "ItemOrder", fetch = FetchType.EAGER)
+    @OneToMany (mappedBy = "ItemOrder", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     Map<String,RestaurantOrderDetails> listItems = new HashMap<>();
 
-    public int getTotalPrice (){
+    public int getTotalPrice() {
         AtomicInteger price = new AtomicInteger();
-        listItems.values().stream().forEach(o -> {
-            price.addAndGet(o.getProduct().getPrice() * o.getAmount());
+        listItems.forEach((key, o) -> {
+            if (o != null && o.getProduct() != null) {
+                int productPrice = o.getProduct().getPrice();
+                int amount = o.getAmount();
+                if (productPrice > 0 && amount > 0) {
+                    price.addAndGet(productPrice * amount);
+                }
+            }
         });
         return price.get();
     }
+
 }
