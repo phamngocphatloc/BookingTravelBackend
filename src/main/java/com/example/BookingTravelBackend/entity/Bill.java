@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -38,4 +39,6 @@ public class Bill {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "BookingId")
     private Booking booking;
+    @OneToMany (mappedBy = "bill", fetch = FetchType.EAGER)
+    private List<RestaurantOrder> listOrderFood;
 }
