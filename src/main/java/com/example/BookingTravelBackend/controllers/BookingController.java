@@ -104,6 +104,8 @@ public class BookingController {
         }
     }
 
+
+
     @GetMapping ("bill/{id}")
     public ResponseEntity<HttpRespone> getBillById (@PathVariable ("id") int id){
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", billService.selectBillById(id)));
