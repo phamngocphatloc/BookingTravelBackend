@@ -9,4 +9,5 @@ public interface RestaurantOrderService {
     void updateStatusBill(RestaurantOrder order, String active);
     public void save (RestaurantOrder order);
     public OrderFoodResponse order (OrderFoodRequest orderFoodRequest);
+    public OrderFoodResponse OrderDetail (int id, int billId);
 }
