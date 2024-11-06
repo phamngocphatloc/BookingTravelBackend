@@ -21,34 +21,33 @@ import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping ("/restaurant")
 public class RestaurantController {
     private final RestaurantService restaurantService;
     private final RestaurantOrderService restaurantOrderService;
-    @GetMapping ("/getmenu")
+    @GetMapping ("/restaurant/getmenu")
     public HttpRespone getMenu (@RequestParam int orderId,@RequestParam  int pageNum,@RequestParam int pageSize){
         HttpRespone response = new HttpRespone(HttpStatus.OK.value(),"Success",restaurantService.LoadProductByOrderId(orderId,pageNum,pageSize));
         return response;
     }
 
-    @GetMapping ("/detail")
+    @GetMapping ("/restaurant/detail")
     public HttpRespone getMenu (@RequestParam int orderId,@RequestParam  int foodId){
         HttpRespone response = new HttpRespone(HttpStatus.OK.value(),"Success",restaurantService.findById(orderId,foodId));
         return response;
     }
-    @PostMapping("/order")
+    @PostMapping("/restaurant/order")
     @Transactional
     public HttpRespone order (@RequestBody OrderFoodRequest request){
         OrderFoodResponse response = restaurantOrderService.order(request);
         return new HttpRespone(HttpStatus.OK.value(), "Đặt Hàng Thành Công", response);
     }
 
-    @GetMapping ("/order-detail")
+    @GetMapping ("/restaurant/order-detail")
     public HttpRespone OrderDetail (@RequestParam ("oid") int id, @RequestParam("bid") int bId){
         return new HttpRespone(HttpStatus.OK.value(), "Success", restaurantOrderService.OrderDetail(id,bId));
     }
 
-    @GetMapping("/paying/{id}")
+    @GetMapping("/orderfood/paying/{id}")
     public RedirectView paying(@PathVariable("id") int id,
                                @RequestParam("vnp_Amount") String amount,
                                @RequestParam("vnp_BankCode") String bankcode,
