@@ -75,5 +75,20 @@ public class RestaurantOrderServiceImpls implements com.example.BookingTravelBac
         RestaurantOrder orderd = restaurantOrderRepository.findById(order.getId()).get();
         return new OrderFoodResponse(orderd);
     }
+
+    @Override
+    public OrderFoodResponse OrderDetail(int id, int billId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User principal = (User) authentication.getPrincipal();
+        User userLogin = userRepository.findById(principal.getId()).get();
+        RestaurantOrder order = findById(id);
+        if (order.getUserOrder().getId() != userLogin.getId()){
+            throw new IllegalArgumentException("Bạn Không Phải Người Mua Đơn Đồ Ăn Này");
+        }
+        if (order.getBill().getId() != billId){
+            throw new IllegalArgumentException("Đơn Đồ Ăn Này Không Phải Nằm Trong Đơn Booking này");
+        }
+        return new OrderFoodResponse(order);
+    }
 }
 

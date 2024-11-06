@@ -34,7 +34,7 @@ public class RestaurantController {
 
     @GetMapping ("/detail")
     public HttpRespone getMenu (@RequestParam int orderId,@RequestParam  int foodId){
-        HttpRespone response = new HttpRespone(HttpStatus.OK.value(),"Success",restaurantService.findById(orderId,foodId));
+        HttpRespone response = new HttpRespone(HttpStatus.OK.value(),"Success",new OrderFoodResponse(restaurantOrderService.findById(orderId)) );
         return response;
     }
     @PostMapping("/order")
@@ -45,8 +45,8 @@ public class RestaurantController {
     }
 
     @GetMapping ("/order-detail")
-    public HttpRespone OrderDetail (@RequestParam ("oid") int id){
-        return new HttpRespone(HttpStatus.OK.value(), "Success", new OrderFoodResponse(restaurantOrderService.findById(id)));
+    public HttpRespone OrderDetail (@RequestParam ("oid") int id, @RequestParam("bid") int bId){
+        return new HttpRespone(HttpStatus.OK.value(), "Success", restaurantOrderService.OrderDetail(id,bId));
     }
 
     @GetMapping("/paying/{id}")
