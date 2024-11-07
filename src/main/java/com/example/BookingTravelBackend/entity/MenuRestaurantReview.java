@@ -30,4 +30,8 @@ public class MenuRestaurantReview {
     @ManyToOne
     @JoinColumn (name = "MenuRestaurantId")
     private Menu menuReview;
+    @OneToMany (mappedBy = "Review", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<ReviewFoodImg> listImg;
+    @Column (columnDefinition = "nvarchar(1000)")
+    private String reply;
 }

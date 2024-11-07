@@ -16,6 +16,7 @@ public class MenuRestaurantResponse {
     private int price;
     private List<MenuRestaurantReviewResponse> menuRestaurantReviews = new ArrayList<>();
     private List<MenuDetailsResponse> listItems = new ArrayList<>();
+    private boolean admin;
 
     public MenuRestaurantResponse(Menu restaurant){
         this.id = restaurant.getId();

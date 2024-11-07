@@ -24,4 +24,8 @@ public class Restaurant {
     private boolean active;
     @OneToMany (mappedBy = "restaurantSell", fetch = FetchType.EAGER)
     private List<Menu> listMenu;
+    @Column (name = "restaurantImg", columnDefinition = "nvarchar(500)")
+    private String restaurantImg;
+    @Column (name = "authentic")
+    private boolean authentic;
 }

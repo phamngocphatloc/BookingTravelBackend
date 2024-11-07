@@ -24,4 +24,17 @@ public interface HotelRepository extends JpaRepository<Hotel,Integer> {
 
     @Query (value = "select * from hotel_service where price >= 1000000", nativeQuery = true)
     public List<Object[]> selectServiceHotelVip();
+
+    @Query (value = "SELECT CASE \n" +
+            "           WHEN EXISTS (\n" +
+            "               SELECT 1 \n" +
+            "               FROM hotel \n" +
+            "               JOIN hotel_partners ON hotel.partners_id = hotel_partners.partners_id \n" +
+            "               JOIN partners_manger ON hotel_partners.partners_id = partners_manger.partners_id \n" +
+            "               JOIN restaurant ON restaurant.hotel_id = hotel.hotel_id \n" +
+            "               WHERE hotel.hotel_id = ?1 AND user_id = ?2\n" +
+            "           ) THEN 1 \n" +
+            "           ELSE 0 \n" +
+            "       END;\n",nativeQuery = true)
+    public int isAdminHotel (int hotelId, int userId);
 }

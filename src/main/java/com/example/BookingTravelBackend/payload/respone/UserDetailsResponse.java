@@ -28,6 +28,8 @@ public class UserDetailsResponse {
 
     private String avatar;
 
+    private boolean authentic;
+
     private List<PartnersManagerResponse> listPartnersManager = new ArrayList<>();
 
     public UserDetailsResponse(User user) {
@@ -42,7 +44,7 @@ public class UserDetailsResponse {
         this.role = user.getRole().getRoleName();
         this.verify = user.isVerify();
         this.avatar = user.getAvatar();
-
+        this.authentic = user.isAuthentic();
         user.getListPartnersManager().stream().forEach(item -> {
             this.listPartnersManager.add(new PartnersManagerResponse(item));
         });
