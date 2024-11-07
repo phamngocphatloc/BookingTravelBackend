@@ -48,5 +48,8 @@ public class User {
     @OneToMany (mappedBy = "userManager", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<PartnersManager> listPartnersManager = new ArrayList<>();
 
+    @Column (name = "authentic")
+    private boolean authentic;
+
 
 }

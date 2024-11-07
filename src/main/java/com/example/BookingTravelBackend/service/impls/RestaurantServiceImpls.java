@@ -13,7 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
+import com.example.BookingTravelBackend.Repository.HotelRepository;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -28,6 +28,7 @@ public class RestaurantServiceImpls implements RestaurantService {
     private final UserRepository userRepository;
     private final MenuRepository menuRepository;
     private final RestaurantCartRepository restaurantCartRepository;
+    private final HotelRepository hotelRepository;
     // Tạo một hàm để chỉ lấy phần ngày và bỏ qua phần thời gian
     private Date removeTime(Date date) {
         Calendar cal = Calendar.getInstance();
@@ -99,10 +100,16 @@ public class RestaurantServiceImpls implements RestaurantService {
         Restaurant restaurant = bill.getBooking().getRoomBooking().getHotelRoom().getRestaurant();
         User userLogin = ValiDateFormAndGetUserLogin(billId);
         Menu menu = menuRepository.findById(foodId).get();
+
         if (menu.getRestaurantSell().getId() != restaurant.getId()) {
             throw new IllegalArgumentException("Nhà Hàng Không Có Sản Phẩm Này");
         }
         MenuRestaurantResponse response = new MenuRestaurantResponse(menu);
+        if (hotelRepository.isAdminHotel(bill.getBooking().getRoomBooking().getHotelRoom().getHotelId(),userLogin.getId())==1){
+            response.setAdmin(true);
+        }else{
+            response.setAdmin(false);
+        }
         return response;
     }
 
