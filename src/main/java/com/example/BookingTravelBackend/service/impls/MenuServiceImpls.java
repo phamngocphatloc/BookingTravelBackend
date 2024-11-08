@@ -69,11 +69,15 @@ public class MenuServiceImpls implements MenuService {
         // Kiểm tra quyền admin của người dùng đối với khách sạn
         if (hotelRepository.isAdminHotel(review.getMenuReview().getRestaurantSell().getHotelRestaurant().getHotelId(), userLogin.getId()) == 1) {
 
-            // Cập nhật phản hồi vào trường reply
-            review.setReply(request.getRepLy()); // Set reply từ request
+            if (request.getRepLy() != null && !request.getRepLy().isEmpty()) {
+                review.setReply(request.getRepLy());
+            } else {
+                throw new IllegalArgumentException("Phản hồi không hợp lệ");
+            }
 
             // Lưu lại đối tượng review
             menuRestaurantReviewRepository.save(review);
+            menuRestaurantReviewRepository.flush();
         } else {
             throw new IllegalArgumentException("Bạn không phải Admin");
         }
