@@ -22,7 +22,7 @@ public class Restaurant {
     private String restaurantName;
     @Column (name = "Active")
     private boolean active;
-    @OneToMany (mappedBy = "restaurantSell", fetch = FetchType.EAGER)
+    @OneToMany (mappedBy = "restaurantSell", fetch = FetchType.LAZY)
     private List<Menu> listMenu;
     @Column (name = "restaurantImg", columnDefinition = "nvarchar(500)")
     private String restaurantImg;

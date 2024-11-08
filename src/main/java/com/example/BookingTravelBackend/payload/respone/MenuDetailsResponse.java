@@ -4,6 +4,8 @@ import com.example.BookingTravelBackend.entity.MenuDetails;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class MenuDetailsResponse {
@@ -14,6 +16,7 @@ public class MenuDetailsResponse {
     private int productId;
     private String productName;
     private String img;
+
     public MenuDetailsResponse (MenuDetails menuDetails){
         this.id = menuDetails.getId();
         this.name = menuDetails.getName();
