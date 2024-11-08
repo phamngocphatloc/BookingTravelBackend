@@ -97,9 +97,11 @@ public class RestaurantServiceImpls implements RestaurantService {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
         Page<Menu> listMenu = menuRepository.findByRestaurant(restaurant.getId(), pageable);
 
-        List<MenuRestaurantResponse> listMenuResponse = listMenu.getContent().stream()
-                .map(MenuRestaurantResponse::new)
-                .collect(Collectors.toList());
+        List<MenuRestaurantResponse> listMenuResponse = new ArrayList<>();
+
+        listMenu.getContent().stream().forEach(item -> {
+            listMenuResponse.add(new MenuRestaurantResponse(item,true));
+        });
 
         return new PaginationResponse(pageNum, pageSize, listMenu.getTotalElements(),
                 listMenu.isLast(), listMenu.getTotalPages(), listMenuResponse);

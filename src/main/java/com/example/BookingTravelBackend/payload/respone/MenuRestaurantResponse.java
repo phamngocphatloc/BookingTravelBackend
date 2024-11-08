@@ -46,4 +46,20 @@ public class MenuRestaurantResponse {
         // Khởi tạo listRelated nếu cần thiết, có thể là null nếu không cần
         this.listRelated = new ArrayList<>();
     }
+
+    // Constructor tối ưu
+    public MenuRestaurantResponse(Menu restaurant, boolean noMenuDetails) {
+        this.id = restaurant.getId();
+        this.productName = restaurant.getProductName();
+        this.imgProduct = restaurant.getImgProduct();
+        this.description = restaurant.getDescription();
+        this.price = restaurant.getPrice();
+
+        // Chỉ chuyển đổi các đối tượng cần thiết thành DTOs
+        this.menuRestaurantReviews = new ArrayList<>();
+        for (MenuRestaurantReview review : restaurant.getMenuRestaurantReviews()) {
+            this.menuRestaurantReviews.add(new MenuRestaurantReviewResponse(review));
+        }
+
+    }
 }
