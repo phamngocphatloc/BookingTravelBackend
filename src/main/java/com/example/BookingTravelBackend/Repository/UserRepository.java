@@ -14,4 +14,13 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByEmail(String email);
     @Query(value = "SELECT u FROM User u WHERE u.phone = ?1")
     Optional<User> findByPhone(String email);
+    @Query (value = "SELECT * \n" +
+            "FROM users \n" +
+            "WHERE user_id = (\n" +
+            "    SELECT booking.user_id \n" +
+            "    FROM booking \n" +
+            "    JOIN bill ON bill.booking_id = booking.booking_id \n" +
+            "    WHERE bill.bill_id = ?1\n" +
+            ");\n",nativeQuery = true)
+    Optional<User> findUserByBillId (int billId);
 }

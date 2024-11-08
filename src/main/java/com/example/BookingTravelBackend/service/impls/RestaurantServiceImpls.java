@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,30 +41,31 @@ public class RestaurantServiceImpls implements RestaurantService {
         return cal.getTime();
     }
 
-    public User ValiDateFormAndGetUserLogin (int orderId) {
-        Bill bill = billRepository.findById(orderId).get();
+    public User ValiDateFormAndGetUserLogin (Bill bill) {
         Date today = removeTime(new Date());
-        Date checkInWithoutTime = removeTime(bill.getBooking().getCheckIn());
-        Date checkOutWithoutTime = removeTime(bill.getBooking().getCheckOut());
+        Booking book = bill.getBooking();
+        Date checkInWithoutTime = removeTime(book.getCheckIn());
+        Date checkOutWithoutTime = removeTime(book.getCheckOut());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User principal = (User) authentication.getPrincipal();
-        User userLogin = userRepository.findById(principal.getId()).get();
+        User userLogin = userRepository.findById(principal.getId()).orElseThrow(() ->
+                new IllegalArgumentException("User không tồn tại!"));
         boolean isTodayInRange = today.compareTo(checkInWithoutTime) >= 0 && today.compareTo(checkOutWithoutTime) <= 0;
 
         if (!isTodayInRange) {
             throw new IllegalArgumentException ("Ngày Hôm Nay Không Có Mã Đơn Này.");
         }
 
-        if (bill.getBooking().getUserBooking().getId() != userLogin.getId()){
+        if (userRepository.findUserByBillId(bill.getId()).get().getId() != userLogin.getId()){
             // Thực hiện logic khi Userlogin Khác Với User Đặt Đơn
             throw new IllegalArgumentException ("Bạn Không Phải Người Đặt Đơn Booking Này.");
         }
 
-        if (!bill.getBooking().getStatus().equalsIgnoreCase("active")){
+        if (!book.getStatus().equalsIgnoreCase("active")){
             throw new IllegalArgumentException ("Đơn Hàng Không Hoạt Động");
         }
 
-        if (bill.getBooking().getRoomBooking().getHotelRoom().getRestaurant() == null) {
+        if (restaurantRepository.findRestaurantByBillId(bill.getId()).isEmpty()) {
             // Thực hiện logic khi Khách Sạn Chưa Có Nhà Hàng
             throw new IllegalArgumentException ("Khách Sạn Không Có Nhà Hàng");
         }
@@ -72,40 +74,48 @@ public class RestaurantServiceImpls implements RestaurantService {
 
     @Override
     public PaginationResponse LoadProductByOrderId(int orderId, int pageNum, int pageSize) {
-        User userLogin = ValiDateFormAndGetUserLogin(orderId);
-        Bill bill = billRepository.findById(orderId).get();
+        Bill bill = billRepository.findById(orderId).orElseThrow(() ->
+                new IllegalArgumentException("Đơn hàng không tồn tại!"));
 
+        User userLogin = ValiDateFormAndGetUserLogin(bill);
 
-        Restaurant restaurant = bill.getBooking().getRoomBooking().getHotelRoom().getRestaurant();
-        if (restaurantCartRepository.findByUserAndBill(userLogin.getId(),bill.getId()).isEmpty()){
-            RestaurantCart cart = new RestaurantCart();
-            cart.setBill(bill);
-            cart.setUserCart(userLogin);
-            restaurantCartRepository.save(cart);
-        }
+        Restaurant restaurant = restaurantRepository.findRestaurantByBillId(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Nhà hàng không tồn tại!"));
+
+        // Kiểm tra xem đã có giỏ hàng chưa, nếu chưa thì tạo mới
+        restaurantCartRepository.findByUserAndBill(userLogin.getId(), bill.getId())
+                .orElseGet(() -> {
+                    RestaurantCart cart = new RestaurantCart();
+                    cart.setBill(bill);
+                    cart.setUserCart(userLogin);
+                    return restaurantCartRepository.save(cart);
+                });
+
+        // Lấy danh sách menu theo phân trang
         Pageable pageable = PageRequest.of(pageNum, pageSize);
         Page<Menu> listMenu = menuRepository.findByRestaurant(restaurant.getId(), pageable);
-        List<MenuRestaurantResponse> listMenuResponse = new ArrayList<>();
-        listMenu.getContent().stream().forEach(item -> {
-            listMenuResponse.add(new MenuRestaurantResponse(item));
-        });
-        PaginationResponse pageResponse = new PaginationResponse(pageNum,pageSize,listMenu.getTotalElements(),listMenu.isLast(),listMenu.getTotalPages(),listMenuResponse);
 
-        return pageResponse;
+        // Chuyển đổi kết quả thành list menu response
+        List<MenuRestaurantResponse> listMenuResponse = listMenu.getContent().stream()
+                .map(MenuRestaurantResponse::new)
+                .collect(Collectors.toList());
+
+        return new PaginationResponse(pageNum, pageSize, listMenu.getTotalElements(),
+                listMenu.isLast(), listMenu.getTotalPages(), listMenuResponse);
     }
 
     @Override
     public MenuRestaurantResponse findById(int billId, int foodId) {
         Bill bill = billRepository.findById(billId).get();
-        Restaurant restaurant = bill.getBooking().getRoomBooking().getHotelRoom().getRestaurant();
-        User userLogin = ValiDateFormAndGetUserLogin(billId);
+        Restaurant restaurant = restaurantRepository.findRestaurantByBillId(billId).get();
+        User userLogin = ValiDateFormAndGetUserLogin(bill);
         Menu menu = menuRepository.findById(foodId).get();
 
         if (menu.getRestaurantSell().getId() != restaurant.getId()) {
             throw new IllegalArgumentException("Nhà Hàng Không Có Sản Phẩm Này");
         }
         MenuRestaurantResponse response = new MenuRestaurantResponse(menu);
-        if (hotelRepository.isAdminHotel(bill.getBooking().getRoomBooking().getHotelRoom().getHotelId(),userLogin.getId())==1){
+        if (hotelRepository.isAdminHotel(hotelRepository.findHotelByBillId(billId).get().getHotelId(),userLogin.getId())==1){
             response.setAdmin(true);
         }else{
             response.setAdmin(false);
@@ -115,8 +125,8 @@ public class RestaurantServiceImpls implements RestaurantService {
 
     @Override
     public List<OrderFoodResponse> ListOrder(int billId) {
-        User userLogin = ValiDateFormAndGetUserLogin(billId);
         Bill bill = billRepository.findById(billId).get();
+        User userLogin = ValiDateFormAndGetUserLogin(bill);
         List<OrderFoodResponse> listOrder = new ArrayList<>();
         bill.getListOrderFood().stream().forEach(item -> {
             listOrder.add(new OrderFoodResponse(item));
