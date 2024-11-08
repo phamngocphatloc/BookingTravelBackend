@@ -116,6 +116,14 @@ public class RestaurantServiceImpls implements RestaurantService {
             throw new IllegalArgumentException("Nhà Hàng Không Có Sản Phẩm Này");
         }
         MenuRestaurantResponse response = new MenuRestaurantResponse(menu);
+        // Phân trang và truy vấn danh sách menu
+        Pageable pageable = PageRequest.of(0, 4);
+        Page<Menu> listMenu = menuRepository.findByRestaurant(restaurant.getId(), pageable);
+
+        List<MenuRestaurantResponse> listMenuResponse = listMenu.getContent().stream()
+                .map(MenuRestaurantResponse::new)
+                .collect(Collectors.toList());
+        response.setListRelated(listMenuResponse);
         if (hotelRepository.isAdminHotel(hotelRepository.findHotelByBillId(billId).get().getHotelId(),userLogin.getId())==1){
             response.setAdmin(true);
         }else{
