@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Entity
@@ -31,4 +32,6 @@ public class CommentPost {
 
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
     private List<CommentMedia> media;
+    @Column (name = "created_at")
+    private Timestamp create_At;
 }

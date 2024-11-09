@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,18 @@ public class PostServiceImpls implements PostService {
     public PaginationResponse findAllPost(String search, int pageNum, int pageSize) {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
         Page<Post> pagePost = postRepository.findPostBySearch("%"+search+"%",pageable);
+        List<PostResponse> listPostResponse = new ArrayList<>();
+        pagePost.getContent().stream().forEach(item -> {
+            listPostResponse.add(new PostResponse(item));
+        });
+        PaginationResponse pagePostResponse = new PaginationResponse(pageNum,pageSize,pagePost.getTotalElements(),pagePost.isLast(),pagePost.getTotalPages(),listPostResponse);
+        return pagePostResponse;
+    }
+
+    @Override
+    public PaginationResponse findTrending(int pageNum, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNum, pageSize);
+        Page<Post> pagePost = postRepository.findTrending(pageable);
         List<PostResponse> listPostResponse = new ArrayList<>();
         pagePost.getContent().stream().forEach(item -> {
             listPostResponse.add(new PostResponse(item));
@@ -70,6 +83,7 @@ public class PostServiceImpls implements PostService {
         CommentPost comment = new CommentPost();
         comment.setComment(request.getComment());
         comment.setCommentPost(post);
+        comment.setCreate_At(new Timestamp(System.currentTimeMillis())); // Set timestamp hiện tại);
         comment.setUser(user);
         CommentPostResponse response = new CommentPostResponse(commentPostRepository.save(comment));
         return response;

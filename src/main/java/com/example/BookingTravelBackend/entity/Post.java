@@ -42,4 +42,6 @@ public class Post {
     private CategoryBlog category;
     private Timestamp createdAt;
     private Timestamp updatedAt;
+    @Column(name = "isAd")
+    private boolean isAd;
 }

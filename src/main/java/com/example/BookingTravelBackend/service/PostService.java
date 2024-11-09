@@ -12,6 +12,7 @@ import java.util.List;
 
 public interface PostService {
     public PaginationResponse findAllPost (String search, int pageNum, int pageSize);
+    public PaginationResponse findTrending (int pageNum, int pageSize);
     public Post findById (int id);
 
     public PostResponse AddPost (PostRequest postRequest);
