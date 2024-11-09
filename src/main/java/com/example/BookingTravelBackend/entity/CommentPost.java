@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table (name = "CommentPost")
 @Getter
@@ -23,4 +25,10 @@ public class CommentPost {
     @ManyToOne
     @JoinColumn (name = "PostId")
     private Post commentPost;
+    @ManyToOne
+    @JoinColumn(name = "parent_comment_id")
+    private CommentPost parentComment;
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    private List<CommentMedia> media;
 }
