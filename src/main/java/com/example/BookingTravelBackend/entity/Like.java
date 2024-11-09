@@ -3,6 +3,7 @@ package com.example.BookingTravelBackend.entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "Likes")
 public class Like {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
