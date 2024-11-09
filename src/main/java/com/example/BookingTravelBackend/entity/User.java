@@ -51,5 +51,17 @@ public class User {
     @Column (name = "authentic")
     private boolean authentic;
 
+    @OneToMany(mappedBy = "sender")
+    private List<FriendRequest> sentRequests;  // Danh sách yêu cầu kết bạn mà người dùng đã gửi
+
+    @OneToMany(mappedBy = "receiver")
+    private List<FriendRequest> receivedRequests;  // Danh sách yêu cầu kết bạn mà người dùng đã nhận
+
+    @OneToMany(mappedBy = "user1")
+    private List<Friendship> friendshipsAsUser1;  // Danh sách kết bạn của người dùng (user1)
+
+    @OneToMany(mappedBy = "user2")
+    private List<Friendship> friendshipsAsUser2;  // Danh sách kết bạn của người dùng (user2)
+
 
 }
