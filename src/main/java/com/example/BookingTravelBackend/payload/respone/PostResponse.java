@@ -1,6 +1,7 @@
 package com.example.BookingTravelBackend.payload.respone;
 
 import com.example.BookingTravelBackend.entity.Post;
+import com.example.BookingTravelBackend.entity.PostMedia;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -18,6 +19,8 @@ public class PostResponse {
     private List<PostCommentResponse> comments;
     private UserDetailsResponse userPost;
     private CategoryBlogResponse category;
+    private List<CommentPostResponse> listComment;
+    private List<PostMedia> listPostMedia;
 
     public PostResponse (Post post){
         this.postId = post.getPostId();

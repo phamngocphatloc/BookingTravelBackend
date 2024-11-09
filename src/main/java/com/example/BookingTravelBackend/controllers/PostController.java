@@ -30,6 +30,12 @@ public class PostController {
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",paginationResponse));
     }
 
+    @GetMapping ("/find_all_post")
+    public ResponseEntity<HttpRespone> GetAllPost (@RequestParam ("pageNum")int pageNum){
+        PaginationResponse paginationResponse = postService.findTrending(pageNum,6);
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",paginationResponse));
+    }
+
     @GetMapping ("/getPostById")
     public ResponseEntity<HttpRespone> getPostById (@RequestParam ("id") int id){
         PostResponse response = new PostResponse(postService.findById(id));
