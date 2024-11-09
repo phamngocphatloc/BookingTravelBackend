@@ -28,7 +28,6 @@ public class PaymentVnpayController {
     private final RestaurantOrderService restaurantOrderService;
     @GetMapping("/createPaymentVnpay")
     public ResponseEntity<?> createPayment(HttpServletRequest request, @RequestParam("bId") int bid, @RequestParam String typeBill) throws UnsupportedEncodingException {
-        Bill order = billService.findById(bid);
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", "2.1.0");
         vnp_Params.put("vnp_Command", "pay");
@@ -36,6 +35,7 @@ public class PaymentVnpayController {
         String vnp_TxnRef = null;
         String vnp_Returnurl = null;
         if (typeBill.equalsIgnoreCase("hotel")){
+            Bill order = billService.findById(bid);
             if (order != null && order.getBooking().getStatus().equalsIgnoreCase("pending")) {
                 vnp_Returnurl = WebConfig.urlBackend+"/api/booking/paying/"+bid;
                 long amount = (long)order.getPrice()* 100;
@@ -76,8 +76,7 @@ public class PaymentVnpayController {
                         query.append('=');
                         query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
                         if (itr.hasNext()) {
-                            query.append('&');
-                            hashData.append('&');
+                              hashData.append('&');
                         }
                     }
                 }
@@ -94,7 +93,8 @@ public class PaymentVnpayController {
                 paymentVnpayRespone dto = new paymentVnpayRespone("ok", "error", "error");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(dto);
             }
-        }else if (typeBill.equalsIgnoreCase("food")){
+        }else {
+            System.out.println("oid"+bid);
             RestaurantOrder orderFood = restaurantOrderService.findById(bid);
             if (orderFood != null && orderFood.getStatus().equalsIgnoreCase("pending")) {
                 long amount = (long)orderFood.getTotalPrice() * 100;
@@ -105,7 +105,7 @@ public class PaymentVnpayController {
                 System.out.println(priceorder);
                 vnp_Returnurl = WebConfig.urlBackend+"/api/orderfood/paying/"+bid;
                 System.out.println(amount);
-                vnp_TxnRef = String.valueOf(order.getId());
+                vnp_TxnRef = String.valueOf(orderFood.getId());
                 vnp_Params.put("vnp_Amount", String.valueOf(amount));
                 Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -152,7 +152,7 @@ public class PaymentVnpayController {
                 String paymentUrl = VnpayConfig.vnp_PayUrl + "?" + queryUrl;
                 paymentVnpayRespone dto = new paymentVnpayRespone("ok", "sucessfully", paymentUrl);
                 return ResponseEntity.status(HttpStatus.OK).body(dto);
-            } else if (order.getBooking().getStatus().equalsIgnoreCase("active")) {
+            } else if (orderFood.getStatus().equalsIgnoreCase("active")) {
                 paymentVnpayRespone dto = new paymentVnpayRespone("ok", "sucessfully", "đã thanh toán");
                 return ResponseEntity.status(HttpStatus.OK).body(dto);
             }else{
@@ -161,6 +161,5 @@ public class PaymentVnpayController {
             }
         }
 
-        return null;
     }
 }
