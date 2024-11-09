@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,7 +35,11 @@ public class Post {
     @ManyToOne
     @JoinColumn (name = "userPost")
     private User userPost;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<PostMedia> media;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn (name ="CategoryId")
     private CategoryBlog category;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
 }
