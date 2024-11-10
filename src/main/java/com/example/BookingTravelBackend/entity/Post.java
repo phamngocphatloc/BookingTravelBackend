@@ -20,10 +20,6 @@ public class Post {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     @Column (name = "PostId")
     private int postId;
-    @Column (name = "PostTitle", columnDefinition = "nvarchar(255)")
-    private String postTitle;
-    @Column (name = "PostImg", columnDefinition =  "nvarchar(500)")
-    private String postImg;
     @Column (name = "ViewPost")
     private int view;
     @Column (name = "DatePost")
@@ -35,8 +31,8 @@ public class Post {
     @ManyToOne
     @JoinColumn (name = "userPost")
     private User userPost;
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private List<PostMedia> media;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<PostMedia> media = new ArrayList<>();
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn (name ="CategoryId")
     private CategoryBlog category;

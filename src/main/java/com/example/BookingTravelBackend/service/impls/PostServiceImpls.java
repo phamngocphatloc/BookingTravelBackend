@@ -1,14 +1,13 @@
 package com.example.BookingTravelBackend.service.impls;
 
-import com.example.BookingTravelBackend.Repository.CategoryRepository;
+import com.example.BookingTravelBackend.Repository.PostMediaRepository;
 import com.example.BookingTravelBackend.Repository.CommentPostRepository;
+import com.example.BookingTravelBackend.Repository.CategoryRepository;
 import com.example.BookingTravelBackend.Repository.PostRepository;
 import com.example.BookingTravelBackend.Repository.UserRepository;
-import com.example.BookingTravelBackend.entity.CategoryBlog;
-import com.example.BookingTravelBackend.entity.CommentPost;
-import com.example.BookingTravelBackend.entity.Post;
-import com.example.BookingTravelBackend.entity.User;
+import com.example.BookingTravelBackend.entity.*;
 import com.example.BookingTravelBackend.payload.Request.CommentRequest;
+import com.example.BookingTravelBackend.payload.Request.PostMeidaRequest;
 import com.example.BookingTravelBackend.payload.Request.PostRequest;
 import com.example.BookingTravelBackend.payload.respone.CommentPostResponse;
 import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
@@ -19,19 +18,24 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpls implements PostService {
     private final PostRepository postRepository;
-    private final CategoryRepository categoryRepository;
+    private final PostMediaRepository postMediaRepository;
     private final UserRepository userRepository;
     private final CommentPostRepository commentPostRepository;
+    private final CategoryRepository categoryRepository;
     @Override
     public PaginationResponse findAllPost(String search, int pageNum, int pageSize) {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
@@ -64,20 +68,47 @@ public class PostServiceImpls implements PostService {
     @Override
     @Transactional
     public PostResponse AddPost(PostRequest postRequest) {
-        Post post= new Post();
-        post.setDatePost(postRequest.getDatePost());
-        post.setPostImg(postRequest.getPostImg());
-        post.setPostTitle(postRequest.getPostTitle());
+        // Tạo bài viết mới
+        Post post = new Post();
         post.setContent(postRequest.getContent());
-        post.setCategory(categoryRepository.findByCategoryName("%"+postRequest.getCategoryName()+"%"));
-        User user = userRepository.findById(postRequest.getUserId()).get();
+        post.setDatePost(new Date(System.currentTimeMillis()));
+
+        // Lấy thông tin người dùng đã đăng nhập
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userLogin = (User) authentication.getPrincipal();
+        User user = userRepository.findById(userLogin.getId())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
         post.setUserPost(user);
-        return new PostResponse(postRepository.save(post));
+        post.setView(0);
+
+        // Lấy danh mục (giả sử danh mục với ID 2 luôn tồn tại)
+        CategoryBlog category = categoryRepository.findById(2)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy danh mục"));
+        post.setCategory(category);
+
+        // Lưu bài viết
+        Post postSaved = postRepository.save(post);
+
+        // Lưu các media liên quan (nếu có)
+        if (postRequest.getListMedia() != null) {
+            for (PostMeidaRequest item : postRequest.getListMedia()) {
+                PostMedia media = new PostMedia();
+                media.setPost(postSaved);
+                media.setMediaType(item.getMediaType());
+                media.setMediaUrl(item.getMediaUrl());
+                postMediaRepository.save(media);
+                postSaved.getMedia().add(media);
+            }
+        }
+
+        // Trả về đối tượng PostResponse (đảm bảo phương thức findById trả về PostResponse)
+        return new PostResponse(postSaved);
     }
+
+
 
     @Override
     public CommentPostResponse CommentPost(CommentRequest request, User user) {
-        System.out.println("PostId: "+request.getPostid());
         Post post = postRepository.findById(request.getPostid()).get();
 
         CommentPost comment = new CommentPost();

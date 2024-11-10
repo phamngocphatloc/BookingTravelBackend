@@ -16,12 +16,7 @@ import java.util.List;
 @Getter
 @Data
 public class PostRequest {
-    private Integer userId;
-    private String postTitle;
-    private String postImg;
-    private int view;
-    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy/MM/dd")
-    private Date datePost;
     private String content;
-    private String categoryName;
+    private List<PostMeidaRequest> listMedia;
+
 }
