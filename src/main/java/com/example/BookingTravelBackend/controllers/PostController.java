@@ -50,4 +50,9 @@ public class PostController {
         CommentPostResponse response = postService.CommentPost(request,userLogin);
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",response));
     }
+    @PostMapping ("/addpost")
+    public ResponseEntity<HttpRespone> addPost (@RequestBody PostRequest request){
+        PostResponse response = postService.AddPost(request);
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",response));
+    }
 }
