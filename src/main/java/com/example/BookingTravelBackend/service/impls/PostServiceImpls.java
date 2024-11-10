@@ -72,7 +72,6 @@ public class PostServiceImpls implements PostService {
         Post post = new Post();
         post.setContent(postRequest.getContent());
         post.setDatePost(new Date());
-        post.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         // Lấy thông tin người dùng đã đăng nhập
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userLogin = (User) authentication.getPrincipal();
@@ -80,7 +79,7 @@ public class PostServiceImpls implements PostService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
         post.setUserPost(user);
         post.setView(0);
-
+        post.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         // Lấy danh mục (giả sử danh mục với ID 2 luôn tồn tại)
         CategoryBlog category = categoryRepository.findById(2)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy danh mục"));
