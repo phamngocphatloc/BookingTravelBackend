@@ -22,9 +22,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -71,7 +71,7 @@ public class PostServiceImpls implements PostService {
         // Tạo bài viết mới
         Post post = new Post();
         post.setContent(postRequest.getContent());
-        post.setDatePost(new Date(System.currentTimeMillis()));
+        post.setDatePost(new Date());
 
         // Lấy thông tin người dùng đã đăng nhập
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
