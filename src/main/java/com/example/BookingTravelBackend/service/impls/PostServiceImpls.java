@@ -72,7 +72,7 @@ public class PostServiceImpls implements PostService {
         Post post = new Post();
         post.setContent(postRequest.getContent());
         post.setDatePost(new Date());
-
+        post.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         // Lấy thông tin người dùng đã đăng nhập
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userLogin = (User) authentication.getPrincipal();
