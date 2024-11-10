@@ -38,18 +38,12 @@ public class ReviewController {
 
     @PostMapping ("/reviewFood")
     public ResponseEntity<HttpRespone> ReviewFood (@RequestBody FoodReviewRequest request){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User principal = (User) authentication.getPrincipal();
-        User userLogin = userService.findById(principal.getId());
         menuService.review(request);
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"Đánh Giá Thành Công",null));
     }
 
     @PostMapping ("/reply")
     public ResponseEntity<HttpRespone> ReviewFood (@RequestBody ReplyFoodReviewRequest request){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User principal = (User) authentication.getPrincipal();
-        User userLogin = userService.findById(principal.getId());
         menuService.reply(request);
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"Đánh Giá Thành Công",null));
     }
