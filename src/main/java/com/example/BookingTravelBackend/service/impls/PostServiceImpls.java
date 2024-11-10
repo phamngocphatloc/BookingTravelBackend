@@ -22,9 +22,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -71,8 +71,7 @@ public class PostServiceImpls implements PostService {
         // Tạo bài viết mới
         Post post = new Post();
         post.setContent(postRequest.getContent());
-        post.setDatePost(new Date(System.currentTimeMillis()));
-
+        post.setDatePost(new Date());
         // Lấy thông tin người dùng đã đăng nhập
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userLogin = (User) authentication.getPrincipal();
@@ -80,7 +79,7 @@ public class PostServiceImpls implements PostService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
         post.setUserPost(user);
         post.setView(0);
-
+        post.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         // Lấy danh mục (giả sử danh mục với ID 2 luôn tồn tại)
         CategoryBlog category = categoryRepository.findById(2)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy danh mục"));
