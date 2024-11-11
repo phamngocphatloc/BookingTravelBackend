@@ -12,7 +12,9 @@ import com.example.BookingTravelBackend.payload.Request.PostRequest;
 import com.example.BookingTravelBackend.payload.respone.CommentPostResponse;
 import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
 import com.example.BookingTravelBackend.payload.respone.PostResponse;
+import com.example.BookingTravelBackend.payload.respone.PostStatusResponse;
 import com.example.BookingTravelBackend.service.PostService;
+import jakarta.persistence.Tuple;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -53,9 +55,29 @@ public class PostServiceImpls implements PostService {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
         Page<Post> pagePost = postRepository.findTrending(pageable);
         List<PostResponse> listPostResponse = new ArrayList<>();
+
         pagePost.getContent().stream().forEach(item -> {
-            listPostResponse.add(new PostResponse(item));
+            // Lấy status của post từ repository
+            Tuple Tuplestatus = postRepository.findPostStatusByPostId(item.getPostId());
+
+            // Ép kiểu Tuple và lấy giá trị từ các trường
+            int totalLikes = (int) Tuplestatus.get("total_likes");
+            int totalDislikes = (int) Tuplestatus.get("total_dislikes");
+            int totalComments = (int) Tuplestatus.get("total_comments");
+
+            // Tạo đối tượng PostStatusResponse với các thông tin lấy được
+            PostStatusResponse status = new PostStatusResponse(totalLikes, totalDislikes, totalComments);
+
+            // Tạo đối tượng PostResponse từ item và gắn status vào
+            PostResponse response = new PostResponse(item);
+            response.setPostStatusResponse(status);
+
+            // Thêm response đã được gắn status vào listPostResponse
+            listPostResponse.add(response);
         });
+
+// Sau khi lặp xong, listPostResponse sẽ chứa các đối tượng PostResponse đã được cập nhật status
+
         PaginationResponse pagePostResponse = new PaginationResponse(pageNum,pageSize,pagePost.getTotalElements(),pagePost.isLast(),pagePost.getTotalPages(),listPostResponse);
         return pagePostResponse;
     }
@@ -126,5 +148,14 @@ public class PostServiceImpls implements PostService {
             response.add(new PostResponse(item));
         });
         return response;
+    }
+
+    @Override
+    @Transactional
+    public int updatePostById(int id) {
+        Post post = postRepository.findById(id).get();
+        post.setView(post.getView()+1);
+        Post postSaved = postRepository.save(post);
+        return postSaved.getView();
     }
 }

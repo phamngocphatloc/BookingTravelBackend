@@ -55,4 +55,10 @@ public class PostController {
         PostResponse response = postService.AddPost(request);
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",response));
     }
+
+    @PutMapping ("/update_view")
+    public ResponseEntity<HttpRespone> addPost (@RequestParam int id){
+        int response = postService.updatePostById(id);
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",response));
+    }
 }

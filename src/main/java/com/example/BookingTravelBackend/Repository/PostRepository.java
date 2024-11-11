@@ -1,6 +1,8 @@
 package com.example.BookingTravelBackend.Repository;
 
 import com.example.BookingTravelBackend.entity.Post;
+import com.example.BookingTravelBackend.payload.respone.PostStatusResponse;
+import jakarta.persistence.Tuple;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -44,4 +46,19 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
             ") c ON p.post_id = c.post_id\n" +
             "ORDER BY trending_score DESC;", nativeQuery = true)
     public Page<Post> findTrending (Pageable pageable);
+
+    @Query (value = "SELECT \n" +
+            "    COUNT(DISTINCT CASE WHEN l.type = 'like' THEN l.user_id END) AS total_likes,\n" +
+            "    COUNT(DISTINCT CASE WHEN l.type = 'dislike' THEN l.user_id END) AS total_dislikes,\n" +
+            "    COUNT(c.comment_post_id) AS total_comments\n" +
+            "FROM \n" +
+            "    post p\n" +
+            "LEFT JOIN \n" +
+            "    likes l ON p.post_id = l.post_id\n" +
+            "LEFT JOIN \n" +
+            "    comment_post c ON p.post_id = c.post_id\n" +
+            "where p.post_id = ?1\n" +
+            "GROUP BY \n" +
+            "    p.post_id", nativeQuery = true)
+    public Tuple findPostStatusByPostId (int postId);
 }
