@@ -38,7 +38,8 @@ public class PostController {
 
     @GetMapping ("/getPostById")
     public ResponseEntity<HttpRespone> getPostById (@RequestParam ("id") int id){
-        PostResponse response = new PostResponse(postService.findById(id));
+        PostResponse response = postService.findPostResponseById(id);
+
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", response));
     }
 

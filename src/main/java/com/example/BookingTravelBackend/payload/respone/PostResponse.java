@@ -30,7 +30,9 @@ public class PostResponse {
         comments = new ArrayList<>();
         this.view = post.getView();
         post.getComments().stream().forEach(item -> {
-            comments.add(new PostCommentResponse(item));
+            if(item.getParentComment() == null) {
+                comments.add(new PostCommentResponse(item));
+            }
         });
         userPost = new UserDetailsResponse(post.getUserPost());
         category = new CategoryBlogResponse(post.getCategory());

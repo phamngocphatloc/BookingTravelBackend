@@ -158,4 +158,23 @@ public class PostServiceImpls implements PostService {
         Post postSaved = postRepository.save(post);
         return postSaved.getView();
     }
+
+    @Override
+    public PostResponse findPostResponseById(int id) {
+        Post post = findById(id);
+        Tuple Tuplestatus = postRepository.findPostStatusByPostId(id);
+
+        // Ép kiểu Tuple và lấy giá trị từ các trường
+        int totalLikes = (int) Tuplestatus.get("total_likes");
+        int totalDislikes = (int) Tuplestatus.get("total_dislikes");
+        int totalComments = (int) Tuplestatus.get("total_comments");
+
+        // Tạo đối tượng PostStatusResponse với các thông tin lấy được
+        PostStatusResponse status = new PostStatusResponse(totalLikes, totalDislikes, totalComments);
+
+        // Tạo đối tượng PostResponse từ item và gắn status vào
+        PostResponse response = new PostResponse(post);
+        response.setPostStatusResponse(status);
+        return response;
+    }
 }
