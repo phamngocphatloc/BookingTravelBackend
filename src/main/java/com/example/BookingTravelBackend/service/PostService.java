@@ -22,4 +22,5 @@ public interface PostService {
     public List<PostResponse> getAllPost ();
 
     public int updatePostById (int id);
+    public PostResponse findPostResponseById (int id);
 }

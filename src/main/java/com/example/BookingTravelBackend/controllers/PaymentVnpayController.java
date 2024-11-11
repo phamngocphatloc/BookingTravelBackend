@@ -37,8 +37,9 @@ public class PaymentVnpayController {
         if (typeBill.equalsIgnoreCase("hotel")){
             Bill order = billService.findById(bid);
             if (order != null && order.getBooking().getStatus().equalsIgnoreCase("pending")) {
+                long amount = (long)order.getPrice() * 100;
+
                 vnp_Returnurl = WebConfig.urlBackend+"/api/booking/paying/"+bid;
-                long amount = (long)order.getPrice()* 100;
                 System.out.println(amount);
                 vnp_TxnRef = String.valueOf(order.getId());
                 vnp_Params.put("vnp_Amount", String.valueOf(amount));
@@ -76,7 +77,8 @@ public class PaymentVnpayController {
                         query.append('=');
                         query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
                         if (itr.hasNext()) {
-                              hashData.append('&');
+                            query.append('&');
+                            hashData.append('&');
                         }
                     }
                 }
