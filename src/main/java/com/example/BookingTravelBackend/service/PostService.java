@@ -20,4 +20,6 @@ public interface PostService {
     public CommentPostResponse CommentPost (CommentRequest request, User user);
 
     public List<PostResponse> getAllPost ();
+
+    public int updatePostById (int id);
 }

@@ -3,12 +3,14 @@ package com.example.BookingTravelBackend.payload.respone;
 import com.example.BookingTravelBackend.entity.Post;
 import com.example.BookingTravelBackend.entity.PostMedia;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Getter
+@Setter
 public class PostResponse {
     private int postId;
     private int view;
@@ -19,6 +21,7 @@ public class PostResponse {
     private CategoryBlogResponse category;
     private List<CommentPostResponse> listComment;
     private List<PostMediaResponse> listPostMedia = new ArrayList<>();
+    private PostStatusResponse postStatusResponse;
 
     public PostResponse (Post post){
         this.postId = post.getPostId();
