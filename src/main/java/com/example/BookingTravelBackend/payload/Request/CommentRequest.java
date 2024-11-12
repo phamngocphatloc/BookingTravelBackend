@@ -9,4 +9,5 @@ import lombok.Setter;
 public class CommentRequest {
     private String comment;
     private int postid;
+    private Integer parentCommentId;
 }

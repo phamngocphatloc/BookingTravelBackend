@@ -17,7 +17,7 @@ public class PostResponse {
     private Date datePost;
     private String content;
     private List<PostCommentResponse> comments;
-    private UserDetailsResponse userPost;
+    private UserInfoResponse userPost;
     private CategoryBlogResponse category;
     private List<CommentPostResponse> listComment;
     private List<PostMediaResponse> listPostMedia = new ArrayList<>();
@@ -34,7 +34,7 @@ public class PostResponse {
                 comments.add(new PostCommentResponse(item));
             }
         });
-        userPost = new UserDetailsResponse(post.getUserPost());
+        userPost = new UserInfoResponse(post.getUserPost());
         category = new CategoryBlogResponse(post.getCategory());
         post.getMedia().stream().forEach(item -> {
             PostMediaResponse response = new PostMediaResponse();

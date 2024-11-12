@@ -25,5 +25,6 @@ public interface UserService {
     public List<UserDetailsResponse> selectAll ();
 
     public UserDetailsResponse updateAdmin (int userId, String role);
+    public UserDetailsResponse findUserById(int id);
 
 }

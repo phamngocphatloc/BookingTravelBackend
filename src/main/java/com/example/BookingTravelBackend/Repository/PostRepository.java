@@ -1,6 +1,7 @@
 package com.example.BookingTravelBackend.Repository;
 
 import com.example.BookingTravelBackend.entity.Post;
+import com.example.BookingTravelBackend.entity.User;
 import com.example.BookingTravelBackend.payload.respone.PostStatusResponse;
 import jakarta.persistence.Tuple;
 import org.springframework.data.domain.Page;
@@ -8,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post,Integer> {
@@ -61,4 +64,7 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
             "GROUP BY \n" +
             "    p.post_id", nativeQuery = true)
     public Tuple findPostStatusByPostId (int postId);
+
+    @Query (value = "select * from post where user_post = ?1", nativeQuery = true)
+    public List<Post> findAllPostByUserId (int userId);
 }
