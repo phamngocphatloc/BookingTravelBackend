@@ -9,10 +9,7 @@ import com.example.BookingTravelBackend.entity.*;
 import com.example.BookingTravelBackend.payload.Request.CommentRequest;
 import com.example.BookingTravelBackend.payload.Request.PostMeidaRequest;
 import com.example.BookingTravelBackend.payload.Request.PostRequest;
-import com.example.BookingTravelBackend.payload.respone.CommentPostResponse;
-import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
-import com.example.BookingTravelBackend.payload.respone.PostResponse;
-import com.example.BookingTravelBackend.payload.respone.PostStatusResponse;
+import com.example.BookingTravelBackend.payload.respone.*;
 import com.example.BookingTravelBackend.service.PostService;
 import jakarta.persistence.Tuple;
 import jakarta.transaction.Transactional;
@@ -129,7 +126,7 @@ public class PostServiceImpls implements PostService {
 
 
     @Override
-    public CommentPostResponse CommentPost(CommentRequest request, User user) {
+    public PostCommentResponse CommentPost(CommentRequest request, User user) {
         Post post = postRepository.findById(request.getPostid()).get();
 
         CommentPost comment = new CommentPost();
@@ -137,7 +134,11 @@ public class PostServiceImpls implements PostService {
         comment.setCommentPost(post);
         comment.setCreate_At(new Timestamp(System.currentTimeMillis())); // Set timestamp hiện tại);
         comment.setUser(user);
-        CommentPostResponse response = new CommentPostResponse(commentPostRepository.save(comment));
+        if (request.getParentCommentId() != null) {
+            CommentPost commentParent = commentPostRepository.findById(request.getParentCommentId()).get();
+            comment.setParentComment(commentParent);
+        }
+        PostCommentResponse response = new PostCommentResponse(commentPostRepository.save(comment));
         return response;
     }
 

@@ -1,10 +1,12 @@
 package com.example.BookingTravelBackend.service.impls;
 
 import com.example.BookingTravelBackend.Configuration.WebConfig;
+import com.example.BookingTravelBackend.Repository.FollowRepository;
 import com.example.BookingTravelBackend.Repository.RoleRepository;
 import com.example.BookingTravelBackend.Repository.UserRepository;
 import com.example.BookingTravelBackend.entity.Role;
 import com.example.BookingTravelBackend.entity.User;
+import com.example.BookingTravelBackend.entity.Post;
 import com.example.BookingTravelBackend.entity.VerificationToken;
 import com.example.BookingTravelBackend.exception.NotFoundException;
 import com.example.BookingTravelBackend.payload.Request.ChangePasswordRequest;
@@ -26,7 +28,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import com.example.BookingTravelBackend.payload.respone.PostResponse;
+import com.example.BookingTravelBackend.Repository.PostRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,8 +48,8 @@ public class UserServiceImpls implements UserService {
     private final VerificationTokenService tokenService;
 
     private final EmailService emailService;
-
-
+    private final PostRepository postRepository;
+    private final FollowRepository followRepository;
 
     @Override
     public JwtResponse login(LoginRequest loginRequest) {
@@ -170,5 +173,21 @@ public class UserServiceImpls implements UserService {
         user.setRole(role);
         User userSaved = userRepository.save(user);
         return new UserDetailsResponse(userSaved);
+    }
+
+    @Override
+    public UserDetailsResponse findUserById(int id) {
+        User userFind = findById(id);
+        UserDetailsResponse response = new UserDetailsResponse(userFind);
+        List<Post> allPost = postRepository.findAllPostByUserId(id);
+        List<PostResponse> allPostResponse = new ArrayList<>();
+        response.setAllFolowers(followRepository.AllFollowersByUser(id));
+        if (!allPost.isEmpty()){
+            allPost.stream().forEach(item -> {
+                allPostResponse.add(new PostResponse(item));
+            });
+        }
+        response.setAllPost(allPostResponse);
+        return response;
     }
 }

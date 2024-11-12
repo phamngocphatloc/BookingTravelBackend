@@ -3,10 +3,7 @@ package com.example.BookingTravelBackend.controllers;
 import com.example.BookingTravelBackend.entity.User;
 import com.example.BookingTravelBackend.payload.Request.CommentRequest;
 import com.example.BookingTravelBackend.payload.Request.PostRequest;
-import com.example.BookingTravelBackend.payload.respone.CommentPostResponse;
-import com.example.BookingTravelBackend.payload.respone.HttpRespone;
-import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
-import com.example.BookingTravelBackend.payload.respone.PostResponse;
+import com.example.BookingTravelBackend.payload.respone.*;
 import com.example.BookingTravelBackend.service.PostService;
 import com.example.BookingTravelBackend.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +45,8 @@ public class PostController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User principal = (User) authentication.getPrincipal();
         User userLogin = userService.findById(principal.getId());
-        CommentPostResponse response = postService.CommentPost(request,userLogin);
+
+        PostCommentResponse response = postService.CommentPost(request,userLogin);
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",response));
     }
     @PostMapping ("/addpost")
