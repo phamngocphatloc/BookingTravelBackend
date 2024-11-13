@@ -20,16 +20,16 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
     @Query (value = "SELECT p.*, \n" +
             "       (\n" +
             "            -- Lượt xem (views) cộng thêm điểm\n" +
-            "            (p.view_post * 0.2) + \n" +
+            "            COALESCE(p.view_post, 0) * 0.2 + \n" +
             "            \n" +
             "            -- Lượt thích (likes) tăng điểm (giả sử mỗi lượt thích tăng 0.5 điểm)\n" +
-            "            (CASE WHEN l.LikesCount > 0 THEN 0.5 * l.LikesCount ELSE 0 END) + \n" +
+            "            (CASE WHEN COALESCE(l.LikesCount, 0) > 0 THEN 0.5 * COALESCE(l.LikesCount, 0) ELSE 0 END) + \n" +
             "            \n" +
             "            -- Bình luận (comments) cộng thêm điểm (2 điểm cho mỗi bình luận)\n" +
-            "            c.CommentCount * 2 + \n" +
+            "            COALESCE(c.CommentCount, 0) * 2 + \n" +
             "            \n" +
             "            -- Nếu bài viết là quảng cáo, cộng thêm 1000 điểm\n" +
-            "            (CASE WHEN p.is_ad = 1 THEN 1000 ELSE 0 END) - \n" +
+            "            (CASE WHEN COALESCE(p.is_ad, 0) = 1 THEN 1000 ELSE 0 END) - \n" +
             "            \n" +
             "            -- Giảm điểm theo thời gian (số giờ đã trôi qua từ khi đăng)\n" +
             "            DATEDIFF(HOUR, p.created_at, GETDATE()) \n" +
