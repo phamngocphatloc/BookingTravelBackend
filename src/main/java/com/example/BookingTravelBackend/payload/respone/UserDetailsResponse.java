@@ -33,7 +33,7 @@ public class UserDetailsResponse {
     private int allFolowers;
 
     private List<PartnersManagerResponse> listPartnersManager = new ArrayList<>();
-
+    private boolean followersProfile;
     public UserDetailsResponse(User user) {
         this.userId = user.getId();
         this.email = user.getEmail();
@@ -58,5 +58,8 @@ public class UserDetailsResponse {
 
     public void setAllFolowers(int allFolowers) {
         this.allFolowers = allFolowers;
+    }
+    public void setFollowersProfile(boolean followersProfile) {
+        this.followersProfile = followersProfile;
     }
 }

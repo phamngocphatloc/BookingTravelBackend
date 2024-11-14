@@ -26,5 +26,6 @@ public interface UserService {
 
     public UserDetailsResponse updateAdmin (int userId, String role);
     public UserDetailsResponse findUserById(int id);
+    public int Follow (int userId);
 
 }
