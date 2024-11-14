@@ -4,10 +4,7 @@ import com.example.BookingTravelBackend.Configuration.WebConfig;
 import com.example.BookingTravelBackend.Repository.FollowRepository;
 import com.example.BookingTravelBackend.Repository.RoleRepository;
 import com.example.BookingTravelBackend.Repository.UserRepository;
-import com.example.BookingTravelBackend.entity.Role;
-import com.example.BookingTravelBackend.entity.User;
-import com.example.BookingTravelBackend.entity.Post;
-import com.example.BookingTravelBackend.entity.VerificationToken;
+import com.example.BookingTravelBackend.entity.*;
 import com.example.BookingTravelBackend.exception.NotFoundException;
 import com.example.BookingTravelBackend.payload.Request.ChangePasswordRequest;
 import com.example.BookingTravelBackend.payload.Request.LoginRequest;
@@ -30,6 +27,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.BookingTravelBackend.payload.respone.PostResponse;
 import com.example.BookingTravelBackend.Repository.PostRepository;
+
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -177,6 +176,8 @@ public class UserServiceImpls implements UserService {
 
     @Override
     public UserDetailsResponse findUserById(int id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User principal = (User) authentication.getPrincipal();
         User userFind = findById(id);
         UserDetailsResponse response = new UserDetailsResponse(userFind);
         List<Post> allPost = postRepository.findAllPostByUserId(id);
@@ -187,7 +188,31 @@ public class UserServiceImpls implements UserService {
                 allPostResponse.add(new PostResponse(item));
             });
         }
+        boolean followers = false;
+        if (followRepository.CheckFollow(id,principal.getId())==1){
+            followers = true;
+        }
         response.setAllPost(allPostResponse);
+        response.setFollowersProfile(followers);
         return response;
+    }
+
+    @Override
+    public int Follow(int userId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User principal = (User) authentication.getPrincipal();
+        if (followRepository.CheckFollow(userId,principal.getId())==0) {
+            User userLogin = findById(principal.getId());
+            User userFollow = findById(userId);
+            Follow follow = new Follow();
+            follow.setFollower(userLogin);
+            follow.setFollowedAt(new Timestamp(System.currentTimeMillis()));
+            follow.setFollowedUser(userFollow);
+            followRepository.save(follow);
+            return followRepository.AllFollowersByUser(userId);
+        }else{
+            throw new IllegalArgumentException("Đã Follower");
+        }
+
     }
 }
