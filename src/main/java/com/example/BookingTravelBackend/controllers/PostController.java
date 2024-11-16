@@ -60,4 +60,10 @@ public class PostController {
         int response = postService.updatePostById(id);
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",response));
     }
+
+    @PostMapping ("like")
+    public ResponseEntity<HttpRespone> likt (@RequestParam int postId, @RequestParam String type){
+        int response = postService.Like(postId,type);
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",response));
+    }
 }

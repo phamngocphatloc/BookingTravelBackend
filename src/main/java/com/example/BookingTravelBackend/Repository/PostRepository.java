@@ -1,8 +1,7 @@
 package com.example.BookingTravelBackend.Repository;
 
+import com.example.BookingTravelBackend.entity.Like;
 import com.example.BookingTravelBackend.entity.Post;
-import com.example.BookingTravelBackend.entity.User;
-import com.example.BookingTravelBackend.payload.respone.PostStatusResponse;
 import jakarta.persistence.Tuple;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post,Integer> {
@@ -67,4 +67,7 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
 
     @Query (value = "select * from post where user_post = ?1", nativeQuery = true)
     public List<Post> findAllPostByUserId (int userId);
+
+    @Query (value = "SELECT CASE WHEN COUNT(l.id) > 0 THEN 1 ELSE 0 END FROM Likes l WHERE l.user_id = ?1 AND l.post_id = ?2", nativeQuery = true)
+    public int checkUserLike (int userId, int postId);
 }

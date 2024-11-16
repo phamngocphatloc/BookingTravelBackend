@@ -198,6 +198,7 @@ public class UserServiceImpls implements UserService {
     }
 
     @Override
+    @Transactional
     public int Follow(int userId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User principal = (User) authentication.getPrincipal();
@@ -211,7 +212,9 @@ public class UserServiceImpls implements UserService {
             followRepository.save(follow);
             return followRepository.AllFollowersByUser(userId);
         }else{
-            throw new IllegalArgumentException("Đã Follower");
+            Follow follow = followRepository.findFollowByUserAndUserFollow(userId,principal.getId());
+            followRepository.delete(follow);
+            return followRepository.AllFollowersByUser(userId);
         }
 
     }
