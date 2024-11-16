@@ -1,5 +1,6 @@
 package com.example.BookingTravelBackend.controllers;
 
+import com.example.BookingTravelBackend.Repository.FollowRepository;
 import com.example.BookingTravelBackend.entity.Bill;
 import com.example.BookingTravelBackend.entity.User;
 import com.example.BookingTravelBackend.payload.Request.ChangePasswordRequest;
@@ -31,6 +32,7 @@ public class UserController {
 
     private final VerificationTokenService tokenService;
     private final BillService billService;
+    private final FollowRepository followRepository;
     @PostMapping("login")
     public ResponseEntity<JwtResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         JwtResponse jwtResponse = userService.login(loginRequest);
@@ -91,7 +93,9 @@ public class UserController {
         User principal = (User) authentication.getPrincipal();
         User userLogin = userService.findById(principal.getId());
         RoleResponse role = new RoleResponse(userLogin.getEmail(),userLogin.getRole().getRoleName());
-        return ResponseEntity.status(HttpStatus.OK).body(new UserDetailsResponse(userLogin));
+        UserDetailsResponse response = new UserDetailsResponse(userLogin);
+        response.setAllFolowers(followRepository.AllFollowersByUser(principal.getId()));
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping ("verify")

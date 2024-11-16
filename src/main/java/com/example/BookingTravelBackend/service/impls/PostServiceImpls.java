@@ -1,10 +1,6 @@
 package com.example.BookingTravelBackend.service.impls;
 
-import com.example.BookingTravelBackend.Repository.PostMediaRepository;
-import com.example.BookingTravelBackend.Repository.CommentPostRepository;
-import com.example.BookingTravelBackend.Repository.CategoryRepository;
-import com.example.BookingTravelBackend.Repository.PostRepository;
-import com.example.BookingTravelBackend.Repository.UserRepository;
+import com.example.BookingTravelBackend.Repository.*;
 import com.example.BookingTravelBackend.entity.*;
 import com.example.BookingTravelBackend.payload.Request.CommentRequest;
 import com.example.BookingTravelBackend.payload.Request.PostMeidaRequest;
@@ -25,6 +21,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
@@ -35,6 +32,7 @@ public class PostServiceImpls implements PostService {
     private final UserRepository userRepository;
     private final CommentPostRepository commentPostRepository;
     private final CategoryRepository categoryRepository;
+    private final LikeRepository likeRepository;
     @Override
     public PaginationResponse findAllPost(String search, int pageNum, int pageSize) {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
@@ -177,5 +175,34 @@ public class PostServiceImpls implements PostService {
         PostResponse response = new PostResponse(post);
         response.setPostStatusResponse(status);
         return response;
+    }
+
+    @Override
+    @Transactional
+    public int Like(int postId, String type) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User principal = (User) authentication.getPrincipal();
+        User userLogin = userRepository.findById(principal.getId()).get();
+        Optional<Post> post = postRepository.findById(postId);
+        if (post.isEmpty()){
+            throw new IllegalArgumentException("Không Tìm Thấy Bài Viết");
+        }
+        if (postRepository.checkUserLike(userLogin.getId(),postId)==0){
+            Like likePost = new Like();
+            likePost.setPost(post.get());
+            likePost.setUser(userLogin);
+            likePost.setType(type);
+            likeRepository.save(likePost);
+        }else{
+            Like likeGet = likeRepository.findByUserLike(userLogin.getId(),postId).get();
+            if (likeGet.getType().equalsIgnoreCase(type)) {
+                likeRepository.delete(likeGet);
+            }else{
+                likeGet.setType(type);
+                likeRepository.save(likeGet);
+            }
+        };
+        int totalLike = likeRepository.AllLikesByPost(postId,type);
+        return totalLike;
     }
 }

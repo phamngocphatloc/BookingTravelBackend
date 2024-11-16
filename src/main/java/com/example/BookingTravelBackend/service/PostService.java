@@ -24,4 +24,5 @@ public interface PostService {
 
     public int updatePostById (int id);
     public PostResponse findPostResponseById (int id);
+    public int Like (int postId, String type);
 }
