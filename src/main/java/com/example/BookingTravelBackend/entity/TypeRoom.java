@@ -7,17 +7,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table (name = "Bed")
+@Table (name = "TypeRooom")
 @Getter
 @Setter
 @Data
 @RequiredArgsConstructor
-public class Bed {
+public class TypeRoom {
     @Id
-    @Column (name = "BedId")
+    @Column (name = "TypeRoomId")
     @GeneratedValue (strategy = GenerationType.IDENTITY)
-    private int bedId;
+    private int typeRoomId;
 
-    @Column (name = "BedName", columnDefinition = "nvarchar(255)")
-    private String bedName;
+    @Column (name = "TypeRoom", columnDefinition = "nvarchar(255)")
+    private String typeRoom;
 }

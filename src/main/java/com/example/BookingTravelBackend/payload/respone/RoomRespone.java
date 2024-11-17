@@ -28,7 +28,7 @@ public class RoomRespone {
     public RoomRespone (Room room){
         this.id = room.getId();
         this.numberOfPeople = room.getNumberOfPeople();
-        room.getBed().stream().forEach(item -> {
+        room.getTypeRoomList().stream().forEach(item -> {
             bed.add(new BedRespone(item));
         });
         this.typeRoom = room.getTypeRoom();

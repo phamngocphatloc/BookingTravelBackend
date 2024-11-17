@@ -33,7 +33,7 @@ public class RoomRequest {
         room.setDescribe(this.describe);
         room.setRoomName(this.roomName);
         room.setPrice(this.price);
-        room.setBed(new ArrayList<>());
+        room.setTypeRoomList(new ArrayList<>());
         return room;
     }
 

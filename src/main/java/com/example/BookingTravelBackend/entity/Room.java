@@ -22,8 +22,8 @@ public class Room {
     @Column (name = "NumberOfPeople")
     private int numberOfPeople;
     @ManyToMany (fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable (joinColumns = @JoinColumn (name = "RoomId"), inverseJoinColumns = @JoinColumn (name = "BedId"))
-    private List<Bed> Bed;
+    @JoinTable (joinColumns = @JoinColumn (name = "RoomId"), inverseJoinColumns = @JoinColumn (name = "typeRoomId"))
+    private List<TypeRoom> typeRoomList;
     @Column (name = "TypeRoom")
     private String typeRoom;
     @Column (name = "Describe", columnDefinition = "nvarchar(255)")

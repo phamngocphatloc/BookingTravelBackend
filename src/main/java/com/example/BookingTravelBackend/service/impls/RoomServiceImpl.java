@@ -4,7 +4,7 @@ import com.example.BookingTravelBackend.Repository.BedRepository;
 import com.example.BookingTravelBackend.Repository.BookingRepository;
 import com.example.BookingTravelBackend.Repository.HotelRepository;
 import com.example.BookingTravelBackend.Repository.RoomRepository;
-import com.example.BookingTravelBackend.entity.Bed;
+import com.example.BookingTravelBackend.entity.TypeRoom;
 import com.example.BookingTravelBackend.entity.Booking;
 import com.example.BookingTravelBackend.entity.Hotel;
 import com.example.BookingTravelBackend.entity.Room;
@@ -69,12 +69,12 @@ public class RoomServiceImpl implements RoomService {
         }
         Hotel hotel = hotelRepository.findById(room.getHotelId()).get();
 
-        Bed bed = bedRepository.findByBedNameLike("%"+room.getBed()+"%");
+        TypeRoom bed = bedRepository.findByBedNameLike("%"+room.getBed()+"%");
         if (bed == null){
             throw new IllegalStateException("Không Tìm Thấy Giường Này");
         }
         Room r = room.getRoom(hotel);
-        r.getBed().add(bed);
+        r.getTypeRoomList().add(bed);
         roomRepository.save(r);
     }
 
