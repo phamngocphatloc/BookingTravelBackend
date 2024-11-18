@@ -19,8 +19,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "WHERE user_id = (\n" +
             "    SELECT booking.user_id \n" +
             "    FROM booking \n" +
-            "    JOIN bill ON bill.booking_id = booking.booking_id \n" +
-            "    WHERE bill.bill_id = ?1\n" +
-            ");\n",nativeQuery = true)
+            "    WHERE booking.booking_id = ?1\n" +
+            ");",nativeQuery = true)
     Optional<User> findUserByBillId (int billId);
 }

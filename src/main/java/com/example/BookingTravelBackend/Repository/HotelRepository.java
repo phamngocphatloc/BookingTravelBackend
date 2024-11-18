@@ -41,13 +41,13 @@ public interface HotelRepository extends JpaRepository<Hotel,Integer> {
 
     @Query (value = "SELECT * \n" +
             "FROM hotel \n" +
-            "WHERE hotel.hotel_id = (\n" +
+            "WHERE hotel.hotel_id in (\n" +
             "    SELECT hotel.hotel_id \n" +
             "    FROM hotel \n" +
             "    JOIN room ON hotel.hotel_id = room.hotel_id \n" +
-            "    JOIN booking ON booking.room_id = room.room_id \n" +
-            "    JOIN bill ON booking.booking_id = bill.booking_id \n" +
-            "    WHERE bill.bill_id = ?1\n" +
-            ");\n",nativeQuery = true)
+            "    JOIN booking_details ON booking_details.room_id = room.room_id \n" +
+            "    JOIN booking ON booking.booking_id = booking_details.booking_id \n" +
+            "    WHERE booking.booking_id = ?1\n" +
+            ");",nativeQuery = true)
     public Optional<Hotel> findHotelByBillId (int billId);
 }
