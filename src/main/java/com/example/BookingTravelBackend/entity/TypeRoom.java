@@ -20,4 +20,7 @@ public class TypeRoom {
 
     @Column (name = "TypeRoom", columnDefinition = "nvarchar(255)")
     private String typeRoom;
+
+    @Column (name = "price")
+    private int price;
 }

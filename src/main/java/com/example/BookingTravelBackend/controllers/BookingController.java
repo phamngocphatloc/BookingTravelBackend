@@ -2,8 +2,8 @@ package com.example.BookingTravelBackend.controllers;
 
 import com.example.BookingTravelBackend.Configuration.VnpayConfig;
 import com.example.BookingTravelBackend.Configuration.WebConfig;
-import com.example.BookingTravelBackend.entity.Bill;
-import com.example.BookingTravelBackend.payload.Request.BillRequest;
+import com.example.BookingTravelBackend.entity.Booking;
+import com.example.BookingTravelBackend.payload.Request.BookingRequest;
 import com.example.BookingTravelBackend.payload.respone.HttpRespone;
 import com.example.BookingTravelBackend.service.BillService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ import java.util.*;
 public class BookingController {
     private final BillService billService;
     @PostMapping ("/book")
-    public ResponseEntity<HttpRespone> Booking (@RequestBody BillRequest request){
+    public ResponseEntity<HttpRespone> Booking (@RequestBody BookingRequest request){
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success",
                 billService.Booking(request,"pending")));
     }
@@ -84,8 +84,8 @@ public class BookingController {
         String vnp_SecureHash = VnpayConfig.hmacSHA512(VnpayConfig.vnp_HashSecret, hashData.toString());
         System.out.println(vnp_SecureHash);
         System.out.println(hash);
-        Bill order = billService.findById(id);
-        if (order.getBooking().getStatus().equalsIgnoreCase("active") || order.getBooking().getStatus().equalsIgnoreCase("cancel")){
+        Booking order = billService.findById(id);
+        if (order.getStatus().equalsIgnoreCase("active") || order.getStatus().equalsIgnoreCase("cancel")){
             return new RedirectView(WebConfig.url+"/#!/booking/"+id);
         }
         if (vnp_SecureHash.equalsIgnoreCase(hash) && order.getId() == Integer.parseInt(txnref)) {

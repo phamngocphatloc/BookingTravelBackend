@@ -4,12 +4,14 @@ import com.example.BookingTravelBackend.entity.*;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 
 import java.util.*;
 
 @RequiredArgsConstructor
 @Getter
+@Setter
 public class HotelRespone {
 
 
@@ -23,6 +25,7 @@ public class HotelRespone {
     List<HotelServiceRespone> listService = new ArrayList<>();
 
     private List<RoomRespone> listRooms = new ArrayList<>();
+    private List<TypeRoomResponse> listTypeRooms = new ArrayList<>();
 
     private String status;
 

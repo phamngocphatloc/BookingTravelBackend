@@ -2,7 +2,7 @@ package com.example.BookingTravelBackend.controllers;
 
 import com.example.BookingTravelBackend.Configuration.VnpayConfig;
 import com.example.BookingTravelBackend.Configuration.WebConfig;
-import com.example.BookingTravelBackend.entity.Bill;
+import com.example.BookingTravelBackend.entity.Booking;
 import com.example.BookingTravelBackend.payload.respone.paymentVnpayRespone;
 import com.example.BookingTravelBackend.service.BillService;
 import com.example.BookingTravelBackend.service.RestaurantOrderService;
@@ -35,8 +35,8 @@ public class PaymentVnpayController {
         String vnp_TxnRef = null;
         String vnp_Returnurl = null;
         if (typeBill.equalsIgnoreCase("hotel")){
-            Bill order = billService.findById(bid);
-            if (order != null && order.getBooking().getStatus().equalsIgnoreCase("pending")) {
+            Booking order = billService.findById(bid);
+            if (order != null && order.getStatus().equalsIgnoreCase("pending")) {
                 long amount = (long)order.getPrice() * 100;
 
                 vnp_Returnurl = WebConfig.urlBackend+"/api/booking/paying/"+bid;
@@ -88,7 +88,7 @@ public class PaymentVnpayController {
                 String paymentUrl = VnpayConfig.vnp_PayUrl + "?" + queryUrl;
                 paymentVnpayRespone dto = new paymentVnpayRespone("ok", "sucessfully", paymentUrl);
                 return ResponseEntity.status(HttpStatus.OK).body(dto);
-            } else if (order.getBooking().getStatus().equalsIgnoreCase("active")) {
+            } else if (order.getStatus().equalsIgnoreCase("active")) {
                 paymentVnpayRespone dto = new paymentVnpayRespone("ok", "sucessfully", "đã thanh toán");
                 return ResponseEntity.status(HttpStatus.OK).body(dto);
             }else{

@@ -7,26 +7,35 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
-@Table (name = "Booking")
 @Getter
 @Setter
 @Data
 @RequiredArgsConstructor
+@Table (name = "Booking")
 public class Booking {
     @Id
-    @Column (name = "BookingId")
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
-    private int BookingId;
+    @Column(name = "BookingId")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @Column(name = "FirstName", columnDefinition = "nvarchar(255)")
+    private String firstName;
+
+    @Column(name = "LastName", columnDefinition = "nvarchar(255)")
+    private String lastName;
 
     @ManyToOne
     @JoinColumn (name = "UserId")
     private User userBooking;
 
-    @ManyToOne
-    @JoinColumn (name = "RoomId")
-    private Room roomBooking;
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "price")
+    private int price;
 
     @Column (name = "CheckIn")
     private Date checkIn;
@@ -34,6 +43,13 @@ public class Booking {
     @Column (name = "CheckOut")
     private Date checkOut;
 
-    @Column (name = "Status")
+    @Column(name = "created_at")
+    private Date createdAt;
+
+    @OneToMany (mappedBy = "booking", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<BookingDetails> listDetails;
+
+    @OneToMany (mappedBy = "bookingBuyed", fetch = FetchType.EAGER)
+    private List<RestaurantOrder> listOrderFood;
     private String status;
 }

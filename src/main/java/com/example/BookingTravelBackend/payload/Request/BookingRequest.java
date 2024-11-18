@@ -7,16 +7,26 @@ import lombok.Setter;
 
 import java.util.Date;
 
+
 @Getter
 @Setter
 @Data
 public class BookingRequest {
 
-    private int userBookingId;
+    private String firstName;
 
-    private int roomBookingId;
+    private String lastName;
+
+    private String phone;
+
+    private int price;
+
+    private int quantityBook;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd")
     private Date checkIn;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd")
     private Date checkOut;
+
+    private int hotelId;
+    private int typeRoom;
 }

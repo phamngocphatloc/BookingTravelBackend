@@ -41,11 +41,11 @@ public class RestaurantServiceImpls implements RestaurantService {
         return cal.getTime();
     }
 
-    public User validateFormAndGetUserLogin(Bill bill) {
+    public User validateFormAndGetUserLogin(Booking bill) {
         Date today = removeTime(new Date());
-        Booking book = bill.getBooking();
-        Date checkInWithoutTime = removeTime(book.getCheckIn());
-        Date checkOutWithoutTime = removeTime(book.getCheckOut());
+        BookingDetails book = bill.getListDetails().get(0);
+        Date checkInWithoutTime = removeTime(bill.getCheckIn());
+        Date checkOutWithoutTime = removeTime(bill.getCheckOut());
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userLogin = (User) authentication.getPrincipal();
@@ -63,7 +63,7 @@ public class RestaurantServiceImpls implements RestaurantService {
             throw new IllegalArgumentException("Bạn Không Phải Người Đặt Đơn Booking Này.");
         }
 
-        if (!book.getStatus().equalsIgnoreCase("active")) {
+        if (!bill.getStatus().equalsIgnoreCase("active")) {
             throw new IllegalArgumentException("Đơn Hàng Không Hoạt Động");
         }
 
@@ -76,7 +76,7 @@ public class RestaurantServiceImpls implements RestaurantService {
 
     @Override
     public PaginationResponse LoadProductByOrderId(int orderId, int pageNum, int pageSize) {
-        Bill bill = billRepository.findById(orderId)
+        Booking bill = billRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Đơn hàng không tồn tại!"));
 
         User userLogin = validateFormAndGetUserLogin(bill);
@@ -109,7 +109,7 @@ public class RestaurantServiceImpls implements RestaurantService {
 
     @Override
     public MenuRestaurantResponse findById(int billId, int foodId) {
-        Bill bill = billRepository.findById(billId).get();
+        Booking bill = billRepository.findById(billId).get();
         Restaurant restaurant = restaurantRepository.findRestaurantByBillId(billId).get();
         User userLogin = validateFormAndGetUserLogin(bill);
         Menu menu = menuRepository.findById(foodId).get();
@@ -136,7 +136,7 @@ public class RestaurantServiceImpls implements RestaurantService {
 
     @Override
     public List<OrderFoodResponse> ListOrder(int billId) {
-        Bill bill = billRepository.findById(billId).get();
+        Booking bill = billRepository.findById(billId).get();
         User userLogin = validateFormAndGetUserLogin(bill);
         List<OrderFoodResponse> listOrder = new ArrayList<>();
         bill.getListOrderFood().stream().forEach(item -> {

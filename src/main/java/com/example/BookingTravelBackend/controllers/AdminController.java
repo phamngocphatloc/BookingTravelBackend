@@ -1,6 +1,6 @@
 package com.example.BookingTravelBackend.controllers;
 
-import com.example.BookingTravelBackend.payload.Request.BillRequest;
+import com.example.BookingTravelBackend.payload.Request.BookingRequest;
 import com.example.BookingTravelBackend.payload.Request.HotelRequestEdit;
 import com.example.BookingTravelBackend.payload.Request.PostRequest;
 import com.example.BookingTravelBackend.payload.Request.RoomEditRequest;
@@ -69,10 +69,6 @@ public class AdminController {
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", response));
     }
 
-    @GetMapping("/getBillByStatus")
-    public ResponseEntity<HttpRespone> getBillByStatus(@RequestParam String status, @RequestParam(defaultValue = "0") int hotelId) {
-        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", billService.selectBillByStatus(status, hotelId)));
-    }
 
     @PutMapping("/updateBillStatus")
     public ResponseEntity<HttpRespone> updateBillByStatus(@RequestParam String status, @RequestParam int billId) {
@@ -119,7 +115,7 @@ public class AdminController {
     }
 
     @PostMapping ("bookVistor")
-    public ResponseEntity<HttpRespone> BookingVistor (@RequestBody BillRequest request){
+    public ResponseEntity<HttpRespone> BookingVistor (@RequestBody BookingRequest request){
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success",
                 billService.Booking(request,"active")));
     }

@@ -15,8 +15,6 @@ import java.util.ArrayList;
 public class RoomRequest {
     @NotNull(message = "vui lòng nhập Số Người")
     private int numberOfPeople;
-    @NotEmpty(message = "vui lòng nhập Giường")
-    private String bed;
     @NotEmpty(message = "vui lòng nhập Loại Phòng")
     private String typeRoom;
     private String describe;
