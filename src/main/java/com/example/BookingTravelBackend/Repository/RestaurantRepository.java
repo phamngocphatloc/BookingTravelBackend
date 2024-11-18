@@ -9,12 +9,16 @@ import java.util.Optional;
 
 @Repository
 public interface RestaurantRepository extends JpaRepository<Restaurant,Integer> {
-    @Query(value = "SELECT * FROM restaurant WHERE restaurant.hotel_id = (" +
-            "SELECT hotel.hotel_id FROM hotel " +
-            "JOIN room ON hotel.hotel_id = room.hotel_id " +
-            "JOIN booking ON room.room_id = booking.room_id " +
-            "JOIN bill ON bill.booking_id = booking.booking_id " +
-            "WHERE bill.bill_id = ?1)", nativeQuery = true)
+    @Query(value = "SELECT * \n" +
+            "FROM restaurant \n" +
+            "WHERE restaurant.hotel_id in (\n" +
+            "    SELECT hotel.hotel_id \n" +
+            "    FROM hotel \n" +
+            "    JOIN room ON hotel.hotel_id = room.hotel_id \n" +
+            "    JOIN booking_details ON room.room_id = booking_details.room_id \n" +
+            "    JOIN booking ON booking.booking_id = booking_details.booking_id \n" +
+            "    WHERE booking.booking_id = ?1\n" +
+            ");", nativeQuery = true)
     Optional<Restaurant> findRestaurantByBillId(int billId);
 
 }
