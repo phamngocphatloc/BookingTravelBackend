@@ -1,18 +1,17 @@
 package com.example.BookingTravelBackend.service.impls;
 
-import com.example.BookingTravelBackend.Repository.HotelPartnersRepository;
-import com.example.BookingTravelBackend.Repository.HotelRepository;
-import com.example.BookingTravelBackend.Repository.HotelServiceRepository;
-import com.example.BookingTravelBackend.Repository.TouristAttractionRepsitory;
+import com.example.BookingTravelBackend.Repository.*;
 import com.example.BookingTravelBackend.entity.Hotel;
 import com.example.BookingTravelBackend.entity.ImageDesbrice;
 import com.example.BookingTravelBackend.entity.TouristAttraction;
+import com.example.BookingTravelBackend.entity.TypeRoom;
 import com.example.BookingTravelBackend.payload.Request.HotelRequest;
 import com.example.BookingTravelBackend.payload.Request.HotelRequestEdit;
 import com.example.BookingTravelBackend.payload.Request.HotelServiceRequest;
 import com.example.BookingTravelBackend.payload.respone.HotelRespone;
 import com.example.BookingTravelBackend.payload.respone.HotelServiceRespone;
 import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
+import com.example.BookingTravelBackend.payload.respone.TypeRoomResponse;
 import com.example.BookingTravelBackend.service.HotelService;
 import com.example.BookingTravelBackend.service.RoomService;
 import jakarta.transaction.Transactional;
@@ -34,6 +33,8 @@ public class HotelServiceImpl implements HotelService {
     private final TouristAttractionRepsitory touristAttractionRepsitory;
     private final HotelServiceRepository hotelServiceRepository;
     private final HotelPartnersRepository hotelPartnersRepository;
+    private final TypeRoomRepository typeRoomRepository;
+    private final RoomRepository roomRepository;
     @Override
     public PaginationResponse selectHotelByTour(TouristAttraction tour, int pageNum, int pageSize,String hotelName, Date checkIn, Date checkOut) {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
@@ -110,6 +111,15 @@ public class HotelServiceImpl implements HotelService {
                 response.setStatus("still");
             }
         });
+        List<TypeRoom> listTypeRoom = typeRoomRepository.findTypeRoomByHotel(id);
+        List<TypeRoomResponse> listTypeRoomResponse = new ArrayList<>();
+        listTypeRoom.stream().forEach(item -> {
+            int quantityRoomStill = roomRepository.selectCountRoomByCheckInCheckOutAndType(id,checkIn,checkOut,item.getTypeRoomId());
+            TypeRoomResponse typeRoomResponse = new TypeRoomResponse(item);
+            typeRoomResponse.setQuantityRoomStill(quantityRoomStill);
+            listTypeRoomResponse.add(typeRoomResponse);
+        });
+        response.setListTypeRooms(listTypeRoomResponse);
         return response;
     }
 

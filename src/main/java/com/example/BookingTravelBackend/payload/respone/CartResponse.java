@@ -1,10 +1,7 @@
 package com.example.BookingTravelBackend.payload.respone;
 
-import com.example.BookingTravelBackend.entity.Bill;
 import com.example.BookingTravelBackend.entity.CartDetails;
 import com.example.BookingTravelBackend.entity.RestaurantCart;
-import com.example.BookingTravelBackend.entity.User;
-import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.util.HashMap;

@@ -46,13 +46,13 @@ public class RestaurantOrderServiceImpls implements com.example.BookingTravelBac
     @Override
     @Transactional
     public OrderFoodResponse order(OrderFoodRequest orderFoodRequest) {
-        Bill bill = billService.findById(orderFoodRequest.getBill());
+        Booking bill = billService.findById(orderFoodRequest.getBill());
         RestaurantOrder order = orderFoodRequest.getOrder();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User principal = (User) authentication.getPrincipal();
         User userLogin = userRepository.findById(principal.getId()).get();
         order.setUserOrder(userLogin);
-        order.setBill(bill);
+        order.setBookingBuyed(bill);
         if (cartRepository.findByUserAndBill(userLogin.getId(),orderFoodRequest.getBill()).isEmpty()){
             throw new IllegalArgumentException("Bạn Chưa Có Giỏ Hàng");
         }
@@ -85,7 +85,7 @@ public class RestaurantOrderServiceImpls implements com.example.BookingTravelBac
         if (order.getUserOrder().getId() != userLogin.getId()){
             throw new IllegalArgumentException("Bạn Không Phải Người Mua Đơn Đồ Ăn Này");
         }
-        if (order.getBill().getId() != billId){
+        if (order.getBookingBuyed().getId() != billId){
             throw new IllegalArgumentException("Đơn Đồ Ăn Này Không Phải Nằm Trong Đơn Booking này");
         }
         return new OrderFoodResponse(order);

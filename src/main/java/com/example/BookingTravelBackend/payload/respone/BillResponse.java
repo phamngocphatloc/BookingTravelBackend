@@ -1,10 +1,12 @@
 package com.example.BookingTravelBackend.payload.respone;
 
-import com.example.BookingTravelBackend.entity.Bill;
+import com.example.BookingTravelBackend.entity.Booking;
 import lombok.Data;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Data
@@ -26,16 +28,29 @@ BillResponse {
 
     private Date createdAt;
 
+    UserDetailsResponse userCreate;
 
-    private BookingResponse booking;
+    private List<BookingResponse> booking = new ArrayList<>();
 
-    public BillResponse (Bill bill){
+    private Date checkIn;
+
+    private Date checkOut;
+
+    private String status;
+
+    public BillResponse (Booking bill){
         this.id = bill.getId();
         this.firstName = bill.getFirstName();
         this.lastName = bill.getLastName();
         this.phone = bill.getPhone();
         this.price = bill.getPrice();
         this.createdAt = bill.getCreatedAt();
-        this.booking = new BookingResponse(bill.getBooking());
+        bill.getListDetails().stream().forEach(item -> {
+            this.booking.add(new BookingResponse(item));
+        });
+        this.userCreate = new UserDetailsResponse(bill.getUserBooking());
+        this.checkIn = bill.getCheckIn();
+        this.checkOut = bill.getCheckOut();
+        this.status = bill.getStatus();
     }
 }

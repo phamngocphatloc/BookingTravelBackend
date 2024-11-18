@@ -1,11 +1,11 @@
 package com.example.BookingTravelBackend.service.impls;
 
-import com.example.BookingTravelBackend.Repository.BedRepository;
+import com.example.BookingTravelBackend.Repository.TypeRoomRepository;
 import com.example.BookingTravelBackend.Repository.BookingRepository;
 import com.example.BookingTravelBackend.Repository.HotelRepository;
 import com.example.BookingTravelBackend.Repository.RoomRepository;
 import com.example.BookingTravelBackend.entity.TypeRoom;
-import com.example.BookingTravelBackend.entity.Booking;
+import com.example.BookingTravelBackend.entity.BookingDetails;
 import com.example.BookingTravelBackend.entity.Hotel;
 import com.example.BookingTravelBackend.entity.Room;
 import com.example.BookingTravelBackend.payload.Request.RoomEditRequest;
@@ -27,7 +27,7 @@ public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
     private final HotelRepository hotelRepository;
     private final BookingRepository bookingRepository;
-    private final BedRepository bedRepository;
+    private final TypeRoomRepository bedRepository;
     @Override
     public List<Room> selectRoomAllByHotel(Hotel hoel) {
         return hoel.getListRooms();
@@ -35,7 +35,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public HotelRespone CheckRoomNotYet(HotelRespone response, Date checkIn, Date checkOut) {
-        List<Booking> bookings = bookingRepository.listBookingByCheckinCheckout(response.getHotelId(),checkIn,checkOut);
+        List<BookingDetails> bookings = bookingRepository.listBookingByCheckinCheckout(response.getHotelId(),checkIn,checkOut);
         if (bookings.isEmpty()){
             response.getListRooms().stream().forEach(item -> {
                 item.setStatus("notyet");
@@ -69,7 +69,7 @@ public class RoomServiceImpl implements RoomService {
         }
         Hotel hotel = hotelRepository.findById(room.getHotelId()).get();
 
-        TypeRoom bed = bedRepository.findByBedNameLike("%"+room.getBed()+"%");
+        TypeRoom bed = bedRepository.findTypeRoomNameLike("%"+room.getTypeRoom()+"%");
         if (bed == null){
             throw new IllegalStateException("Không Tìm Thấy Giường Này");
         }

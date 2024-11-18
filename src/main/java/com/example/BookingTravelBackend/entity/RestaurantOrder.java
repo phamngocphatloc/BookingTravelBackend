@@ -32,7 +32,7 @@ public class RestaurantOrder {
     private User userOrder;
     @ManyToOne
     @JoinColumn (name = "BillId")
-    Bill bill;
+    Booking bookingBuyed;
     @OneToMany (mappedBy = "ItemOrder", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     Map<String,RestaurantOrderDetails> listItems = new HashMap<>();
 

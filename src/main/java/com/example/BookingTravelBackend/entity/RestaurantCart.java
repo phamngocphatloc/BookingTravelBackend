@@ -19,7 +19,7 @@ public class RestaurantCart {
     private int cartId;
     @ManyToOne
     @JoinColumn (name = "BillId")
-    private Bill bill;
+    private Booking bill;
     @ManyToOne
     @JoinColumn (name = "UserId")
     private User UserCart;

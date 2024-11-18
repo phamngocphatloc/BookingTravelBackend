@@ -1,11 +1,11 @@
 package com.example.BookingTravelBackend.service.impls;
 
 import com.example.BookingTravelBackend.Repository.*;
-import com.example.BookingTravelBackend.entity.Bill;
 import com.example.BookingTravelBackend.entity.Booking;
+import com.example.BookingTravelBackend.entity.BookingDetails;
 import com.example.BookingTravelBackend.entity.Room;
 import com.example.BookingTravelBackend.entity.User;
-import com.example.BookingTravelBackend.payload.Request.BillRequest;
+import com.example.BookingTravelBackend.payload.Request.BookingRequest;
 import com.example.BookingTravelBackend.payload.respone.BillResponse;
 import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
 import com.example.BookingTravelBackend.payload.respone.RevenueResponse;
@@ -17,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,66 +32,94 @@ public class BillServiceImpl implements BillService {
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
+    @Transactional
     @Override
-    public BillResponse Booking(BillRequest request, String status) {
-        Room r = roomRepository.findById(request.getBooking().getRoomBookingId()).get();
-        List<Booking> listOrder = bookingRepository.listBookingByCheckinCheckout(r.getHotelRoom().getHotelId(),request.getBooking().getCheckIn(), request.getBooking().getCheckOut());
-
-        if (!listOrder.isEmpty()){
-            listOrder.stream().forEach(item -> {
-                if (item.getRoomBooking().getId() == request.getBooking().getRoomBookingId()){
-                    throw new IllegalStateException("Phòng Này Đã Được Đặt");
-                }
-            });
+    public BillResponse Booking(BookingRequest request, String status) {
+        // Check available rooms
+        int quantityStill = roomRepository.selectCountRoomByCheckInCheckOutAndType(
+                request.getHotelId(), request.getCheckIn(), request.getCheckOut(), request.getTypeRoom());
+        if (quantityStill < request.getQuantityBook()) {
+            throw new IllegalArgumentException("Chỉ còn " + quantityStill + " phòng trống, không đủ để đặt " + request.getQuantityBook() + " phòng.");
         }
 
-        Bill bill = new Bill();
+        // Check date validity
+        if (!request.getCheckOut().after(request.getCheckIn())) {
+            throw new IllegalArgumentException("Ngày trả phòng phải sau ngày nhận phòng");
+        }
+
+        // Create a new booking
+        Booking bill = new Booking();
         bill.setPrice(request.getPrice());
         bill.setPhone(request.getPhone());
         bill.setLastName(request.getLastName());
         bill.setFirstName(request.getFirstName());
-        Booking booking = new Booking();
-        Room roomBooking = roomRepository.findById(request.getBooking().getRoomBookingId()).get();
-        User user = userRepository.findById(request.getBooking().getUserBookingId()).get();
-        booking.setRoomBooking(roomBooking);
-        booking.setUserBooking(user);
-        booking.setStatus(status);
-        booking.setCheckIn(request.getBooking().getCheckIn());
-        booking.setCheckOut(request.getBooking().getCheckOut());
-        bill.setBooking(booking);
+        bill.setStatus(status);
+        bill.setCheckIn(request.getCheckIn());
+        bill.setCheckOut(request.getCheckOut());
         bill.setCreatedAt(new Date());
-        Bill billCheck = billRepository.save(bill);
+
+        // Get the logged-in user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userLogin = userRepository.findById(((User) authentication.getPrincipal()).getId())
+                .orElseThrow(() -> new IllegalArgumentException("Người dùng không hợp lệ"));
+        bill.setUserBooking(userLogin);
+
+        // Fetch available rooms and create booking details
+        List<Room> listRoomStill = roomRepository.selectAllRoomByCheckInCheckOutAndType(
+                request.getHotelId(), request.getCheckIn(), request.getCheckOut(), request.getTypeRoom());
+
+        if (listRoomStill.isEmpty()) {
+            throw new IllegalArgumentException("Không tìm thấy phòng khả dụng");
+        }
+
+        List<BookingDetails> bookingDetailsList = new ArrayList<>();
+        int quantityBook = request.getQuantityBook();
+
+        for (int i = 0; i < quantityBook && i < listRoomStill.size(); i++) {
+            BookingDetails bookingDetails = new BookingDetails();
+            bookingDetails.setRoomBooking(listRoomStill.get(i));
+            bookingDetails.setBooking(bill);
+            bookingDetailsList.add(bookingDetails);
+        }
+
+        // Attach booking details to the booking
+        bill.setListDetails(bookingDetailsList);
+
+        // Save the booking to the database
+        Booking billCheck = billRepository.save(bill);
+
+        // Return response
         return new BillResponse(billCheck);
     }
 
-
     @Override
-    public Bill findById(int id) {
+    public Booking findById(int id) {
         return billRepository.findById(id).get();
     }
 
+
     @Override
     @Transactional
-    public void updateStatusBill(Bill bill, String status) {
-        bill.getBooking().setStatus(status);
+    public void updateStatusBill(Booking bill, String status) {
+        bill.setStatus(status);
         billRepository.save(bill);
     }
 
     @Transactional
     public void cancelUnpaidOrders() {
         Date thirtyMinutesAgo = new Date(System.currentTimeMillis() - 30 * 60 * 1000);
-        List<Bill> bills = billRepository.findByStatusPendingAndCreatedAtBefore(thirtyMinutesAgo);
+        List<Booking> bills = billRepository.findByStatusPendingAndCreatedAtBefore(thirtyMinutesAgo);
 
-        for (Bill bill : bills) {
+        for (Booking bill : bills) {
             updateStatusBill(bill,"Cancel");
         }
     }
 
     @Override
     public PaginationResponse selectBillByUser(User user, int pageNum) {
-        Sort sort = HandleSort.buildSortProperties("bill_id", "desc");
+        Sort sort = HandleSort.buildSortProperties("booking_id", "desc");
         Pageable pageable = PageRequest.of(pageNum, 10,sort);
-        Page<Bill> pageBill = billRepository.findBookingByUser(user.getId(),pageable);
+        Page<Booking> pageBill = billRepository.findBookingByUser(user.getId(),pageable);
         List<BillResponse> listResponse = new ArrayList<>();
         pageBill.getContent().stream().forEach(item -> {
             listResponse.add(new BillResponse(item));
@@ -113,20 +143,13 @@ public class BillServiceImpl implements BillService {
         return list;
     }
 
-    @Override
-    public List<BillResponse> selectBillByStatus(String status, int hotelId) {
-        List<BillResponse> response = new ArrayList<>();
-        billRepository.selectBillByStatusAndHotel(status,hotelId).stream().forEach(item -> {
-            response.add(new BillResponse(item));
-        });
-        return response;
-    }
+
 
     @Override
     @Transactional
     public void updateStatusBill(String status, int billId) {
-        Bill bill = billRepository.findById(billId).get();
-        bill.getBooking().setStatus(status);
+        Booking bill = billRepository.findById(billId).get();
+        bill.setStatus(status);
         billRepository.save(bill);
     }
 }

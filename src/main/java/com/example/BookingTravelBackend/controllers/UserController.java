@@ -1,7 +1,6 @@
 package com.example.BookingTravelBackend.controllers;
 
 import com.example.BookingTravelBackend.Repository.FollowRepository;
-import com.example.BookingTravelBackend.entity.Bill;
 import com.example.BookingTravelBackend.entity.User;
 import com.example.BookingTravelBackend.payload.Request.ChangePasswordRequest;
 import com.example.BookingTravelBackend.payload.Request.LoginRequest;
@@ -20,7 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -120,7 +118,7 @@ public class UserController {
         User principal = (User) authentication.getPrincipal();
         User userLogin = userService.findById(principal.getId());
         BillResponse response = billService.selectBillById(id);
-        if (userLogin.getId() == response.getBooking().getUserBooking().getUserId()){
+        if (userLogin.getId() == response.getUserCreate().getUserId()){
             return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", response));
         }else{
             return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "không tìm thấy id này trong tài khoản", null));

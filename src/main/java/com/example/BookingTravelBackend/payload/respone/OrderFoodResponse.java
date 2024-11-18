@@ -29,7 +29,7 @@ public class OrderFoodResponse {
         this.payment = order.getPayment();
         this.Status = order.getStatus();
         this.user = new UserDetailsResponse(order.getUserOrder());
-        this.bill = new BillResponse(order.getBill());
+        this.bill = new BillResponse(order.getBookingBuyed());
         order.getListItems().forEach((key,value) -> {
             listOrderDetails.add(new OrderFoodDetailResponse(value));
         });
