@@ -22,6 +22,7 @@ public class OrderFoodResponse {
     private BillResponse bill;
     private List<OrderFoodDetailResponse> listOrderDetails = new ArrayList<>();
     private int totalPrice = 0;
+    private String room;
     public OrderFoodResponse (RestaurantOrder order){
         this.id = order.getId();
         this.orderDate = order.getOrderDate();
@@ -34,5 +35,6 @@ public class OrderFoodResponse {
             listOrderDetails.add(new OrderFoodDetailResponse(value));
         });
         this.totalPrice = order.getTotalPrice();
+        this.room = order.getRoom();
     }
 }

@@ -35,6 +35,8 @@ public class RestaurantOrder {
     Booking bookingBuyed;
     @OneToMany (mappedBy = "ItemOrder", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     Map<String,RestaurantOrderDetails> listItems = new HashMap<>();
+    @Column (name = "roomOrder")
+    private String room;
 
     public int getTotalPrice() {
         AtomicInteger price = new AtomicInteger();
