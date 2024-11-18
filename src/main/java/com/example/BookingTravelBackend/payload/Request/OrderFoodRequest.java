@@ -15,13 +15,14 @@ public class OrderFoodRequest {
    private String coupon;
    private String payment;
    private int bill;
+   private String room;
    public RestaurantOrder getOrder (){
     RestaurantOrder order = new RestaurantOrder();
     order.setStatus("pending");
     order.setOrderDate(new java.sql.Date(System.currentTimeMillis()));
     order.setPayment(payment);
     order.setCoupon(coupon);
-
+    order.setRoom(room);
     return order;
     }
 }

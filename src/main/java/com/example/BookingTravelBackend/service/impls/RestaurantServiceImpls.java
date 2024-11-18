@@ -5,6 +5,7 @@ import com.example.BookingTravelBackend.entity.*;
 import com.example.BookingTravelBackend.payload.respone.MenuRestaurantResponse;
 import com.example.BookingTravelBackend.payload.respone.OrderFoodResponse;
 import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
+import com.example.BookingTravelBackend.payload.respone.RoomNameResponse;
 import com.example.BookingTravelBackend.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -143,6 +144,16 @@ public class RestaurantServiceImpls implements RestaurantService {
             listOrder.add(new OrderFoodResponse(item));
         });
         return listOrder;
+    }
+
+    @Override
+    public List<RoomNameResponse> findAllRoomNameByBillId(int billI) {
+        List<RoomNameResponse> listRoom = new ArrayList<>();
+        billRepository.getAllRoomByBooking(billI).stream().forEach(item -> {
+            RoomNameResponse roomName = new RoomNameResponse(item);
+            listRoom.add(roomName);
+        });
+        return listRoom;
     }
 
 }

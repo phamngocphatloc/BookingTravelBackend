@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import com.example.BookingTravelBackend.entity.RestaurantOrder;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -123,5 +124,10 @@ public class RestaurantController {
         } else {
             return new RedirectView("https://sandbox.vnpayment.vn/paymentv2/Payment/Error.html?code=70");
         }
+    }
+
+    @GetMapping("/restaurant/get_room")
+    public ResponseEntity<HttpRespone> allRoom (@RequestParam int billId){
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", restaurantService.findAllRoomNameByBillId(billId)));
     }
 }

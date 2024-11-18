@@ -45,6 +45,15 @@ public interface BillRepository extends JpaRepository<Booking,Integer> {
             "    hotel.hotel_id, hotel.address, hotel.describe;", nativeQuery = true)
     public List<Object[]> selectRevenueByHotelAndDate (int hotelId,Date dateFrom, Date dateTo);
 
+    @Query (value = "select room.room_name " +
+            "from room " +
+            "where room.room_id in (" +
+            "select booking_details.room_id " +
+            "from booking_details join booking " +
+            "on booking_details.booking_id = booking.booking_id " +
+            "where booking.booking_id = ?1" +
+            ")",nativeQuery = true)
+    public List<String> getAllRoomByBooking (int bookingId);
 
 
 
