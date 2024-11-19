@@ -22,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
+
     @Autowired
     @Lazy
     private JwtFilter jwtFilter;
@@ -45,8 +46,8 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(csrf -> csrf.disable()) // Vô hiệu hóa CSRF (thường dùng cho API)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless cho các API
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(HttpMethod.GET, "/booking/bill/**").hasAnyRole(Constant.ROLE_ADMIN)
                         .requestMatchers(HttpMethod.POST, "/hotel/**").hasRole(Constant.ROLE_ADMIN)
@@ -55,9 +56,12 @@ public class SecurityConfiguration {
                         .requestMatchers("/auth/authorization").authenticated()
                         .requestMatchers("/restaurant/**").authenticated()
                         .requestMatchers("/restaurant/paying/**").permitAll()
-                        .anyRequest().permitAll())
-                .httpBasic(Customizer.withDefaults())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                        // Cho phép tất cả kết nối WebSocket
+                        .requestMatchers("/ws/**").permitAll()  // Đảm bảo cho phép tất cả truy cập WebSocket
+                        .anyRequest().permitAll()) // Cho phép tất cả các yêu cầu khác
+                .httpBasic(Customizer.withDefaults()) // Sử dụng HTTP Basic cho xác thực
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // Thêm JwtFilter vào trước UsernamePasswordAuthenticationFilter
         return httpSecurity.build();
     }
+
 }
