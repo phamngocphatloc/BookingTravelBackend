@@ -8,17 +8,18 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 @Configuration
 @EnableWebSocketMessageBroker
-public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic", "/user"); // Định nghĩa các chủ đề mà client có thể đăng ký nhận thông báo
-        config.setApplicationDestinationPrefixes("/app"); // Định nghĩa tiền tố cho các message mapping trong controller
-        config.setUserDestinationPrefix("/user"); // Định nghĩa tiền tố cho các chủ đề dành riêng cho từng user
+        config.enableSimpleBroker("/topic", "/queue", "/user"); // Định nghĩa các topic/queue client có thể subscribe
+        config.setApplicationDestinationPrefixes("/app"); // Prefix dành cho các message gửi tới server
+        config.setUserDestinationPrefix("/user"); // Dành cho tin nhắn riêng tư
     }
+
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws-notification").setAllowedOriginPatterns("*").withSockJS(); // Đăng ký endpoint WebSocket
+        registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS(); // Đăng ký endpoint WebSocket
     }
-
 }
