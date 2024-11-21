@@ -1,13 +1,13 @@
 package com.example.BookingTravelBackend.controllers;
 
+import com.example.BookingTravelBackend.Configuration.WebConfig;
 import com.example.BookingTravelBackend.Repository.FollowRepository;
 import com.example.BookingTravelBackend.entity.User;
-import com.example.BookingTravelBackend.payload.Request.ChangePasswordRequest;
-import com.example.BookingTravelBackend.payload.Request.LoginRequest;
-import com.example.BookingTravelBackend.payload.Request.UserInfoRequest;
-import com.example.BookingTravelBackend.payload.Request.UserRequest;
+import com.example.BookingTravelBackend.entity.VerificationToken;
+import com.example.BookingTravelBackend.payload.Request.*;
 import com.example.BookingTravelBackend.payload.respone.*;
 import com.example.BookingTravelBackend.service.BillService;
+import com.example.BookingTravelBackend.service.EmailService;
 import com.example.BookingTravelBackend.service.UserService;
 import com.example.BookingTravelBackend.service.VerificationTokenService;
 import jakarta.transaction.Transactional;
@@ -31,6 +31,7 @@ public class UserController {
     private final VerificationTokenService tokenService;
     private final BillService billService;
     private final FollowRepository followRepository;
+    private final EmailService emailService;
     @PostMapping("login")
     public ResponseEntity<JwtResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         JwtResponse jwtResponse = userService.login(loginRequest);
@@ -85,6 +86,8 @@ public class UserController {
         }
     }
 
+
+
     @GetMapping ("authorization")
     public ResponseEntity<UserDetailsResponse> getRoleUset (){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -125,6 +128,36 @@ public class UserController {
         }
     }
 
+    @PostMapping ("forget_password")
+    public ResponseEntity<HttpRespone> forgetPasssword (String email){
+        User user = userService.findByEmail(email);
+        VerificationToken token = tokenService.createVerificationToken(user);
+        String recipientAddress = user.getEmail();
+        String subject = "Yêu Cầu Đặt Lại Mật Khẩu";
+        String confirmationUrl = "/" + token.getToken()+"/"+email;
+        String message = "Click the link to verify your account: " + WebConfig.url+"#!/forget_pass" + confirmationUrl;
+        try {
+            emailService.sendEmail(recipientAddress, subject, message);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", "vui lòng nhấn vào link được gửi đến email của bạn"));
+    }
+
+    @GetMapping ("forget_password")
+    public ResponseEntity<HttpRespone> checkTokenForget (String email, String token){
+        User user = userService.findByEmail(email);
+        if (tokenService.checkTokenValidity(token,email)){
+            return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", "yes"));
+        }
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", "token không chính xác hoặc đã hết hạn"));
+    }
+
+    @PutMapping ("forget_password")
+    public ResponseEntity<HttpRespone> forgetPassword (@RequestBody ForgetPasswordRequest request){
+        User user = tokenService.forgetPassword(request);
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", new UserInfoResponse(user)));
+    }
 
 
 
