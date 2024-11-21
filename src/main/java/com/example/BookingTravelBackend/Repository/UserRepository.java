@@ -24,16 +24,33 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             ");",nativeQuery = true)
     Optional<User> findUserByBillId (int billId);
 
-    @Query (value = "SELECT * \n" +
-            "FROM users \n" +
-            "WHERE users.user_id IN (\n" +
-            "    SELECT DISTINCT\n" +
-            "        CASE\n" +
-            "            WHEN sender_id = ?1 THEN receiver_id\n" +
-            "            WHEN receiver_id = ?1 THEN sender_id\n" +
-            "        END AS user_id\n" +
-            "    FROM message\n" +
-            "    WHERE (sender_id = ?1 OR receiver_id = ?1)\n" +
-            ");\n", nativeQuery = true)
-    public List<User> selectAllUserChatByUserId (int userId);
+    @Query(value = "SELECT u.* \n" +
+            "FROM users u \n" +
+            "INNER JOIN (\n" +
+            "    SELECT \n" +
+            "        user_id, \n" +
+            "        MAX(sent_at) AS latest_message_time\n" +
+            "    FROM (\n" +
+            "        SELECT \n" +
+            "            CASE \n" +
+            "                WHEN sender_id = ?1 THEN receiver_id \n" +
+            "                WHEN receiver_id = ?1 THEN sender_id \n" +
+            "            END AS user_id, \n" +
+            "            sent_at\n" +
+            "        FROM message\n" +
+            "        WHERE sender_id = ?1 OR receiver_id = ?1\n" +
+            "    ) subquery\n" +
+            "    GROUP BY user_id\n" +
+            ") m ON u.user_id = m.user_id\n" +
+            "ORDER BY m.latest_message_time DESC;",
+            nativeQuery = true)
+    public List<User> selectAllUserChatByUserId(int userId);
+
+
+    @Query (value = "select * \n" +
+            "from users \n" +
+            "where users.user_id in (select followed_user_id \n" +
+            "from follow \n" +
+            "where follow.follower_id = ?1)",nativeQuery = true)
+    public List<User> selectFollowingByUser (int userId);
 }

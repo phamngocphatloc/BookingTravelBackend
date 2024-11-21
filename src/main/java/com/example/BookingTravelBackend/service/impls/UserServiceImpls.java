@@ -12,6 +12,7 @@ import com.example.BookingTravelBackend.payload.Request.UserInfoRequest;
 import com.example.BookingTravelBackend.payload.Request.UserRequest;
 import com.example.BookingTravelBackend.payload.respone.JwtResponse;
 import com.example.BookingTravelBackend.payload.respone.UserDetailsResponse;
+import com.example.BookingTravelBackend.payload.respone.UserInfoResponse;
 import com.example.BookingTravelBackend.service.EmailService;
 import com.example.BookingTravelBackend.service.JwtService;
 import com.example.BookingTravelBackend.service.UserService;
@@ -217,5 +218,15 @@ public class UserServiceImpls implements UserService {
             return followRepository.AllFollowersByUser(userId);
         }
 
+    }
+
+    @Override
+    public List<UserInfoResponse> AllFollowingByUser(int userId) {
+        List<User> listUserFollowing = userRepository.selectFollowingByUser(userId);
+        List<UserInfoResponse> listUser = new ArrayList<>();
+        listUserFollowing.stream().forEach(item -> {
+            listUser.add(new UserInfoResponse(item));
+        });
+        return listUser;
     }
 }

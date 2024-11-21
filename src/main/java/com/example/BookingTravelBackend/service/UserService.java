@@ -7,6 +7,7 @@ import com.example.BookingTravelBackend.payload.Request.UserInfoRequest;
 import com.example.BookingTravelBackend.payload.Request.UserRequest;
 import com.example.BookingTravelBackend.payload.respone.JwtResponse;
 import com.example.BookingTravelBackend.payload.respone.UserDetailsResponse;
+import com.example.BookingTravelBackend.payload.respone.UserInfoResponse;
 
 import java.util.List;
 
@@ -27,5 +28,6 @@ public interface UserService {
     public UserDetailsResponse updateAdmin (int userId, String role);
     public UserDetailsResponse findUserById(int id);
     public int Follow (int userId);
+    public List<UserInfoResponse> AllFollowingByUser (int userId);
 
 }
