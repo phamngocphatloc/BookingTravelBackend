@@ -16,6 +16,7 @@ public class TypeRoomResponse {
 
     private int quantityRoomStill;
 
+
     public TypeRoomResponse (TypeRoom typeRoom){
         this.typeRoomId = typeRoom.getTypeRoomId();
         this.typeRoom = typeRoom.getTypeRoom();

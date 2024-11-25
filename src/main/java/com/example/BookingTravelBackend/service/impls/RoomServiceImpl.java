@@ -1,21 +1,18 @@
 package com.example.BookingTravelBackend.service.impls;
 
-import com.example.BookingTravelBackend.Repository.TypeRoomRepository;
-import com.example.BookingTravelBackend.Repository.BookingRepository;
-import com.example.BookingTravelBackend.Repository.HotelRepository;
-import com.example.BookingTravelBackend.Repository.RoomRepository;
-import com.example.BookingTravelBackend.entity.TypeRoom;
-import com.example.BookingTravelBackend.entity.BookingDetails;
-import com.example.BookingTravelBackend.entity.Hotel;
-import com.example.BookingTravelBackend.entity.Room;
+import com.example.BookingTravelBackend.Repository.*;
+import com.example.BookingTravelBackend.entity.*;
 import com.example.BookingTravelBackend.payload.Request.RoomEditRequest;
 import com.example.BookingTravelBackend.payload.Request.RoomRequest;
 import com.example.BookingTravelBackend.payload.respone.BedRespone;
 import com.example.BookingTravelBackend.payload.respone.HotelRespone;
 import com.example.BookingTravelBackend.payload.respone.RoomRespone;
+import com.example.BookingTravelBackend.service.PartnersHotelService;
 import com.example.BookingTravelBackend.service.RoomService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,6 +25,9 @@ public class RoomServiceImpl implements RoomService {
     private final HotelRepository hotelRepository;
     private final BookingRepository bookingRepository;
     private final TypeRoomRepository bedRepository;
+    private final PartnersHotelService partnersHotelService;
+    private final PartnersRepository hotelPartnersRepository;
+    private final TypeRoomRepository typeRoomRepository;
     @Override
     public List<Room> selectRoomAllByHotel(Hotel hoel) {
         return hoel.getListRooms();
@@ -64,14 +64,19 @@ public class RoomServiceImpl implements RoomService {
         if (hotelRepository.findById(room.getHotelId()).isEmpty()){
             throw new IllegalStateException("Không Tìm Thấy Khách Sạn");
         }
-        if (!roomRepository.findByRoomNameLikeAndHotel("%"+room.getRoomName()+"%",room.getHotelId()).isEmpty()){
+        if (roomRepository.findByRoomNameLikeAndHotel("%"+room.getRoomName()+"%",room.getHotelId()).isPresent()){
             throw new IllegalStateException("Phòng Này Đã Tồn Tại");
         }
         Hotel hotel = hotelRepository.findById(room.getHotelId()).get();
 
-        TypeRoom bed = bedRepository.findTypeRoomNameLike("%"+room.getTypeRoom()+"%");
+        TypeRoom bed = bedRepository.findById(room.getTypeRoomId()).get();
         if (bed == null){
             throw new IllegalStateException("Không Tìm Thấy Giường Này");
+        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userLogin = (User) authentication.getPrincipal();
+        if (hotelPartnersRepository.checkHotelPartnersByUser(userLogin.getId(),room.getHotelId())==0){
+            throw new IllegalArgumentException("Bạn Không Phải Đối Tác Khách Sạn Này");
         }
         Room r = room.getRoom(hotel);
         r.getTypeRoomList().add(bed);
@@ -103,6 +108,20 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public RoomRespone selectRoomById(int roomId) {
         return new RoomRespone(roomRepository.findById(roomId).get());
+    }
+
+    @Override
+    public List<RoomRespone> selectRoomByHotelId(int hotelId) {
+        if (partnersHotelService.checkHotelPartnersByHotelId(hotelId)==false){
+            throw new IllegalArgumentException("Bạn Không Phải Quản Lý Khách Sạn Này");
+        }
+        List<Room> listRoom = roomRepository.findRoomByHotel(hotelId);
+        List<RoomRespone> response = new ArrayList<>();
+        listRoom.stream().forEach(item -> {
+            RoomRespone roomRespone = new RoomRespone(item);
+            response.add(roomRespone);
+        });
+        return response;
     }
 
 

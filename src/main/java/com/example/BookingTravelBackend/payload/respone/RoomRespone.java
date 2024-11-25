@@ -10,7 +10,7 @@ import java.util.List;
 public class RoomRespone {
     private int id;
     private int numberOfPeople;
-    private List<BedRespone> bed = new ArrayList<>();
+    private List<BedRespone> typeRooms = new ArrayList<>();
     private String typeRoom;
     private String describe;
     private int price;
@@ -29,7 +29,7 @@ public class RoomRespone {
         this.id = room.getId();
         this.numberOfPeople = room.getNumberOfPeople();
         room.getTypeRoomList().stream().forEach(item -> {
-            bed.add(new BedRespone(item));
+            typeRooms.add(new BedRespone(item));
         });
         this.typeRoom = room.getTypeRoom();
         this.describe = room.getDescribe();

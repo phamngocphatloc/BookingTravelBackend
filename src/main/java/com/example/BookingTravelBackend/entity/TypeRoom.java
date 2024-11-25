@@ -23,4 +23,8 @@ public class TypeRoom {
 
     @Column (name = "price")
     private int price;
+
+    @ManyToOne
+    @JoinColumn (name = "PartnersId")
+    public HotelPartners partNerType;
 }

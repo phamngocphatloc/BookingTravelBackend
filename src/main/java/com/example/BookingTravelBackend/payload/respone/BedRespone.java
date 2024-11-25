@@ -7,9 +7,10 @@ import lombok.Getter;
 public class BedRespone {
     private int bedId;
     private String bedName;
-
+    private int price;
     public BedRespone (TypeRoom type){
         this.bedId = type.getTypeRoomId();
         this.bedName = type.getTypeRoom();
+        this.price = type.getPrice();
     }
 }
