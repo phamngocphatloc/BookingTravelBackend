@@ -23,6 +23,8 @@ public class RoomRequest {
     @NotNull(message = "vui lòng nhập Tên Phòng ")
     private String roomName;
     private int hotelId;
+    private int partnerId;
+    private int typeRoomId;
     public Room getRoom (Hotel hotel){
         Room room = new Room();
         room.setHotelRoom(hotel);

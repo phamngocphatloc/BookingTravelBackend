@@ -34,4 +34,6 @@ public class HotelPartners {
     @OneToMany (mappedBy = "partnerReview", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<ReviewPartner> listReviews;
 
+    @OneToMany (mappedBy = "partNerType")
+    public List<TypeRoom> listTypeRooms;
 }

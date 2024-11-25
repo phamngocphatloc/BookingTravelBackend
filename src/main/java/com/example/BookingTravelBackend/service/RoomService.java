@@ -18,4 +18,5 @@ public interface RoomService {
     public List<BedRespone> selectAllBed ();
     public RoomRespone updateRoom (RoomEditRequest request);
     public RoomRespone selectRoomById (int roomId);
+    public List<RoomRespone> selectRoomByHotelId (int hotelId);
 }

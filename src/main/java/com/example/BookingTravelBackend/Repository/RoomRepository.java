@@ -76,5 +76,8 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
             int typeRoomId
     );
 
+    @Query (value = "select * from room where hotel_id = ?1", nativeQuery = true)
+    public List<Room> findRoomByHotel (int hotelId);
+
 
 }

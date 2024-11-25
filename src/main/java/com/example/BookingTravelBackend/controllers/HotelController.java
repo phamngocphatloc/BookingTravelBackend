@@ -10,6 +10,7 @@ import com.example.BookingTravelBackend.service.RoomService;
 import com.example.BookingTravelBackend.service.TouristAttractionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -99,6 +100,11 @@ public class HotelController {
             responses.add(response);
         });
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",responses));
+    }
+
+    @GetMapping ("getroombyhotelid")
+    public ResponseEntity<HttpRespone> allRoomByHotel (@RequestParam int hotelId){
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"Lưu Phòng Thành Công",roomService.selectRoomByHotelId(hotelId)));
     }
 
 
