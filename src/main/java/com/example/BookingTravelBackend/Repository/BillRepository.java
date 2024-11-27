@@ -55,6 +55,13 @@ public interface BillRepository extends JpaRepository<Booking,Integer> {
             ")",nativeQuery = true)
     public List<String> getAllRoomByBooking (int bookingId);
 
+    @Query (value = "SELECT DISTINCT b.* \n" +
+            "FROM booking b\n" +
+            "JOIN booking_details bd ON b.booking_id = bd.booking_id\n" +
+            "JOIN room r ON bd.room_id = r.room_id\n" +
+            "WHERE r.hotel_id = ?1 and (b.status like ?2 or ?2 = '') and (b.phone = ?3 or ?3 = '') order by b.booking_id desc",nativeQuery = true)
+    public List<Booking> listBookingByHotelAndStatus (int hotelId, String status, String phone);
+
 
 
 }
