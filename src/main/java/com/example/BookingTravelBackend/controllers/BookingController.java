@@ -96,7 +96,7 @@ public class BookingController {
 
                 return new RedirectView(WebConfig.url+"/#!/booking/"+id);
             } else {
-                billService.updateStatusBill(order,"cancel");
+                billService.updateStatusBill(order,"Cancel");
                 return new RedirectView(WebConfig.url+"/#!/booking/"+id);
             }
         } else {

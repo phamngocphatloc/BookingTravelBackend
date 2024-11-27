@@ -20,10 +20,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import com.example.BookingTravelBackend.entity.Hotel;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +36,7 @@ public class BillServiceImpl implements BillService {
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
+    private final PartnersRepository hotelPartnersRepository;
     @Transactional
     @Override
     public BillResponse Booking(BookingRequest request, String status) {
@@ -152,4 +157,69 @@ public class BillServiceImpl implements BillService {
         bill.setStatus(status);
         billRepository.save(bill);
     }
+
+    @Override
+    public List<BillResponse> SelectBookingByHotelIdAndStatus(int hotelId, String status, String phone) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userLogin = (User) authentication.getPrincipal();
+
+        // Kiểm tra quyền
+        if (hotelPartnersRepository.checkHotelPartnersByUser(userLogin.getId(), hotelId) == 0) {
+            throw new IllegalArgumentException("Bạn Không Phải Đối Tác Này");
+        }
+
+        // Lấy danh sách booking
+        List<Booking> listBooking = billRepository.listBookingByHotelAndStatus(hotelId, status,phone);
+
+        // Chuyển đổi sang BillResponse
+        return listBooking.stream()
+                .map(BillResponse::new)
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
+    @Transactional
+    public BillResponse updateBillId(int bookingId, String status) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userLogin = (User) authentication.getPrincipal();
+
+        // Fetch the booking and check if it exists
+        Booking bookingEntity = billRepository.findById(bookingId)
+                .orElseThrow(() -> new IllegalArgumentException("Không Tìm Thấy Đơn Đặt Hàng Này"));
+
+        // Ensure booking has details and get the hotel
+        if (bookingEntity.getListDetails().isEmpty() || bookingEntity.getListDetails().get(0).getRoomBooking() == null) {
+            throw new IllegalArgumentException("Không có chi tiết phòng trong đơn đặt hàng.");
+        }
+
+        Hotel hotel = bookingEntity.getListDetails().get(0).getRoomBooking().getHotelRoom();
+
+        // Check if the user has permission to update the booking
+        if (hotelPartnersRepository.checkHotelPartnersByUser(userLogin.getId(), hotel.getHotelId()) == 0) {
+            throw new IllegalArgumentException("Bạn Không Có Quền Update Đơn Đặt Hàng Này");
+        }
+
+        // Check if status is 'success' and if today's date is on or after the check-out date
+        if ("success".equalsIgnoreCase(status)) {
+            Date today = new Date(System.currentTimeMillis());  // Get today's date
+            Date checkOutDate = bookingEntity.getCheckOut(); // Assuming checkOut is of type java.sql.Date
+
+            // Check if today's date is before the check-out date
+            if (today.before(checkOutDate)) {
+                throw new IllegalArgumentException("Chưa đến ngày checkout, không thể cập nhật trạng thái thành 'success'.");
+            }
+        }
+
+        // Update the booking status
+        bookingEntity.setStatus(status);
+        Booking bookingSaved = billRepository.save(bookingEntity);
+
+        // Return the updated booking response
+        return new BillResponse(bookingSaved);
+    }
+
+
+
+
 }
