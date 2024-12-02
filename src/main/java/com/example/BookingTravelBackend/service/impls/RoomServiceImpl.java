@@ -90,6 +90,7 @@ public class RoomServiceImpl implements RoomService {
             list.add(new BedRespone(item));
         });
         return list;
+
     }
 
     @Override

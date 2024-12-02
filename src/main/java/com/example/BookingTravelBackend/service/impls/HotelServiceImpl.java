@@ -81,6 +81,7 @@ public class HotelServiceImpl implements HotelService {
         return listResponse;
     }
 
+
     @Override
     public void addHotel(HotelRequest hotelRequest) {
         Hotel hotel = new Hotel();
