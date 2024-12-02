@@ -8,7 +8,7 @@ import com.example.BookingTravelBackend.payload.Request.HotelServiceRequest;
 import com.example.BookingTravelBackend.payload.respone.HotelRespone;
 import com.example.BookingTravelBackend.payload.respone.HotelServiceRespone;
 import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
-
+import com.example.BookingTravelBackend.payload.respone.HttpRespone;
 import java.util.Date;
 import java.util.List;
 
@@ -26,4 +26,5 @@ public interface HotelService {
     public List<HotelRespone> listHotel ();
     public  HotelRespone selectHotelId (int hotelId);
     public List<String> findHotelNameByTour(String tour, String hotelNaneFind);
+    public HttpRespone findHotelById (int hotelId);
 }

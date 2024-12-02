@@ -8,10 +8,7 @@ import com.example.BookingTravelBackend.entity.TypeRoom;
 import com.example.BookingTravelBackend.payload.Request.HotelRequest;
 import com.example.BookingTravelBackend.payload.Request.HotelRequestEdit;
 import com.example.BookingTravelBackend.payload.Request.HotelServiceRequest;
-import com.example.BookingTravelBackend.payload.respone.HotelRespone;
-import com.example.BookingTravelBackend.payload.respone.HotelServiceRespone;
-import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
-import com.example.BookingTravelBackend.payload.respone.TypeRoomResponse;
+import com.example.BookingTravelBackend.payload.respone.*;
 import com.example.BookingTravelBackend.service.HotelService;
 import com.example.BookingTravelBackend.service.RoomService;
 import jakarta.transaction.Transactional;
@@ -19,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -35,6 +33,7 @@ public class HotelServiceImpl implements HotelService {
     private final HotelPartnersRepository hotelPartnersRepository;
     private final TypeRoomRepository typeRoomRepository;
     private final RoomRepository roomRepository;
+
     @Override
     public PaginationResponse selectHotelByTour(TouristAttraction tour, int pageNum, int pageSize,String hotelName, Date checkIn, Date checkOut) {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
@@ -190,4 +189,15 @@ public class HotelServiceImpl implements HotelService {
     public List<String> findHotelNameByTour(String tour, String hotelNaneFind) {
         return hotelPartnersRepository.findHotelNameByTour("%"+tour+"%", "%"+hotelNaneFind+"%");
     }
+
+    @Override
+    public HttpRespone findHotelById(int hotelId) {
+        // Kiểm tra xem khách sạn có tồn tại không
+        Hotel hotel = hotelRepository.findById(hotelId)
+                .orElseThrow(() -> new IllegalArgumentException("Khách sạn không tồn tại"));
+
+        // Tạo và trả về phản hồi với thông tin khách sạn
+        return new HttpRespone(HttpStatus.OK.value(), "success", new HotelRespone(hotel));
+    }
+
 }

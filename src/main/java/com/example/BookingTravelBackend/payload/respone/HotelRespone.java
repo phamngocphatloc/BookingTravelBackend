@@ -31,6 +31,7 @@ public class HotelRespone {
 
     private int price;
     private HotelPartnersResponse Partner;
+    private int restaurantId;
 
 
 
@@ -63,6 +64,7 @@ public class HotelRespone {
         }
 
         this.Partner = new HotelPartnersResponse(hotel.getPartner());
+        this.restaurantId = hotel.getRestaurant().getId();
     }
 
 
