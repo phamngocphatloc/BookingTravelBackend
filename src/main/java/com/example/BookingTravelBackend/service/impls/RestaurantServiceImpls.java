@@ -2,15 +2,17 @@ package com.example.BookingTravelBackend.service.impls;
 
 import com.example.BookingTravelBackend.Repository.*;
 import com.example.BookingTravelBackend.entity.*;
-import com.example.BookingTravelBackend.payload.respone.MenuRestaurantResponse;
-import com.example.BookingTravelBackend.payload.respone.OrderFoodResponse;
-import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
-import com.example.BookingTravelBackend.payload.respone.RoomNameResponse;
+import com.example.BookingTravelBackend.payload.Request.MenuRestaurantRequest;
+import com.example.BookingTravelBackend.payload.Request.RestaurantRequest;
+import com.example.BookingTravelBackend.payload.respone.*;
 import com.example.BookingTravelBackend.service.RestaurantService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -155,5 +157,122 @@ public class RestaurantServiceImpls implements RestaurantService {
         });
         return listRoom;
     }
+
+    @Override
+    public HttpRespone checkRestaurantByHotel(int hotelId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userLogin = (User) authentication.getPrincipal();
+        if (hotelRepository.isAdminHotel(hotelId,userLogin.getId())==0){
+            throw new AccessDeniedException("Bạn Không Phải Admin Khách Sạn Này");
+        }
+        if (restaurantRepository.checkRestaurantByHotel(hotelId)==1){
+            return new HttpRespone(HttpStatus.OK.value(), "success", "yes");
+        }else{
+            return new HttpRespone(HttpStatus.OK.value(), "success", "no");
+        }
+    }
+
+
+    @Override
+    @Transactional
+    public HttpRespone createRestaurant(RestaurantRequest request) {
+        // Lấy thông tin người dùng hiện tại từ Authentication
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userLogin = (User) authentication.getPrincipal();
+
+        // Kiểm tra xem người dùng có phải là admin của khách sạn này không
+        if (hotelRepository.isAdminHotel(request.getHotelRestaurantId(), userLogin.getId()) == 0) {
+            throw new AccessDeniedException("Bạn Không Phải Admin Khách Sạn Này");
+        }
+
+        // Kiểm tra xem khách sạn đã có nhà hàng hay chưa
+        if (restaurantRepository.checkRestaurantByHotel(request.getHotelRestaurantId()) == 1) {
+            throw new IllegalArgumentException("Khách Sạn Này Đã Cố Nhà Hàng");
+        }
+
+        // Khởi tạo đối tượng Restaurant và thiết lập các thuộc tính
+        Restaurant restaurant = new Restaurant();
+        restaurant.setRestaurantImg(request.getRestaurantImg());
+        restaurant.setRestaurantName(request.getRestaurantName());
+
+        // Lấy thông tin khách sạn từ hotelRepository bằng phương thức an toàn
+        Hotel hotelRestaurant = hotelRepository.findById(request.getHotelRestaurantId())
+                .orElseThrow(() -> new IllegalArgumentException("Khách Sạn Không Tồn Tại"));
+
+        restaurant.setHotelRestaurant(hotelRestaurant);
+        restaurant.setActive(true);
+        restaurant.setAuthentic(false);
+        restaurant.setListMenu(new ArrayList<>());
+
+        // Lưu nhà hàng vào cơ sở dữ liệu
+        Restaurant restaurantSaved = restaurantRepository.save(restaurant);
+
+        // Trả về thông tin nhà hàng đã lưu
+        return new HttpRespone(HttpStatus.OK.value(), "success", new RestaurantResponse(restaurantSaved));
+    }
+
+    @Override
+    public HttpRespone AddMenu(MenuRestaurantRequest request) {
+        // Lấy thông tin người dùng hiện tại từ Authentication
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userLogin = (User) authentication.getPrincipal();
+
+        // Kiểm tra xem người dùng có phải là admin của khách sạn này không
+        if (hotelRepository.isAdminHotel(request.getHotelId(), userLogin.getId()) == 0) {
+            throw new AccessDeniedException("Bạn Không Phải Admin Khách Sạn Này");
+        }
+
+        // Kiểm tra xem khách sạn đã có nhà hàng hay chưa
+        if (restaurantRepository.checkRestaurantByHotel(request.getHotelId()) == 0) {
+            throw new IllegalArgumentException("Khách Sạn Này Chưa Có Nhà Hàng");
+        }
+
+        Restaurant restaurantSell = restaurantRepository.findRestaurantByBillId(request.getRestaurantSellId())
+                .orElseThrow(() -> new IllegalArgumentException("Nhà Hàng Không Tồn Tại"));
+        Menu menu = new Menu();
+        menu.setDescription(request.getDescription());
+        menu.setRestaurantSell(restaurantSell);
+        menu.setImgProduct(request.getImgProduct());
+        menu.setListItems(new ArrayList<>());
+        menu.setPrice(request.getPrice());
+        menu.setProductName(request.getProductName());
+        menu.setMenuRestaurantReviews(new ArrayList<>());
+        Menu menuSaved = menuRepository.save(menu);
+        return new HttpRespone(HttpStatus.OK.value(), "success", new MenuRestaurantResponse(menuSaved));
+    }
+
+    @Override
+    public HttpRespone getRestaurantById(int restaurantId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new IllegalArgumentException("Nhà Hàng Không Tồn Tại"));
+        restaurant.setListMenu(menuRepository.findAllByRestaurant(restaurantId));
+        return new HttpRespone(HttpStatus.OK.value(), "success", new RestaurantResponse(restaurant));
+    }
+
+    @Override
+    public HttpRespone findAllMenuByRestaurantId(int restaurantId, int hotelId) {
+        // Lấy thông tin người dùng hiện tại từ Authentication
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userLogin = (User) authentication.getPrincipal();
+        // Kiểm tra xem người dùng có phải là admin của khách sạn này không
+        if (hotelRepository.isAdminHotel(hotelId, userLogin.getId()) == 0) {
+            throw new AccessDeniedException("Bạn Không Phải Admin Khách Sạn Này");
+        }
+
+        // Kiểm tra xem khách sạn đã có nhà hàng hay chưa
+        if (restaurantRepository.checkRestaurantByHotel(hotelId) == 0) {
+            throw new IllegalArgumentException("Khách Sạn Này Chưa Có Nhà Hàng");
+        }
+
+        List<Menu> listMenu = menuRepository.findAllByRestaurant(restaurantId);
+        List<MenuRestaurantResponse> listResponse = new ArrayList<>();
+        if (!listMenu.isEmpty()){
+            listMenu.stream().forEach(item -> {
+                listResponse.add(new MenuRestaurantResponse(item));
+            });
+        }
+     return new HttpRespone(HttpStatus.OK.value(), "success", listResponse);
+    }
+
 
 }

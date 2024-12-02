@@ -8,10 +8,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface MenuRepository extends JpaRepository<Menu,Integer> {
     @Query (value = "select * from menu_restaurant where restaurant_id = ?1", nativeQuery = true)
     Page<Menu> findByRestaurant(int restaurantId, Pageable pageable);
+    @Query (value = "select * from menu_restaurant where restaurant_id = ?1", nativeQuery = true)
+    List<Menu> findAllByRestaurant(int restaurantId);
     @Query(value = "SELECT CASE WHEN EXISTS (" +
             "  SELECT 1 " +
             "  FROM menu_restaurant_review " +

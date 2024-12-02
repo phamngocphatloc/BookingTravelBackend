@@ -21,4 +21,11 @@ public interface RestaurantRepository extends JpaRepository<Restaurant,Integer> 
             ");", nativeQuery = true)
     Optional<Restaurant> findRestaurantByBillId(int billId);
 
+    @Query (value = "SELECT CASE \n" +
+            "            WHEN EXISTS (SELECT 1 FROM restaurant WHERE hotel_id = ?1) THEN 1 \n" +
+            "            ELSE 0 \n" +
+            "        END AS result;\n", nativeQuery = true)
+    public int checkRestaurantByHotel (int hotelId);
+
+
 }
