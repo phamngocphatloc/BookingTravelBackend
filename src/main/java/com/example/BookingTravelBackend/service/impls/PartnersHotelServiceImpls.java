@@ -9,13 +9,15 @@ import com.example.BookingTravelBackend.entity.TypeRoom;
 import com.example.BookingTravelBackend.entity.User;
 import com.example.BookingTravelBackend.payload.Request.TypeRoomRequest;
 import com.example.BookingTravelBackend.payload.respone.HotelPartnersResponse;
+import com.example.BookingTravelBackend.payload.respone.HttpRespone;
 import com.example.BookingTravelBackend.payload.respone.TypeRoomResponse;
 import com.example.BookingTravelBackend.service.PartnersHotelService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
+import com.example.BookingTravelBackend.entity.HotelPartners;
 import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
@@ -105,6 +107,22 @@ public class PartnersHotelServiceImpls implements PartnersHotelService {
 
         TypeRoom savedTypeRoom = typeRoomRepository.save(typeRoom);
         return new TypeRoomResponse(savedTypeRoom);
+    }
+
+    @Override
+    public HttpRespone GetAllPartners() {
+        List<HotelPartners> listPartners = hotelPartnersRepository.findAll();
+        List<HotelPartnersResponse> responses = new ArrayList<>();
+        if (!listPartners.isEmpty()){
+            listPartners.stream().forEach(item -> {
+                responses.add(new HotelPartnersResponse(item));
+
+            });
+        }else {
+            throw new IllegalArgumentException("không có Pertner");
+        }
+        return new HttpRespone(HttpStatus.OK.value(),"success",responses);
+
     }
 
 
