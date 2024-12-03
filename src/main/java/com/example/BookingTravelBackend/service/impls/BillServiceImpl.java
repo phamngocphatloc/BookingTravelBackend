@@ -37,6 +37,7 @@ public class BillServiceImpl implements BillService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final PartnersRepository hotelPartnersRepository;
+    private final HotelRepository hotelRepository;
     @Transactional
     @Override
     public BillResponse Booking(BookingRequest request, String status) {
@@ -50,6 +51,9 @@ public class BillServiceImpl implements BillService {
         // Check date validity
         if (!request.getCheckOut().after(request.getCheckIn())) {
             throw new IllegalArgumentException("Ngày trả phòng phải sau ngày nhận phòng");
+        }
+        if (hotelRepository.findById(request.getHotelId()).get().isDelete() ==true){
+            throw new IllegalArgumentException("Khách Sạn Đã Đóng Cửa");
         }
 
         // Create a new booking

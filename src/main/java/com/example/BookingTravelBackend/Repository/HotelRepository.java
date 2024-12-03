@@ -12,10 +12,15 @@ import java.util.Optional;
 
 @Repository
 public interface HotelRepository extends JpaRepository<Hotel,Integer> {
-    @Query(value = "select * from hotel join tourist_attraction on hotel.tourist_attaction_id = tourist_attraction.id \n" +
-            "where tourist_attraction.name like ?1 and (hotel_id in (select hotel_id from hotel join hotel_partners on hotel.partners_id = hotel_partners.partners_id\n" +
-            "where hotel_name like ?2) or ?2 = '')",nativeQuery = true)
-    public Page<Hotel> findByTouristAttraction (String tour, String hotelName, Pageable page);
+    @Query(value = "select * from hotel " +
+            "join tourist_attraction on hotel.tourist_attaction_id = tourist_attraction.id " +
+            "where tourist_attraction.name like ?1 " +
+            "and (hotel_id in (select hotel_id from hotel " +
+            "                  join hotel_partners on hotel.partners_id = hotel_partners.partners_id " +
+            "                  where hotel_name like ?2) or ?2 = '') " +
+            "and hotel.is_delete = 0", nativeQuery = true)
+    public Page<Hotel> findByTouristAttraction(String tour, String hotelName, Pageable page);
+
 
     @Query (value = "select * from hotel_service where price = 0", nativeQuery = true)
     public List<Object[]> selectServiceHotelFree();
@@ -40,7 +45,7 @@ public interface HotelRepository extends JpaRepository<Hotel,Integer> {
             "       END AS result;\n",nativeQuery = true)
     public int isAdminHotel (int hotelId, int userId);
 
-    @Query (value = "SELECT * \n" +
+    @Query(value = "SELECT * \n" +
             "FROM hotel \n" +
             "WHERE hotel.hotel_id in (\n" +
             "    SELECT hotel.hotel_id \n" +
@@ -49,6 +54,7 @@ public interface HotelRepository extends JpaRepository<Hotel,Integer> {
             "    JOIN booking_details ON booking_details.room_id = room.room_id \n" +
             "    JOIN booking ON booking.booking_id = booking_details.booking_id \n" +
             "    WHERE booking.booking_id = ?1\n" +
-            ");",nativeQuery = true)
-    public Optional<Hotel> findHotelByBillId (int billId);
+            ")", nativeQuery = true)
+    public Optional<Hotel> findHotelByBillId(int billId);
+
 }

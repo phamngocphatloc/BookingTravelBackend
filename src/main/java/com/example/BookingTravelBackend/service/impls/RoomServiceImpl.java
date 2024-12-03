@@ -11,6 +11,7 @@ import com.example.BookingTravelBackend.service.PartnersHotelService;
 import com.example.BookingTravelBackend.service.RoomService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @Service
 public class RoomServiceImpl implements RoomService {
@@ -64,23 +67,36 @@ public class RoomServiceImpl implements RoomService {
         if (hotelRepository.findById(room.getHotelId()).isEmpty()){
             throw new IllegalStateException("Không Tìm Thấy Khách Sạn");
         }
-        if (roomRepository.findByRoomNameLikeAndHotel("%"+room.getRoomName()+"%",room.getHotelId()).isPresent()){
-            throw new IllegalStateException("Phòng Này Đã Tồn Tại");
-        }
+
+        Optional<Room> roomexist = roomRepository.findByRoomNameLikeAndHotel("%"+room.getRoomName()+"%",room.getHotelId());
+
         Hotel hotel = hotelRepository.findById(room.getHotelId()).get();
 
         TypeRoom bed = bedRepository.findById(room.getTypeRoomId()).get();
         if (bed == null){
             throw new IllegalStateException("Không Tìm Thấy Giường Này");
         }
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User userLogin = (User) authentication.getPrincipal();
-        if (hotelPartnersRepository.checkHotelPartnersByUser(userLogin.getId(),room.getHotelId())==0){
-            throw new IllegalArgumentException("Bạn Không Phải Đối Tác Khách Sạn Này");
+        if (roomexist.isPresent()){
+            Room roomEdit = roomexist.get();
+            roomEdit.setTypeRoom(room.getTypeRoom());
+            roomEdit.setDescribe(room.getDescribe());
+            roomEdit.setPrice(room.getPrice());
+            roomEdit.setNumberOfPeople(room.getNumberOfPeople());
+            roomEdit.getTypeRoomList().remove(0);
+            roomEdit.getTypeRoomList().add(bed);
+            roomEdit.setDelete(false);
+            roomRepository.save(roomEdit);
+
+        }else {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User userLogin = (User) authentication.getPrincipal();
+            if (hotelPartnersRepository.checkHotelPartnersByUser(userLogin.getId(), room.getHotelId()) == 0) {
+                throw new IllegalArgumentException("Bạn Không Phải Đối Tác Khách Sạn Này");
+            }
+            Room r = room.getRoom(hotel);
+            r.getTypeRoomList().add(bed);
+            roomRepository.save(r);
         }
-        Room r = room.getRoom(hotel);
-        r.getTypeRoomList().add(bed);
-        roomRepository.save(r);
     }
 
     @Override
@@ -102,6 +118,7 @@ public class RoomServiceImpl implements RoomService {
         roomEdit.setDescribe(request.getDescribe());
         roomEdit.setPrice(request.getPrice());
         roomEdit.setNumberOfPeople(request.getNumberOfPeople());
+        roomEdit.setDelete(false);
         Room roomsaved = roomRepository.save(roomEdit);
         return new RoomRespone(roomsaved);
     }
@@ -123,6 +140,23 @@ public class RoomServiceImpl implements RoomService {
             response.add(roomRespone);
         });
         return response;
+    }
+
+    @Override
+    public RoomRespone deleteRoom(int roomId) {
+
+        Optional<Room> roomexist = roomRepository.findById(roomId);
+        if (roomexist.isPresent()){
+            Room roomdelete = roomexist.get();
+            if (partnersHotelService.checkHotelPartnersByHotelId(roomdelete.getHotelRoom().getHotelId())==false){
+                throw new IllegalArgumentException("Bạn Không Phải Quản Lý Khách Sạn Này");
+            }
+            roomdelete.setDelete(true);
+            Room roomSaved = roomRepository.save(roomdelete);
+            return new RoomRespone(roomSaved);
+        }else{
+            throw new IllegalArgumentException("Phòng Không Tồn Tại");
+        }
     }
 
 

@@ -35,4 +35,6 @@ public class Room {
     private Hotel hotelRoom;
     @Column (name = "roomName")
     private String roomName;
+    @Column (name = "isDelete")
+    private boolean isDelete;
 }

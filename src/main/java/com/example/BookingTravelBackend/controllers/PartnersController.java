@@ -1,9 +1,6 @@
 package com.example.BookingTravelBackend.controllers;
 
-import com.example.BookingTravelBackend.payload.Request.BookingUpdateRequest;
-import com.example.BookingTravelBackend.payload.Request.MenuRestaurantRequest;
-import com.example.BookingTravelBackend.payload.Request.RestaurantRequest;
-import com.example.BookingTravelBackend.payload.Request.TypeRoomRequest;
+import com.example.BookingTravelBackend.payload.Request.*;
 import com.example.BookingTravelBackend.payload.respone.HotelPartnersResponse;
 import com.example.BookingTravelBackend.payload.respone.HttpRespone;
 import com.example.BookingTravelBackend.service.PartnersHotelService;
@@ -15,6 +12,7 @@ import com.example.BookingTravelBackend.service.RestaurantService;
 import java.util.List;
 import com.example.BookingTravelBackend.service.BillService;
 import com.example.BookingTravelBackend.service.HotelService;
+import com.example.BookingTravelBackend.service.RoomService;
 @RestController
 @RequestMapping ("/partners")
 @RequiredArgsConstructor
@@ -23,6 +21,7 @@ public class PartnersController {
     private final BillService billService;
     private final RestaurantService restaurantService;
     private final HotelService hotelService;
+    private final RoomService roomService;
     @GetMapping ("/get_all")
     public ResponseEntity<HttpRespone> ListAllPartnerResponse (){
         List<HotelPartnersResponse> response = partnersHotelService.listPartnersByUserId();
@@ -68,6 +67,10 @@ public class PartnersController {
     public ResponseEntity<HttpRespone> AddMenu (@RequestBody MenuRestaurantRequest request){
         return ResponseEntity.ok(restaurantService.AddMenu(request));
     }
+    @DeleteMapping ("delete_room")
+    public ResponseEntity<HttpRespone> AddMenu (@RequestParam int roomId){
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", roomService.deleteRoom(roomId)));
+    }
     @GetMapping ("get_hotel")
     public ResponseEntity<HttpRespone> GetHotel (@RequestParam int hotelId){
         return ResponseEntity.ok(hotelService.findHotelById(hotelId));
@@ -79,6 +82,16 @@ public class PartnersController {
     @GetMapping("get_menu")
     public ResponseEntity<HttpRespone> GetMenuRestaurant (@RequestParam int restaurantId, @RequestParam int hotelId){
         return ResponseEntity.ok(restaurantService.findAllMenuByRestaurantId(restaurantId,hotelId));
+    }
+
+    @PostMapping ("add_menu_detail")
+    public ResponseEntity<HttpRespone> AddMenuDetail (@RequestBody OrderFoodDetailPartnerRequest request){
+        return ResponseEntity.ok(restaurantService.AddmenuDetails(request));
+    }
+
+    @GetMapping ("get_all_menudetail")
+    public ResponseEntity<HttpRespone> GetAllMenuDetail (@RequestParam int menuId, @RequestParam int hotelId){
+        return ResponseEntity.ok(restaurantService.getAllMenuDetailsByMenuId(menuId,hotelId));
     }
 
 }

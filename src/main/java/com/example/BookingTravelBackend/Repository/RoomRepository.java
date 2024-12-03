@@ -40,8 +40,10 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
             "            AND b.status IN ('active', 'pending')\n" +
             "    ) \n" +
             "    AND r.hotel_id = ?1 \n" +
-            "    AND tr.type_room_id = ?4", nativeQuery = true)
-    public List<Room> selectAllRoomByCheckInCheckOutAndType(int HotelId, Date checkin, Date Checkout, int typeRoomId);
+            "    AND tr.type_room_id = ?4\n" +
+            "    AND r.is_delete = 0", nativeQuery = true)
+    public List<Room> selectAllRoomByCheckInCheckOutAndType(int hotelId, Date checkin, Date checkout, int typeRoomId);
+
 
     @Query(value = "SELECT \n" +
             "     COUNT(*)\n" +
@@ -68,15 +70,12 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
             "            AND b.status IN ('active', 'pending')\n" +
             "    ) \n" +
             "    AND r.hotel_id = ?1 \n" +
-            "    AND tr.type_room_id = ?4", nativeQuery = true)
-    int selectCountRoomByCheckInCheckOutAndType(
-            int hotelId,
-            Date checkIn,
-            Date checkOut,
-            int typeRoomId
-    );
+            "    AND tr.type_room_id = ?4\n" +
+            "    AND r.is_delete = 0", nativeQuery = true)
+    public int selectCountRoomByCheckInCheckOutAndType(int hotelId, Date checkIn, Date checkOut, int typeRoomId);
 
-    @Query (value = "select * from room where hotel_id = ?1", nativeQuery = true)
+
+    @Query (value = "select * from room where hotel_id = ?1 and is_delete = 0", nativeQuery = true)
     public List<Room> findRoomByHotel (int hotelId);
 
 

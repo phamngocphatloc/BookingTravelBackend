@@ -24,4 +24,6 @@ public class MenuDetails {
     @ManyToOne
     @JoinColumn (name = "MenuId")
     private Menu product;
+    @Column (name = "IsDelete")
+    public boolean isDelete;
 }

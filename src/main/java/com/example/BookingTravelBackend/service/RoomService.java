@@ -19,4 +19,5 @@ public interface RoomService {
     public RoomRespone updateRoom (RoomEditRequest request);
     public RoomRespone selectRoomById (int roomId);
     public List<RoomRespone> selectRoomByHotelId (int hotelId);
+    public RoomRespone deleteRoom (int roomId);
 }
