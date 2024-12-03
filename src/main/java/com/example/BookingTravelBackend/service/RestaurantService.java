@@ -2,7 +2,7 @@ package com.example.BookingTravelBackend.service;
 import com.example.BookingTravelBackend.payload.Request.MenuRestaurantRequest;
 import com.example.BookingTravelBackend.payload.Request.RestaurantRequest;
 import com.example.BookingTravelBackend.payload.respone.*;
-
+import com.example.BookingTravelBackend.payload.Request.OrderFoodDetailPartnerRequest;
 import java.util.List;
 
 public interface RestaurantService {
@@ -15,4 +15,6 @@ public interface RestaurantService {
     public HttpRespone AddMenu (MenuRestaurantRequest request);
     public HttpRespone getRestaurantById (int restaurantId);
     public HttpRespone findAllMenuByRestaurantId (int restaurantId, int hotelId);
+    public HttpRespone AddmenuDetails (OrderFoodDetailPartnerRequest request);
+    public HttpRespone getAllMenuDetailsByMenuId (int menuId, int hotelId);
 }

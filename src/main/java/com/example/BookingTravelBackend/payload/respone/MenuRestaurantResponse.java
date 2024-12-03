@@ -40,7 +40,9 @@ public class MenuRestaurantResponse {
 
         this.listItems = new ArrayList<>();
         for (MenuDetails item : restaurant.getListItems()) {
-            this.listItems.add(new MenuDetailsResponse(item));
+            if (item.isDelete == false) {
+                this.listItems.add(new MenuDetailsResponse(item));
+            }
         }
 
         // Khởi tạo listRelated nếu cần thiết, có thể là null nếu không cần

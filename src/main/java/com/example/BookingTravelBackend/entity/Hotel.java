@@ -41,7 +41,9 @@ public class Hotel {
     @JoinColumn (name = "PartnersId")
     private HotelPartners Partner;
 
-    @OneToOne (mappedBy = "hotelRestaurant", fetch = FetchType.LAZY)
+    @OneToOne (mappedBy = "hotelRestaurant", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Restaurant restaurant;
+    @Column (name = "isDelete")
+    private boolean isDelete;
 
 }

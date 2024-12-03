@@ -64,7 +64,9 @@ public class HotelRespone {
         }
 
         this.Partner = new HotelPartnersResponse(hotel.getPartner());
-        this.restaurantId = hotel.getRestaurant().getId();
+        if (hotel.getRestaurant() != null) {
+            this.restaurantId = hotel.getRestaurant().getId();
+        }
     }
 
 

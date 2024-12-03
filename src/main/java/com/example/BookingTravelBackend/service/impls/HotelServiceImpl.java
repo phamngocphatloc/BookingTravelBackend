@@ -111,6 +111,9 @@ public class HotelServiceImpl implements HotelService {
                 response.setStatus("still");
             }
         });
+        if (hotel.isDelete() == true){
+            response.setStatus("delete");
+        }
         List<TypeRoom> listTypeRoom = typeRoomRepository.findTypeRoomByHotel(id);
         List<TypeRoomResponse> listTypeRoomResponse = new ArrayList<>();
         listTypeRoom.stream().forEach(item -> {
@@ -151,6 +154,7 @@ public class HotelServiceImpl implements HotelService {
                     item.setStatus("still");
                 }
             });
+
         });
         return new PaginationResponse(pageNum,pageSize,pageHotel.getTotalElements(),pageHotel.isLast(),pageHotel.getTotalPages(),listHotel);
     }
