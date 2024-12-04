@@ -3,18 +3,16 @@ package com.example.BookingTravelBackend.controllers;
 import com.example.BookingTravelBackend.payload.Request.*;
 import com.example.BookingTravelBackend.payload.respone.HotelPartnersResponse;
 import com.example.BookingTravelBackend.payload.respone.HttpRespone;
-import com.example.BookingTravelBackend.service.PartnersHotelService;
+import com.example.BookingTravelBackend.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.BookingTravelBackend.service.RestaurantService;
+
 import java.util.List;
-import com.example.BookingTravelBackend.service.BillService;
-import com.example.BookingTravelBackend.service.HotelService;
-import com.example.BookingTravelBackend.service.RoomService;
+
 @RestController
-@RequestMapping ("/partners")
+@RequestMapping("/partners")
 @RequiredArgsConstructor
 public class PartnersController {
     private final PartnersHotelService partnersHotelService;
@@ -22,76 +20,111 @@ public class PartnersController {
     private final RestaurantService restaurantService;
     private final HotelService hotelService;
     private final RoomService roomService;
-    @GetMapping ("/get_all")
-    public ResponseEntity<HttpRespone> ListAllPartnerResponse (){
+    private final PartnerNotificationService partnerNotificationService;
+
+    @GetMapping("/get_all")
+    public ResponseEntity<HttpRespone> ListAllPartnerResponse() {
         List<HotelPartnersResponse> response = partnersHotelService.listPartnersByUserId();
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", response));
     }
-    @GetMapping ("/login_partner")
-    public ResponseEntity<HttpRespone> loginHotel (int hotelId){
-        if (partnersHotelService.checkHotelPartnersByHotelId(hotelId)==false){
+
+    @GetMapping("/login_partner")
+    public ResponseEntity<HttpRespone> loginHotel(int hotelId) {
+        if (partnersHotelService.checkHotelPartnersByHotelId(hotelId) == false) {
             throw new IllegalArgumentException("Bạn Không Phải Quản Lý Của Khách Sạn Này");
-        }else{
+        } else {
             return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", "yes"));
         }
     }
 
-    @GetMapping ("list_type")
-    public ResponseEntity<HttpRespone> ListTypeRoomByPartner (@RequestParam int partnerId){
-        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success",partnersHotelService.selectAllTypeRoomByPartnersId(partnerId)));
+    @GetMapping("list_type")
+    public ResponseEntity<HttpRespone> ListTypeRoomByPartner(@RequestParam int partnerId) {
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", partnersHotelService.selectAllTypeRoomByPartnersId(partnerId)));
     }
 
     @PostMapping("save_type")
-    public ResponseEntity<HttpRespone> SaveTypeRoom (@RequestBody TypeRoomRequest request){
-        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success",partnersHotelService.saveTypeRoom(request)));
+    public ResponseEntity<HttpRespone> SaveTypeRoom(@RequestBody TypeRoomRequest request) {
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", partnersHotelService.saveTypeRoom(request)));
     }
 
     @GetMapping("get_all_bill")
-    public ResponseEntity<HttpRespone> getAllBill (@RequestParam int hotelId, @RequestParam(defaultValue = "") String status, @RequestParam(defaultValue = "") String phone){
-        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", billService.SelectBookingByHotelIdAndStatus(hotelId,status,phone)));
+    public ResponseEntity<HttpRespone> getAllBill(@RequestParam int hotelId, @RequestParam(defaultValue = "") String status, @RequestParam(defaultValue = "") String phone) {
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", billService.SelectBookingByHotelIdAndStatus(hotelId, status, phone)));
     }
 
-    @PutMapping ("update_booking")
-    public ResponseEntity<HttpRespone> UpdateBooking (@RequestBody BookingUpdateRequest request){
-        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success",billService.updateBillId(request.getBookingId(),request.getStatus())));
+    @PutMapping("update_booking")
+    public ResponseEntity<HttpRespone> UpdateBooking(@RequestBody BookingUpdateRequest request) {
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", billService.updateBillId(request.getBookingId(), request.getStatus())));
     }
-    @GetMapping ("check_restaurant")
-    public ResponseEntity<HttpRespone> CheckRestaurant (@RequestParam int hotelId){
+
+    @GetMapping("check_restaurant")
+    public ResponseEntity<HttpRespone> CheckRestaurant(@RequestParam int hotelId) {
         return ResponseEntity.ok(restaurantService.checkRestaurantByHotel(hotelId));
     }
-    @PostMapping ("create_restaurant")
-    public ResponseEntity<HttpRespone> CreateRestaurant (@RequestBody RestaurantRequest request){
+
+    @PostMapping("create_restaurant")
+    public ResponseEntity<HttpRespone> CreateRestaurant(@RequestBody RestaurantRequest request) {
         return ResponseEntity.ok(restaurantService.createRestaurant(request));
     }
-    @PostMapping ("add_menu")
-    public ResponseEntity<HttpRespone> AddMenu (@RequestBody MenuRestaurantRequest request){
+
+    @PostMapping("add_menu")
+    public ResponseEntity<HttpRespone> AddMenu(@RequestBody MenuRestaurantRequest request) {
         return ResponseEntity.ok(restaurantService.AddMenu(request));
     }
-    @DeleteMapping ("delete_room")
-    public ResponseEntity<HttpRespone> AddMenu (@RequestParam int roomId){
+
+    @DeleteMapping("delete_room")
+    public ResponseEntity<HttpRespone> AddMenu(@RequestParam int roomId) {
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", roomService.deleteRoom(roomId)));
     }
-    @GetMapping ("get_hotel")
-    public ResponseEntity<HttpRespone> GetHotel (@RequestParam int hotelId){
+
+    @GetMapping("get_hotel")
+    public ResponseEntity<HttpRespone> GetHotel(@RequestParam int hotelId) {
         return ResponseEntity.ok(hotelService.findHotelById(hotelId));
     }
+
     @GetMapping("get_restaurant")
-    public ResponseEntity<HttpRespone> getRestaurant (@RequestParam int restaurantId){
+    public ResponseEntity<HttpRespone> getRestaurant(@RequestParam int restaurantId) {
         return ResponseEntity.ok(restaurantService.getRestaurantById(restaurantId));
     }
+
     @GetMapping("get_menu")
-    public ResponseEntity<HttpRespone> GetMenuRestaurant (@RequestParam int restaurantId, @RequestParam int hotelId){
-        return ResponseEntity.ok(restaurantService.findAllMenuByRestaurantId(restaurantId,hotelId));
+    public ResponseEntity<HttpRespone> GetMenuRestaurant(@RequestParam int restaurantId, @RequestParam int hotelId) {
+        return ResponseEntity.ok(restaurantService.findAllMenuByRestaurantId(restaurantId, hotelId));
     }
 
-    @PostMapping ("add_menu_detail")
-    public ResponseEntity<HttpRespone> AddMenuDetail (@RequestBody OrderFoodDetailPartnerRequest request){
+    @PostMapping("add_menu_detail")
+    public ResponseEntity<HttpRespone> AddMenuDetail(@RequestBody OrderFoodDetailPartnerRequest request) {
         return ResponseEntity.ok(restaurantService.AddmenuDetails(request));
     }
 
-    @GetMapping ("get_all_menudetail")
-    public ResponseEntity<HttpRespone> GetAllMenuDetail (@RequestParam int menuId, @RequestParam int hotelId){
-        return ResponseEntity.ok(restaurantService.getAllMenuDetailsByMenuId(menuId,hotelId));
+    @GetMapping("get_all_menudetail")
+    public ResponseEntity<HttpRespone> GetAllMenuDetail(@RequestParam int menuId, @RequestParam int hotelId) {
+        return ResponseEntity.ok(restaurantService.getAllMenuDetailsByMenuId(menuId, hotelId));
     }
 
+    @DeleteMapping("delete_menu_detail")
+    public ResponseEntity<HttpRespone> DeleteMenuDetail(@RequestParam int foodId, @RequestParam int hotelId) {
+        return ResponseEntity.ok(restaurantService.DeleteMenuDetail(foodId, hotelId));
+    }
+
+    @GetMapping("get_all_orderfood")
+    public ResponseEntity<HttpRespone> GetAllOrderfood(@RequestParam int hotelId) {
+        return ResponseEntity.ok(restaurantService.FindAllRestaurantOrderByHotelId(hotelId));
+    }
+
+    @PostMapping("handle_order_food")
+    public ResponseEntity<HttpRespone> HandleOrderFood(@RequestParam int hotelId, @RequestParam int orderId,
+                                                       @RequestParam String Status) {
+        return ResponseEntity.ok(restaurantService.HandleOrderFood(hotelId,orderId,Status));
+    }
+
+    @GetMapping ("get_all_notification")
+    public ResponseEntity<HttpRespone> GetAllNotification (@RequestParam int partnerId){
+        return ResponseEntity.ok(partnerNotificationService.GetAllNotificationByPartner(partnerId));
+    }
+
+    @DeleteMapping ("delete_notification")
+    public ResponseEntity<HttpRespone> DeleteNotification (@RequestParam int notificationId){
+        return ResponseEntity.ok(partnerNotificationService.DeleteNotification(notificationId));
+    }
 }

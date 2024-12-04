@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -37,6 +37,8 @@ public class RestaurantOrder {
     Map<String,RestaurantOrderDetails> listItems = new HashMap<>();
     @Column (name = "roomOrder")
     private String room;
+    @Column (name = "handler")
+    private String handler;
 
     public int getTotalPrice() {
         AtomicInteger price = new AtomicInteger();

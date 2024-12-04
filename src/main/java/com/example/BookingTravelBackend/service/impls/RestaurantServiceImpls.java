@@ -18,6 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.example.BookingTravelBackend.Repository.HotelRepository;
+
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -35,6 +37,8 @@ public class RestaurantServiceImpls implements RestaurantService {
     private final RestaurantCartRepository restaurantCartRepository;
     private final HotelRepository hotelRepository;
     private final MenuDetailsRepository menuDetailsRepository;
+    private final RestaurantOrderRepository restaurantOrderRepository;
+
     // Tạo một hàm để chỉ lấy phần ngày và bỏ qua phần thời gian
     private Date removeTime(Date date) {
         Calendar cal = Calendar.getInstance();
@@ -105,7 +109,7 @@ public class RestaurantServiceImpls implements RestaurantService {
         List<MenuRestaurantResponse> listMenuResponse = new ArrayList<>();
 
         listMenu.getContent().stream().forEach(item -> {
-            listMenuResponse.add(new MenuRestaurantResponse(item,true));
+            listMenuResponse.add(new MenuRestaurantResponse(item, true));
         });
 
         return new PaginationResponse(pageNum, pageSize, listMenu.getTotalElements(),
@@ -131,9 +135,9 @@ public class RestaurantServiceImpls implements RestaurantService {
                 .map(MenuRestaurantResponse::new)
                 .collect(Collectors.toList());
         response.setListRelated(listMenuResponse);
-        if (hotelRepository.isAdminHotel(hotelRepository.findHotelByBillId(billId).get().getHotelId(),userLogin.getId())==1){
+        if (hotelRepository.isAdminHotel(hotelRepository.findHotelByBillId(billId).get().getHotelId(), userLogin.getId()) == 1) {
             response.setAdmin(true);
-        }else{
+        } else {
             response.setAdmin(false);
         }
         return response;
@@ -164,12 +168,12 @@ public class RestaurantServiceImpls implements RestaurantService {
     public HttpRespone checkRestaurantByHotel(int hotelId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userLogin = (User) authentication.getPrincipal();
-        if (hotelRepository.isAdminHotel(hotelId,userLogin.getId())==0){
+        if (hotelRepository.isAdminHotel(hotelId, userLogin.getId()) == 0) {
             throw new AccessDeniedException("Bạn Không Phải Admin Khách Sạn Này");
         }
-        if (restaurantRepository.checkRestaurantByHotel(hotelId)==1){
+        if (restaurantRepository.checkRestaurantByHotel(hotelId) == 1) {
             return new HttpRespone(HttpStatus.OK.value(), "success", "yes");
-        }else{
+        } else {
             return new HttpRespone(HttpStatus.OK.value(), "success", "no");
         }
     }
@@ -268,12 +272,12 @@ public class RestaurantServiceImpls implements RestaurantService {
 
         List<Menu> listMenu = menuRepository.findAllByRestaurant(restaurantId);
         List<MenuRestaurantResponse> listResponse = new ArrayList<>();
-        if (!listMenu.isEmpty()){
+        if (!listMenu.isEmpty()) {
             listMenu.stream().forEach(item -> {
                 listResponse.add(new MenuRestaurantResponse(item));
             });
         }
-     return new HttpRespone(HttpStatus.OK.value(), "success", listResponse);
+        return new HttpRespone(HttpStatus.OK.value(), "success", listResponse);
     }
 
     @Override
@@ -285,23 +289,33 @@ public class RestaurantServiceImpls implements RestaurantService {
         if (hotelRepository.isAdminHotel(request.getHotelId(), userLogin.getId()) == 0) {
             throw new AccessDeniedException("Bạn Không Phải Admin Khách Sạn Này");
         }
-        Menu menu = menuRepository.findById(request.getProductId()).
-                orElseThrow(() -> new IllegalArgumentException("Không Tìm Thấy Sản Phẩm Này"));
-        MenuDetails menuDetails = new MenuDetails();
-        menuDetails.setPrice(request.getAmount());
-        menuDetails.setName(request.getName());
-        menuDetails.setSize(request.getSize());
-        menuDetails.setProduct(menu);
-        MenuDetails menusaved = menuDetailsRepository.save(menuDetails);
-        return new HttpRespone(HttpStatus.OK.value(), "success" , new MenuDetailsResponse(menusaved));
+        if (menuDetailsRepository.findMenuDetailsByMenuIdAndSize(request.getProductId(), request.getSize()) != null) {
+            MenuDetails detailsExists = menuDetailsRepository.findMenuDetailsByMenuIdAndSize(request.getProductId(), request.getSize());
+            detailsExists.setPrice(request.getAmount());
+            detailsExists.setName(request.getName());
+            detailsExists.setDelete(false);
+            MenuDetails menusaved = menuDetailsRepository.save(detailsExists);
+            return new HttpRespone(HttpStatus.OK.value(), "success", new MenuDetailsResponse(menusaved));
+        } else {
+            Menu menu = menuRepository.findById(request.getProductId()).
+                    orElseThrow(() -> new IllegalArgumentException("Không Tìm Thấy Sản Phẩm Này"));
+            MenuDetails menuDetails = new MenuDetails();
+            menuDetails.setPrice(request.getAmount());
+            menuDetails.setName(request.getName());
+            menuDetails.setSize(request.getSize());
+            menuDetails.setProduct(menu);
+            MenuDetails menusaved = menuDetailsRepository.save(menuDetails);
+            return new HttpRespone(HttpStatus.OK.value(), "success", new MenuDetailsResponse(menusaved));
+        }
     }
 
     @Override
-    public HttpRespone getAllMenuDetailsByMenuId (int menuId, int hotelId){
+    public HttpRespone getAllMenuDetailsByMenuId(int menuId, int hotelId) {
         // Lấy thông tin người dùng hiện tại từ Authentication
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userLogin = (User) authentication.getPrincipal();
         // Kiểm tra xem người dùng có phải là admin của khách sạn này không
+
         if (hotelRepository.isAdminHotel(hotelId, userLogin.getId()) == 0) {
             throw new AccessDeniedException("Bạn Không Phải Admin Khách Sạn Này");
         }
@@ -310,12 +324,90 @@ public class RestaurantServiceImpls implements RestaurantService {
             throw new IllegalArgumentException("Không Tìm Thấy Sản Phẩm Này");
         });
         List<MenuDetailsResponse> responses = new ArrayList<>();
-        if (!menu.getListItems().isEmpty()){
+        if (!menu.getListItems().isEmpty()) {
             menu.getListItems().stream().forEach(item -> {
-                responses.add(new MenuDetailsResponse(item));
+                if (item.isDelete == false) {
+                    responses.add(new MenuDetailsResponse(item));
+                }
             });
         }
         return new HttpRespone(HttpStatus.OK.value(), "success", responses);
     }
+
+    @Override
+    public HttpRespone DeleteMenuDetail(int menuId, int hotelId) {
+        // Lấy thông tin người dùng hiện tại từ Authentication
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userLogin = (User) authentication.getPrincipal();
+        // Kiểm tra xem người dùng có phải là admin của khách sạn này không
+
+        if (hotelRepository.isAdminHotel(hotelId, userLogin.getId()) == 0) {
+            throw new AccessDeniedException("Bạn Không Phải Admin Khách Sạn Này");
+        }
+
+        MenuDetails menu = menuDetailsRepository.findById(menuId).orElseThrow(() -> {
+            throw new IllegalArgumentException("Không Tìm Thấy Sản Phẩm Này");
+        });
+
+        menu.setDelete(true);
+        MenuDetails menusaved = menuDetailsRepository.save(menu);
+        return new HttpRespone(HttpStatus.OK.value(), "success", new MenuDetailsResponse(menusaved));
+    }
+
+    @Override
+    public HttpRespone FindAllRestaurantOrderByHotelId(int hotelId) {
+        // Lấy thông tin người dùng hiện tại từ Authentication
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userLogin = (User) authentication.getPrincipal();
+        // Kiểm tra xem người dùng có phải là admin của khách sạn này không
+
+        if (hotelRepository.isAdminHotel(hotelId, userLogin.getId()) == 0) {
+            throw new AccessDeniedException("Bạn Không Phải Admin Khách Sạn Này");
+        }
+
+        List<RestaurantOrder> listOrder = restaurantOrderRepository.findAllOrderByHotelId(hotelId);
+        List<OrderFoodResponse> listResponse = new ArrayList<>();
+        if (!listOrder.isEmpty()) {
+            listOrder.stream().forEach(item -> {
+                listResponse.add(new OrderFoodResponse(item));
+            });
+        }
+        return new HttpRespone(HttpStatus.OK.value(), "success", listResponse);
+    }
+
+    @Override
+    public void cancelUnpaidOrders() {
+        Date thirtyMinutesAgo = new Date(System.currentTimeMillis() - 30 * 60 * 1000);
+        List<RestaurantOrder> bills = restaurantOrderRepository.GetAllRestaurantOrderOrderdateBefore(thirtyMinutesAgo);
+        if (!bills.isEmpty()) {
+            for (RestaurantOrder item : bills) {
+                item.setStatus("cancel");
+                item.setHandler("Auto");
+                restaurantOrderRepository.save(item);
+            }
+        }
+    }
+
+    @Override
+    public HttpRespone HandleOrderFood(int hotelId, int orderFoodId, String status) {
+        // Lấy thông tin người dùng hiện tại từ Authentication
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userLogin = (User) authentication.getPrincipal();
+        // Kiểm tra xem người dùng có phải là admin của khách sạn này không
+
+        if (hotelRepository.isAdminHotel(hotelId, userLogin.getId()) == 0) {
+            throw new AccessDeniedException("Bạn Không Phải Admin Khách Sạn Này");
+        }
+
+        RestaurantOrder order = restaurantOrderRepository.findById(orderFoodId).orElseThrow(() -> {
+            throw new IllegalArgumentException("Không Tìm Thấy Đơn Hàng Này");
+        });
+        order.setHandler(userLogin.getEmail());
+
+        order.setStatus(status);
+        RestaurantOrder saved = restaurantOrderRepository.save(order);
+        return new HttpRespone(HttpStatus.OK.value(), "success", new OrderFoodResponse(saved));
+    }
+
 
 }

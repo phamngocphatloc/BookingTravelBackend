@@ -9,6 +9,7 @@ import com.example.BookingTravelBackend.entity.RestaurantOrder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import com.example.BookingTravelBackend.payload.respone.OrderFoodDetailResponse;
 
 @Getter
@@ -23,7 +24,9 @@ public class OrderFoodResponse {
     private List<OrderFoodDetailResponse> listOrderDetails = new ArrayList<>();
     private int totalPrice = 0;
     private String room;
-    public OrderFoodResponse (RestaurantOrder order){
+    private String handler;
+
+    public OrderFoodResponse(RestaurantOrder order) {
         this.id = order.getId();
         this.orderDate = order.getOrderDate();
         this.coupon = order.getCoupon();
@@ -31,10 +34,13 @@ public class OrderFoodResponse {
         this.Status = order.getStatus();
         this.user = new UserDetailsResponse(order.getUserOrder());
         this.bill = new BillResponse(order.getBookingBuyed());
-        order.getListItems().forEach((key,value) -> {
+        order.getListItems().forEach((key, value) -> {
             listOrderDetails.add(new OrderFoodDetailResponse(value));
         });
         this.totalPrice = order.getTotalPrice();
         this.room = order.getRoom();
+        if (order.getHandler() != null) {
+            handler = order.getHandler();
+        }
     }
 }
