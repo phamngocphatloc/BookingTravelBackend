@@ -5,6 +5,7 @@ import com.example.BookingTravelBackend.Configuration.WebConfig;
 import com.example.BookingTravelBackend.payload.Request.OrderFoodRequest;
 import com.example.BookingTravelBackend.payload.respone.HttpRespone;
 import com.example.BookingTravelBackend.payload.respone.OrderFoodResponse;
+import com.example.BookingTravelBackend.service.PartnerNotificationService;
 import com.example.BookingTravelBackend.service.RestaurantOrderService;
 import com.example.BookingTravelBackend.service.RestaurantService;
 import jakarta.transaction.Transactional;
@@ -25,6 +26,7 @@ import java.util.*;
 public class RestaurantController {
     private final RestaurantService restaurantService;
     private final RestaurantOrderService restaurantOrderService;
+    private final PartnerNotificationService partnerNotificationService;
     @GetMapping ("/restaurant/getmenu")
     public HttpRespone getMenu (@RequestParam int orderId,@RequestParam  int pageNum,@RequestParam int pageSize){
         HttpRespone response = new HttpRespone(HttpStatus.OK.value(),"Success",restaurantService.LoadProductByOrderId(orderId,pageNum,pageSize));
@@ -114,8 +116,10 @@ public class RestaurantController {
         }
         if (vnp_SecureHash.equalsIgnoreCase(hash) && order.getId() == Integer.parseInt(txnref)) {
             if (status.equalsIgnoreCase("00")) {
-
+                int partnerId = order.getBookingBuyed().getListDetails().get(0).getRoomBooking().getHotelRoom().getPartner().getId();
+                partnerNotificationService.addNotification(partnerId,"Bạn Có Đơn Đặt Đồ Ăn Mới", "Bạn Có Đơn Đặt Đồ Ăn Mới", "#!/order-food");
                 restaurantOrderService.updateStatusBill(order,"active");
+
                 return new RedirectView(WebConfig.url+"/restaurant/#!/order-detail/"+id);
             } else {
                 restaurantOrderService.updateStatusBill(order,"cancel");

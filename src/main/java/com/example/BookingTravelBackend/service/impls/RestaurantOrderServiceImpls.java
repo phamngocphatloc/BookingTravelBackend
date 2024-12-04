@@ -5,6 +5,7 @@ import com.example.BookingTravelBackend.payload.Request.OrderFoodRequest;
 import com.example.BookingTravelBackend.payload.respone.OrderFoodResponse;
 import com.example.BookingTravelBackend.Repository.RestaurantCartRepository;
 import com.example.BookingTravelBackend.Repository.CartDetailsRepository;
+import com.example.BookingTravelBackend.service.PartnerNotificationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -27,6 +28,7 @@ public class RestaurantOrderServiceImpls implements com.example.BookingTravelBac
     private final RestaurantCartRepository cartRepository;
     private final CartDetailsRepository cartDetailsRepository;
     private final UserRepository userRepository;
+    private final PartnerNotificationService partnerNotificationService;
     @Override
     public RestaurantOrder findById(int id) {
         return restaurantOrderRepository.findById(id).get();
