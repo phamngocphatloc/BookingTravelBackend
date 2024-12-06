@@ -63,5 +63,7 @@ public class User {
     @OneToMany(mappedBy = "user2")
     private List<Friendship> friendshipsAsUser2;  // Danh sách kết bạn của người dùng (user2)
 
+    @OneToOne (mappedBy = "user")
+    private Wallet wallet;
 
 }

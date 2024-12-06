@@ -49,6 +49,9 @@ public class Booking {
     @OneToMany (mappedBy = "booking", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<BookingDetails> listDetails;
 
+    @OneToMany (mappedBy = "booking")
+    private List<Invoice> invoice;
+
     @OneToMany (mappedBy = "bookingBuyed", fetch = FetchType.EAGER)
     private List<RestaurantOrder> listOrderFood;
     private String status;

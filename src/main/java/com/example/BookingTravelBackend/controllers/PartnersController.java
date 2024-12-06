@@ -21,6 +21,7 @@ public class PartnersController {
     private final HotelService hotelService;
     private final RoomService roomService;
     private final PartnerNotificationService partnerNotificationService;
+    private final WalletService walletService;
 
     @GetMapping("/get_all")
     public ResponseEntity<HttpRespone> ListAllPartnerResponse() {
@@ -126,5 +127,15 @@ public class PartnersController {
     @DeleteMapping ("delete_notification")
     public ResponseEntity<HttpRespone> DeleteNotification (@RequestParam int notificationId){
         return ResponseEntity.ok(partnerNotificationService.DeleteNotification(notificationId));
+    }
+
+    @GetMapping ("wallet")
+    public ResponseEntity<HttpRespone> GetWallet (@RequestParam int partnerId){
+        return ResponseEntity.ok(walletService.getWalletByPartner(partnerId));
+    }
+
+    @GetMapping ("room_reservation_number")
+    public ResponseEntity<HttpRespone> RoomReservationNumber (@RequestParam int hotelId){
+        return ResponseEntity.ok(partnersHotelService.RoomReservationNumber(hotelId));
     }
 }

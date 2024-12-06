@@ -1,6 +1,6 @@
 package com.example.BookingTravelBackend.service.impls;
 
-import com.example.BookingTravelBackend.Repository.HotelPartnersRepository;
+import com.example.BookingTravelBackend.Repository.RoomRepository;
 import com.example.BookingTravelBackend.Repository.HotelRepository;
 import com.example.BookingTravelBackend.Repository.PartnersRepository;
 import com.example.BookingTravelBackend.Repository.TypeRoomRepository;
@@ -10,8 +10,10 @@ import com.example.BookingTravelBackend.entity.User;
 import com.example.BookingTravelBackend.payload.Request.TypeRoomRequest;
 import com.example.BookingTravelBackend.payload.respone.HotelPartnersResponse;
 import com.example.BookingTravelBackend.payload.respone.HttpRespone;
+import com.example.BookingTravelBackend.payload.respone.RoomBookingResponse;
 import com.example.BookingTravelBackend.payload.respone.TypeRoomResponse;
 import com.example.BookingTravelBackend.service.PartnersHotelService;
+import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -27,6 +29,7 @@ public class PartnersHotelServiceImpls implements PartnersHotelService {
     private final HotelRepository hotelRepository;
     private final PartnersRepository hotelPartnersRepository;
     private final TypeRoomRepository typeRoomRepository;
+    private final RoomRepository roomRepository;
     @Override
     public List<HotelPartnersResponse> listPartnersByUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -121,6 +124,20 @@ public class PartnersHotelServiceImpls implements PartnersHotelService {
         }
         return new HttpRespone(HttpStatus.OK.value(),"success",responses);
 
+    }
+
+    @Override
+    public HttpRespone RoomReservationNumber(int hotelId) {
+        List<Tuple> results = roomRepository.getRoomBookingsByHotelId(hotelId);
+        List<RoomBookingResponse> roomBookingResponses = new ArrayList<>();
+
+        for (Tuple result : results) {
+            int roomId = (int) result.get("room_id");
+            String roomName = (String) result.get("room_name");
+            int totalBookings = (int) result.get("total_bookings");
+            roomBookingResponses.add(new RoomBookingResponse(roomId, roomName, totalBookings));
+        }
+        return new HttpRespone(HttpStatus.OK.value(), "success", roomBookingResponses);
     }
 
 

@@ -38,6 +38,10 @@ public class Post {
     private CategoryBlog category;
     private Timestamp createdAt;
     private Timestamp updatedAt;
+    // Quan hệ OneToOne với HotelPartners, có thể null
+    @OneToOne
+    @JoinColumn(name = "partnerId", nullable = true) // nullable = true cho phép partner có thể null
+    private HotelPartners partner;
     @Column(name = "isAd")
     private boolean isAd;
 }
