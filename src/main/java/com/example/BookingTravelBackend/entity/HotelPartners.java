@@ -35,5 +35,8 @@ public class HotelPartners {
     private List<ReviewPartner> listReviews;
 
     @OneToMany (mappedBy = "partNerType")
-    public List<TypeRoom> listTypeRooms;
+    private List<TypeRoom> listTypeRooms;
+
+    @OneToOne (mappedBy = "partner")
+    private Wallet wallet;
 }

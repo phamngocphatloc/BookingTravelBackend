@@ -22,7 +22,7 @@ public class PostResponse {
     private List<CommentPostResponse> listComment;
     private List<PostMediaResponse> listPostMedia = new ArrayList<>();
     private PostStatusResponse postStatusResponse;
-
+    private HotelPartnersResponse hotelPartnersResponse = null;
     public PostResponse (Post post){
         this.postId = post.getPostId();
         this.datePost = post.getDatePost();
@@ -42,5 +42,9 @@ public class PostResponse {
             response.setMediaUrl(item.getMediaUrl());
             listPostMedia.add(response);
         });
+
+        if (post.getPartner() != null){
+            this.hotelPartnersResponse = new HotelPartnersResponse(post.getPartner());
+        }
     }
 }

@@ -1,6 +1,8 @@
 package com.example.BookingTravelBackend.Repository;
 
 import com.example.BookingTravelBackend.entity.Room;
+import com.example.BookingTravelBackend.payload.respone.RoomBookingResponse;
+import jakarta.persistence.Tuple;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -78,5 +80,26 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
     @Query (value = "select * from room where hotel_id = ?1 and is_delete = 0", nativeQuery = true)
     public List<Room> findRoomByHotel (int hotelId);
 
+
+    @Query(value = "SELECT \n" +
+            "    room.room_id, \n" +
+            "    room.room_name, \n" +
+            "    COUNT(booking_details.booking_id) AS total_bookings\n" +
+            "FROM \n" +
+            "    room\n" +
+            "LEFT JOIN \n" +
+            "    booking_details ON room.room_id = booking_details.room_id\n" +
+            "LEFT JOIN \n" +
+            "    booking ON booking_details.booking_id = booking.booking_id \n" +
+            "    AND room.hotel_id = 1\n" +
+            "    AND YEAR(booking.created_at) = YEAR(GETDATE())  -- Chỉ lấy đặt phòng trong năm hiện tại\n" +
+            "    AND MONTH(booking.created_at ) = MONTH(GETDATE())  -- Chỉ lấy đặt phòng trong tháng hiện tại\n" +
+            "WHERE \n" +
+            "    room.hotel_id = :hotelId\n" +
+            "GROUP BY \n" +
+            "    room.room_id, room.room_name\n" +
+            "order by total_bookings desc",
+            nativeQuery = true)
+    List<Tuple> getRoomBookingsByHotelId(@Param("hotelId") int hotelId);
 
 }

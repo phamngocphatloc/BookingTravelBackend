@@ -53,4 +53,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "from follow \n" +
             "where follow.follower_id = ?1)",nativeQuery = true)
     public List<User> selectFollowingByUser (int userId);
+
+    public List<User> findByWalletIsNull();
 }
