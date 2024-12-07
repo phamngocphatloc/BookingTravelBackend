@@ -10,15 +10,14 @@ import com.example.BookingTravelBackend.payload.Request.ChangePasswordRequest;
 import com.example.BookingTravelBackend.payload.Request.LoginRequest;
 import com.example.BookingTravelBackend.payload.Request.UserInfoRequest;
 import com.example.BookingTravelBackend.payload.Request.UserRequest;
-import com.example.BookingTravelBackend.payload.respone.JwtResponse;
-import com.example.BookingTravelBackend.payload.respone.UserDetailsResponse;
-import com.example.BookingTravelBackend.payload.respone.UserInfoResponse;
+import com.example.BookingTravelBackend.payload.respone.*;
 import com.example.BookingTravelBackend.service.EmailService;
 import com.example.BookingTravelBackend.service.JwtService;
 import com.example.BookingTravelBackend.service.UserService;
 import com.example.BookingTravelBackend.service.VerificationTokenService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,7 +25,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.example.BookingTravelBackend.payload.respone.PostResponse;
 import com.example.BookingTravelBackend.Repository.PostRepository;
 
 import java.sql.Timestamp;
@@ -228,5 +226,17 @@ public class UserServiceImpls implements UserService {
             listUser.add(new UserInfoResponse(item));
         });
         return listUser;
+    }
+
+    @Override
+    public HttpRespone GetAllUser() {
+        List<User> listUser = userRepository.findAll();
+        List<UserInfoResponse> listReponse  =  new ArrayList<>();
+        if(!listUser.isEmpty()){
+            listUser.stream().forEach(item->{
+                listReponse.add(new UserInfoResponse(item));
+            });
+        }
+        return new HttpRespone(HttpStatus.OK.value(), "success", listReponse);
     }
 }
