@@ -1,17 +1,12 @@
 package com.example.BookingTravelBackend.service.impls;
 
-import com.example.BookingTravelBackend.Repository.RoomRepository;
-import com.example.BookingTravelBackend.Repository.HotelRepository;
-import com.example.BookingTravelBackend.Repository.PartnersRepository;
-import com.example.BookingTravelBackend.Repository.TypeRoomRepository;
+import com.example.BookingTravelBackend.Repository.*;
 import com.example.BookingTravelBackend.entity.HotelPartners;
+import com.example.BookingTravelBackend.entity.Invoice;
 import com.example.BookingTravelBackend.entity.TypeRoom;
 import com.example.BookingTravelBackend.entity.User;
 import com.example.BookingTravelBackend.payload.Request.TypeRoomRequest;
-import com.example.BookingTravelBackend.payload.respone.HotelPartnersResponse;
-import com.example.BookingTravelBackend.payload.respone.HttpRespone;
-import com.example.BookingTravelBackend.payload.respone.RoomBookingResponse;
-import com.example.BookingTravelBackend.payload.respone.TypeRoomResponse;
+import com.example.BookingTravelBackend.payload.respone.*;
 import com.example.BookingTravelBackend.service.PartnersHotelService;
 import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +21,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class PartnersHotelServiceImpls implements PartnersHotelService {
-    private final HotelRepository hotelRepository;
+    private final InvoiceRepository invoiceRepository;
     private final PartnersRepository hotelPartnersRepository;
     private final TypeRoomRepository typeRoomRepository;
     private final RoomRepository roomRepository;
@@ -138,6 +133,19 @@ public class PartnersHotelServiceImpls implements PartnersHotelService {
             roomBookingResponses.add(new RoomBookingResponse(roomId, roomName, totalBookings));
         }
         return new HttpRespone(HttpStatus.OK.value(), "success", roomBookingResponses);
+    }
+
+    @Override
+    public HttpRespone FindAllInvoiceByHotelId(int hotelId) {
+        if (checkHotelPartnersByHotelId(hotelId)==false){
+            throw new IllegalArgumentException("Bạn Không Phải Admin Của Khách Sạn Này");
+        }
+        List<Invoice> listInvoice = invoiceRepository.findAllBookingByHotelId(hotelId);
+        List<InvoiceResponse> responses = new ArrayList<>();
+        listInvoice.stream().forEach(item -> {
+            responses.add(new InvoiceResponse(item));
+        });
+        return new HttpRespone(HttpStatus.OK.value(), "success", responses);
     }
 
 
