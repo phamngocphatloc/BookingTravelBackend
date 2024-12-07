@@ -116,26 +116,31 @@ public class PartnersController {
     @PostMapping("handle_order_food")
     public ResponseEntity<HttpRespone> HandleOrderFood(@RequestParam int hotelId, @RequestParam int orderId,
                                                        @RequestParam String Status) {
-        return ResponseEntity.ok(restaurantService.HandleOrderFood(hotelId,orderId,Status));
+        return ResponseEntity.ok(restaurantService.HandleOrderFood(hotelId, orderId, Status));
     }
 
-    @GetMapping ("get_all_notification")
-    public ResponseEntity<HttpRespone> GetAllNotification (@RequestParam int partnerId){
+    @GetMapping("get_all_notification")
+    public ResponseEntity<HttpRespone> GetAllNotification(@RequestParam int partnerId) {
         return ResponseEntity.ok(partnerNotificationService.GetAllNotificationByPartner(partnerId));
     }
 
-    @DeleteMapping ("delete_notification")
-    public ResponseEntity<HttpRespone> DeleteNotification (@RequestParam int notificationId){
+    @DeleteMapping("delete_notification")
+    public ResponseEntity<HttpRespone> DeleteNotification(@RequestParam int notificationId) {
         return ResponseEntity.ok(partnerNotificationService.DeleteNotification(notificationId));
     }
 
-    @GetMapping ("wallet")
-    public ResponseEntity<HttpRespone> GetWallet (@RequestParam int partnerId){
+    @GetMapping("wallet")
+    public ResponseEntity<HttpRespone> GetWallet(@RequestParam int partnerId) {
         return ResponseEntity.ok(walletService.getWalletByPartner(partnerId));
     }
 
-    @GetMapping ("room_reservation_number")
-    public ResponseEntity<HttpRespone> RoomReservationNumber (@RequestParam int hotelId){
+    @GetMapping("room_reservation_number")
+    public ResponseEntity<HttpRespone> RoomReservationNumber(@RequestParam int hotelId) {
         return ResponseEntity.ok(partnersHotelService.RoomReservationNumber(hotelId));
+    }
+
+    @GetMapping("get_all_invoice")
+    public ResponseEntity<HttpRespone> GetAllInvoice(@RequestParam int hotelId) {
+        return ResponseEntity.ok(partnersHotelService.FindAllInvoiceByHotelId(hotelId));
     }
 }

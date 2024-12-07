@@ -15,4 +15,5 @@ public interface PartnersHotelService {
     public TypeRoomResponse saveTypeRoom (TypeRoomRequest request);
     public HttpRespone GetAllPartners();
     public HttpRespone RoomReservationNumber (int hotelId);
+    public HttpRespone FindAllInvoiceByHotelId (int hotelId);
 }
