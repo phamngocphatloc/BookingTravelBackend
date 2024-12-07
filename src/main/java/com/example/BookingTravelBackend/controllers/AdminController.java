@@ -30,5 +30,8 @@ public class AdminController {
     public ResponseEntity<HttpRespone> GetAllPartnerts (){
         return ResponseEntity.ok(partnersHotelService.GetAllPartners());
     }
-
+    @GetMapping("get_all_user")
+    public ResponseEntity<HttpRespone> getAllUser(){
+        return ResponseEntity.ok(userService.GetAllUser());
+    }
 }
