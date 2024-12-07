@@ -34,4 +34,8 @@ public class AdminController {
     public ResponseEntity<HttpRespone> getAllUser(){
         return ResponseEntity.ok(userService.GetAllUser());
     }
+    @GetMapping("get_all_post")
+    public ResponseEntity<HttpRespone> getAllPost(){
+        return ResponseEntity.ok(postService.GetAllPost());
+    }
 }
