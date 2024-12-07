@@ -25,6 +25,8 @@ public class AdminController {
     private final BillService billService;
     private final UserService userService;
     private final PartnersHotelService partnersHotelService;
+    private final WalletService walletService;
+
 
     @GetMapping("get_all_partners")
     public ResponseEntity<HttpRespone> GetAllPartnerts (){
@@ -37,5 +39,9 @@ public class AdminController {
     @GetMapping("get_all_post")
     public ResponseEntity<HttpRespone> getAllPost(){
         return ResponseEntity.ok(postService.GetAllPost());
+    }
+    @GetMapping("get_transaction_wallet")
+    public ResponseEntity<HttpRespone> GetTransactionWallet(@RequestParam(defaultValue = "") String type){
+        return ResponseEntity.ok(walletService.getTransactioWallet(type));
     }
 }
