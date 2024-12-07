@@ -4,10 +4,7 @@ import com.example.BookingTravelBackend.entity.Post;
 import com.example.BookingTravelBackend.entity.User;
 import com.example.BookingTravelBackend.payload.Request.CommentRequest;
 import com.example.BookingTravelBackend.payload.Request.PostRequest;
-import com.example.BookingTravelBackend.payload.respone.CommentPostResponse;
-import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
-import com.example.BookingTravelBackend.payload.respone.PostCommentResponse;
-import com.example.BookingTravelBackend.payload.respone.PostResponse;
+import com.example.BookingTravelBackend.payload.respone.*;
 
 import java.util.List;
 
@@ -25,4 +22,6 @@ public interface PostService {
     public int updatePostById (int id);
     public PostResponse findPostResponseById (int id);
     public int Like (int postId, String type);
+    public HttpRespone GetAllPost();
+    public void DeletePost (int id);
 }

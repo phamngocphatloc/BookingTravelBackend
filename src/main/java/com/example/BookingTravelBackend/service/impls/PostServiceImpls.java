@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -205,4 +206,23 @@ public class PostServiceImpls implements PostService {
         int totalLike = likeRepository.AllLikesByPost(postId,type);
         return totalLike;
     }
+
+    @Override
+    public HttpRespone GetAllPost() {
+        List<Post> listposts = postRepository.findAll();
+        List<PostResponse> response = new ArrayList<>();
+        if (!listposts.isEmpty()) {
+            listposts.stream().forEach(item -> {
+                response.add(new PostResponse(item));
+            });
+        }
+        return new HttpRespone(HttpStatus.OK.value(), "success", response);
+    }
+
+    @Override
+    public void DeletePost(int id) {
+
+    }
+
+
 }
