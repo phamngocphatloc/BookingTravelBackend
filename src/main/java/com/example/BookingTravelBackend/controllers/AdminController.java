@@ -25,13 +25,21 @@ public class AdminController {
     private final BillService billService;
     private final UserService userService;
     private final PartnersHotelService partnersHotelService;
+    private final WalletService walletService;
+
 
     @GetMapping("get_all_partners")
     public ResponseEntity<HttpRespone> GetAllPartnerts (){
         return ResponseEntity.ok(partnersHotelService.GetAllPartners());
     }
     @GetMapping("get_all_user")
-    public ResponseEntity<HttpRespone> getAllUser(){
+    public ResponseEntity<HttpRespone> GetAllUser(){
         return ResponseEntity.ok(userService.GetAllUser());
     }
+
+    @GetMapping("get_transaction_wallet")
+    public ResponseEntity<HttpRespone> GetTransactionWallet(@RequestParam(defaultValue = "") String type){
+        return ResponseEntity.ok(walletService.getTransactioWallet(type));
+    }
+
 }
