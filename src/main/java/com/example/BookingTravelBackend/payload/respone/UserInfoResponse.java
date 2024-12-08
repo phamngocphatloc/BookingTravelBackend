@@ -15,6 +15,7 @@ public class UserInfoResponse {
     private String avatar;
 
     private boolean authentic;
+    private String phone;
 
     public UserInfoResponse(User user) {
         this.userId = user.getId();
@@ -22,5 +23,6 @@ public class UserInfoResponse {
         this.verify = user.isVerify();
         this.avatar = user.getAvatar();
         this.authentic = user.isAuthentic();
+        this.phone = user.getPhone();
     }
 }

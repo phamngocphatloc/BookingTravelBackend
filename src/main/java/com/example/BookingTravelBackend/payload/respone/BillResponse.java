@@ -28,7 +28,7 @@ BillResponse {
 
     private Date createdAt;
 
-    UserDetailsResponse userCreate;
+    UserInfoResponse userCreate;
 
     private List<BookingResponse> booking = new ArrayList<>();
 
@@ -48,7 +48,7 @@ BillResponse {
         bill.getListDetails().stream().forEach(item -> {
             this.booking.add(new BookingResponse(item));
         });
-        this.userCreate = new UserDetailsResponse(bill.getUserBooking());
+        this.userCreate = new UserInfoResponse(bill.getUserBooking());
         this.checkIn = bill.getCheckIn();
         this.checkOut = bill.getCheckOut();
         this.status = bill.getStatus();

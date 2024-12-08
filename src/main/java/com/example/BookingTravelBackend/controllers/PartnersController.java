@@ -143,4 +143,8 @@ public class PartnersController {
     public ResponseEntity<HttpRespone> GetAllInvoice(@RequestParam int hotelId) {
         return ResponseEntity.ok(partnersHotelService.FindAllInvoiceByHotelId(hotelId));
     }
+    @GetMapping("get_invoice_id")
+    public ResponseEntity<HttpRespone> GetInvoiceById(@RequestParam int invoiceId) {
+        return ResponseEntity.ok(billService.findInvoiceById(invoiceId));
+    }
 }
