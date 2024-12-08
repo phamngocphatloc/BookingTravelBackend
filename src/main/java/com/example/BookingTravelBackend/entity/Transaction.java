@@ -57,6 +57,16 @@ public class Transaction {
     @JoinColumn(name = "initiator_id", nullable = false)
     private User initiator;
 
+    // Thông tin tài khoản ngân hàng cho giao dịch
+    @Column(nullable = true)
+    private String bankAccountNumber;
+
+    @Column(nullable = true)
+    private String bankName;
+
+    @Column (name = "AccountHolderName")
+    private String accountHolderName;
+
     // Người tạo giao dịch nếu ví là của partner
     @ManyToOne
     @JoinColumn(name = "user_id_for_partner", nullable = true)

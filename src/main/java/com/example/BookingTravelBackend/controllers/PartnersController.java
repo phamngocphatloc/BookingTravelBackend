@@ -3,12 +3,14 @@ package com.example.BookingTravelBackend.controllers;
 import com.example.BookingTravelBackend.payload.Request.*;
 import com.example.BookingTravelBackend.payload.respone.HotelPartnersResponse;
 import com.example.BookingTravelBackend.payload.respone.HttpRespone;
+import com.example.BookingTravelBackend.payload.respone.RenuveResponse;
 import com.example.BookingTravelBackend.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -146,5 +148,16 @@ public class PartnersController {
     @GetMapping("get_invoice_id")
     public ResponseEntity<HttpRespone> GetInvoiceById(@RequestParam int invoiceId) {
         return ResponseEntity.ok(billService.findInvoiceById(invoiceId));
+    }
+    @GetMapping("/revenue/{year}/{hotelId}")
+    public ResponseEntity<HttpRespone> getRevenueByMonth(@PathVariable int year, @PathVariable int hotelId) {
+        List<RenuveResponse> listResponse = new ArrayList<>();
+        List<Object[]> listRenuve = billService.getRevenueByMonth(year,hotelId);
+        if (!listRenuve.isEmpty()) {
+            billService.getRevenueByMonth(year, hotelId).stream().forEach(item -> {
+                listResponse.add(new RenuveResponse(item));
+            });
+        }
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", listResponse));
     }
 }

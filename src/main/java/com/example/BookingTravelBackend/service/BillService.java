@@ -28,4 +28,5 @@ public interface BillService {
     public List<BillResponse> SelectBookingByHotelIdAndStatus (int hotelId, String status, String phone);
     public HttpRespone updateBillId (int bookingId, String Status);
     public HttpRespone findInvoiceById (int invoiceId);
+    public List<Object[]> getRevenueByMonth(int year, int hotelId);
 }
