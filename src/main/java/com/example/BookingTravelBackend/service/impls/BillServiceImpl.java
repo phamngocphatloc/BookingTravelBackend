@@ -19,8 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -314,7 +312,10 @@ public class BillServiceImpl implements BillService {
     }
 
 
-
+    @Override
+    public List<Object[]> getRevenueByMonth(int year, int hotelId) {
+        return invoiceRepository.getTotalRevenueByMonth(year, hotelId);
+    }
 
 
 }

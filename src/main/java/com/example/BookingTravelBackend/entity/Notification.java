@@ -5,23 +5,34 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 @Entity
 @Getter
 @Setter
 public class Notification {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private int id;
-    private String message;
-    private boolean isRead;
-    private Timestamp createdAt;
+
+    @Column (name = "Title", columnDefinition = "nvarchar(255)")
+    private String title;
+
+    @Column (name = "content", columnDefinition = "nvarchar(255)")
+    private String content;
+
+    @Column(nullable = false)
+    private Date createdDate = new Date(); // Thời gian tạo thông báo
+
+    @Column (name = "link")
+    private String link;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn (name = "userId")
     private User user;
 
-    private String notificationType; // ví dụ: "like", "comment", "follow"
+    @Column (name = "IsDelete")
+    private boolean isDelete;
 
 
 }
