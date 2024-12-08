@@ -19,7 +19,7 @@ public class OrderFoodResponse {
     private String coupon;
     private String payment;
     private String Status;
-    private UserDetailsResponse user;
+    private UserInfoResponse user;
     private BillResponse bill;
     private List<OrderFoodDetailResponse> listOrderDetails = new ArrayList<>();
     private int totalPrice = 0;
@@ -32,7 +32,7 @@ public class OrderFoodResponse {
         this.coupon = order.getCoupon();
         this.payment = order.getPayment();
         this.Status = order.getStatus();
-        this.user = new UserDetailsResponse(order.getUserOrder());
+        this.user = new UserInfoResponse(order.getUserOrder());
         this.bill = new BillResponse(order.getBookingBuyed());
         order.getListItems().forEach((key, value) -> {
             listOrderDetails.add(new OrderFoodDetailResponse(value));

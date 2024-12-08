@@ -3,9 +3,7 @@ package com.example.BookingTravelBackend.service.impls;
 import com.example.BookingTravelBackend.Repository.*;
 import com.example.BookingTravelBackend.entity.*;
 import com.example.BookingTravelBackend.payload.Request.BookingRequest;
-import com.example.BookingTravelBackend.payload.respone.BillResponse;
-import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
-import com.example.BookingTravelBackend.payload.respone.RevenueResponse;
+import com.example.BookingTravelBackend.payload.respone.*;
 import com.example.BookingTravelBackend.service.BillService;
 import com.example.BookingTravelBackend.service.PartnerNotificationService;
 import com.example.BookingTravelBackend.util.HandleSort;
@@ -15,12 +13,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -185,7 +185,8 @@ public class BillServiceImpl implements BillService {
 
     @Override
     @Transactional
-    public BillResponse updateBillId(int bookingId, String status) {
+    public HttpRespone updateBillId(int bookingId, String status) {
+        Invoice invoice = null;
         // Lấy người dùng đã đăng nhập
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userLogin = (User) authentication.getPrincipal();
@@ -206,17 +207,12 @@ public class BillServiceImpl implements BillService {
             throw new IllegalArgumentException("Bạn Không Có Quyền Update Đơn Đặt Hàng Này");
         }
 
-        // Kiểm tra nếu trạng thái là 'success' và ngày checkout hợp lệ
-        if ("success".equalsIgnoreCase(status)) {
-            validateCheckoutDate(bookingEntity);
-        }
-
         // Chỉ tạo và xử lý hóa đơn nếu booking đang ở trạng thái "active"
         if (status.equalsIgnoreCase("success") && bookingEntity.getStatus().equalsIgnoreCase("active")) {
             // Ngăn việc tạo hóa đơn trùng lặp bằng cách kiểm tra xem booking đã có hóa đơn chưa
             if (bookingEntity.getInvoice().isEmpty()) { // Giả sử Booking có trường Invoice
                 // Tạo và lưu hóa đơn
-                Invoice invoice = createInvoice(userLogin, bookingEntity);
+                invoice = createInvoice(userLogin, bookingEntity);
 
                 // Xử lý giao dịch
                 processTransaction(userLogin, invoice, bookingEntity);
@@ -228,8 +224,19 @@ public class BillServiceImpl implements BillService {
         // Cập nhật trạng thái booking
         bookingEntity.setStatus(status);
         Booking bookingSaved = billRepository.save(bookingEntity);
+        if (invoice != null) {
+            return new HttpRespone(HttpStatus.OK.value(), "success", new InvoiceResponse(invoice));
+        }else{
+            return new HttpRespone(HttpStatus.OK.value(), "success", new BillResponse(bookingSaved));
+        }
+    }
 
-        return new BillResponse(bookingSaved);
+    @Override
+    public HttpRespone findInvoiceById(int invoiceId) {
+        Invoice invoice = invoiceRepository.findById(invoiceId).orElseThrow(() -> {
+           throw new IllegalArgumentException("Không Tìm Thấy Hoá Đơn");
+        });
+        return new HttpRespone(HttpStatus.OK.value(), "success",new InvoiceResponse(invoice));
     }
 
 
@@ -237,13 +244,8 @@ public class BillServiceImpl implements BillService {
         return hotelPartnersRepository.checkHotelPartnersByUser(userLogin.getId(), hotel.getHotelId()) > 0;
     }
 
-    private void validateCheckoutDate(Booking bookingEntity) {
-        Date today = new Date(System.currentTimeMillis());
-        Date checkOutDate = bookingEntity.getCheckOut();
-        if (today.before(checkOutDate)) {
-            throw new IllegalArgumentException("Chưa đến ngày checkout, không thể cập nhật trạng thái thành 'success'.");
-        }
-    }
+
+
 
     private Invoice createInvoice(User userLogin, Booking bookingSaved) {
         Invoice invoice = new Invoice();

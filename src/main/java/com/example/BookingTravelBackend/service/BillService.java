@@ -7,6 +7,7 @@ import com.example.BookingTravelBackend.payload.respone.BillResponse;
 import com.example.BookingTravelBackend.payload.respone.PaginationResponse;
 import com.example.BookingTravelBackend.payload.respone.RevenueResponse;
 
+import com.example.BookingTravelBackend.payload.respone.HttpRespone;
 import java.util.Date;
 import java.util.List;
 
@@ -25,5 +26,6 @@ public interface BillService {
 
     public void updateStatusBill (String status, int billId);
     public List<BillResponse> SelectBookingByHotelIdAndStatus (int hotelId, String status, String phone);
-    public BillResponse updateBillId (int bookingId, String Status);
+    public HttpRespone updateBillId (int bookingId, String Status);
+    public HttpRespone findInvoiceById (int invoiceId);
 }
