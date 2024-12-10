@@ -22,7 +22,7 @@ public class AdminController {
     private final PostService postService;
     private final HotelService hotelService;
     private final RoomService roomService;
-    private final BillService billService;
+    private final ReportService reportService;
     private final UserService userService;
     private final PartnersHotelService partnersHotelService;
     private final WalletService walletService;
@@ -43,5 +43,10 @@ public class AdminController {
     @GetMapping("get_transaction_wallet")
     public ResponseEntity<HttpRespone> GetTransactionWallet(@RequestParam(defaultValue = "") String type){
         return ResponseEntity.ok(walletService.getTransactioWallet(type));
+    }
+
+    @GetMapping ("get_all_report_pending")
+    public ResponseEntity<HttpRespone> getAllReportPending(){
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", reportService.getReport()));
     }
 }
