@@ -86,6 +86,9 @@ public class PostServiceImpls implements PostService {
     @Override
     @Transactional
     public PostResponse AddPost(PostRequest postRequest) {
+        if (postRequest.getContent().equalsIgnoreCase("")) {
+            throw new IllegalArgumentException("Vui Lòng Nhập Nội Dung Bài Viết");
+        }
         // Tạo bài viết mới
         Post post = new Post();
         post.setContent(postRequest.getContent());
@@ -127,7 +130,9 @@ public class PostServiceImpls implements PostService {
     @Override
     public PostCommentResponse CommentPost(CommentRequest request, User user) {
         Post post = postRepository.findById(request.getPostid()).get();
-
+        if (request.getComment().equalsIgnoreCase("")){
+            throw new IllegalArgumentException("Vui Lòng Nhập Comment");
+        }
         CommentPost comment = new CommentPost();
         comment.setComment(request.getComment());
         comment.setCommentPost(post);
