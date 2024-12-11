@@ -304,6 +304,7 @@ public class BillServiceImpl implements BillService {
         transaction.setAmount(new BigDecimal(amount));
         transaction.setDescription("Thanh Toán Tiền Hoá Đơn");
         transaction.setWallet(wallet);
+
         transaction.setFee(BigDecimal.ZERO);
         transaction.setStatus(Transaction.TransactionStatus.COMPLETED);
         transaction.setInitiator(userLogin);

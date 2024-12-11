@@ -25,5 +25,8 @@ public class Report {
     @ManyToOne
     @JoinColumn(name = "reported_user_id")
     private User reportedUser; // Đối tượng bị báo cáo
+    @OneToOne
+    @JoinColumn (name = "postId")
+    private Post post;
 
 }

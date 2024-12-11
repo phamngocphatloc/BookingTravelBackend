@@ -16,6 +16,7 @@ public class ReportRespone {
     private Timestamp reportedAt;
     private UserInfoResponse reportedBy;
     private UserInfoResponse reportedUser;
+    private PostResponse postResponse;
     public ReportRespone(Report report) {
         this.id = report.getId();
         this.reportType = report.getReportType();
@@ -24,6 +25,6 @@ public class ReportRespone {
         this.reportedAt = report.getReportedAt();
         this.reportedBy = new UserInfoResponse(report.getReportedBy());
         this.reportedUser = new UserInfoResponse(report.getReportedUser());
-
+        this.postResponse = new PostResponse(report.getPost());
     }
 }
