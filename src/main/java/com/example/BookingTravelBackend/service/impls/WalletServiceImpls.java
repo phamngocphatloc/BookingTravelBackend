@@ -77,6 +77,17 @@ public class WalletServiceImpls implements WalletService {
         }
     }
 
+    @Override
+    public HttpRespone WalletTransion(int id) {
+        Transaction transaction = transactionRepository.findById(id).orElseThrow(()->{
+            throw new IllegalArgumentException("Không tìm thấy Transaction");
+
+        });
+        transaction.setStatus(Transaction.TransactionStatus.COMPLETED);
+        return new HttpRespone(HttpStatus.OK.value(), "success",
+                new TransactionResponse(transactionRepository.save(transaction)));
+    }
+
     private void processPartnerWithdrawal(WithdrawRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userLogin = (User) authentication.getPrincipal();
