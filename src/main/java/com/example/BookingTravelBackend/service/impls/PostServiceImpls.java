@@ -167,6 +167,9 @@ public class PostServiceImpls implements PostService {
     @Override
     public PostResponse findPostResponseById(int id) {
         Post post = findById(id);
+        if (post.isDelete()){
+            throw new IllegalArgumentException("Bài Viết Đã Bị Xoá");
+        }
         Tuple Tuplestatus = postRepository.findPostStatusByPostId(id);
 
         // Ép kiểu Tuple và lấy giá trị từ các trường
@@ -225,8 +228,13 @@ public class PostServiceImpls implements PostService {
     }
 
     @Override
+    @Transactional
     public void DeletePost(int id) {
-
+        Post post = postRepository.findById(id).orElseThrow(() -> {
+           throw new IllegalArgumentException("Không Tìm Thấy Bài Viết Này");
+        });
+        post.setDelete(true);
+        postRepository.save(post);
     }
 
 
