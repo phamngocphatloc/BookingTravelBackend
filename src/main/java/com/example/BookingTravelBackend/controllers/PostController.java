@@ -66,4 +66,10 @@ public class PostController {
         int response = postService.Like(postId,type);
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(),"success",response));
     }
+
+    @DeleteMapping ("delete_post_id")
+    public ResponseEntity<String> DeletePostById (@RequestParam int postId){
+        postService.DeletePost(postId);
+        return ResponseEntity.ok("Xoá Bài Viết Thành Công ");
+    }
 }

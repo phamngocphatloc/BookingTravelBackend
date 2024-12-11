@@ -44,4 +44,6 @@ public class Post {
     private HotelPartners partner;
     @Column(name = "isAd")
     private boolean isAd;
+    @Column (nullable = true)
+    private boolean isDelete;
 }

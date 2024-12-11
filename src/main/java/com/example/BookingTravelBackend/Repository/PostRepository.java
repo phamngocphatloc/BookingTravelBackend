@@ -17,7 +17,7 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
     @Query (value = "select * from post where post.post_title like ?1 or ?1 = ''",nativeQuery = true)
     public Page<Post> findPostBySearch (String search, Pageable pageable);
 
-    @Query (value = "SELECT p.*, \n" +
+    @Query(value = "SELECT p.*, \n" +
             "       (\n" +
             "            -- Lượt xem (views) cộng thêm điểm\n" +
             "            COALESCE(p.view_post, 0) * 0.2 + \n" +
@@ -47,8 +47,10 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
             "    FROM comment_post\n" +
             "    GROUP BY comment_post.post_id\n" +
             ") c ON p.post_id = c.post_id\n" +
+            "WHERE p.is_delete = 0 \n" + // Added this condition
             "ORDER BY trending_score DESC;", nativeQuery = true)
-    public Page<Post> findTrending (Pageable pageable);
+    public Page<Post> findTrending(Pageable pageable);
+
 
     @Query (value = "SELECT \n" +
             "    COUNT(DISTINCT CASE WHEN l.type = 'like' THEN l.user_id END) AS total_likes,\n" +
