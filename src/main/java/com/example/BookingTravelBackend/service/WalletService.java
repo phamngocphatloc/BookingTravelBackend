@@ -7,4 +7,5 @@ public interface WalletService {
     public HttpRespone getWalletByPartner (int partnerId);
     public HttpRespone getTransactioWallet (String transactionType);
     public void processWithdrawal(WithdrawRequest request);
+    public HttpRespone WalletTransion(int id);
 }

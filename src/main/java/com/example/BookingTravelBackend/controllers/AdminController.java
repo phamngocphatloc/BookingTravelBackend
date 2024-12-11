@@ -49,4 +49,8 @@ public class AdminController {
     public ResponseEntity<HttpRespone> getAllReportPending(){
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", reportService.getReport()));
     }
+    @PostMapping("complete_transection")
+    public ResponseEntity<HttpRespone> CompleteTransection(@RequestParam int id){
+        return ResponseEntity.ok(walletService.WalletTransion(id));
+    }
 }
