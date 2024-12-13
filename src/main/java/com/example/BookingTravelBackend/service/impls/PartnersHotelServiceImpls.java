@@ -1,10 +1,10 @@
 package com.example.BookingTravelBackend.service.impls;
 
 import com.example.BookingTravelBackend.Repository.*;
-import com.example.BookingTravelBackend.entity.HotelPartners;
-import com.example.BookingTravelBackend.entity.Invoice;
-import com.example.BookingTravelBackend.entity.TypeRoom;
-import com.example.BookingTravelBackend.entity.User;
+import com.example.BookingTravelBackend.entity.*;
+import com.example.BookingTravelBackend.payload.Request.CreateHotelRequest;
+import com.example.BookingTravelBackend.payload.Request.CreatePartnerRequest;
+import com.example.BookingTravelBackend.payload.Request.ImageDesbriceRequest;
 import com.example.BookingTravelBackend.payload.Request.TypeRoomRequest;
 import com.example.BookingTravelBackend.payload.respone.*;
 import com.example.BookingTravelBackend.service.PartnersHotelService;
@@ -25,6 +25,10 @@ public class PartnersHotelServiceImpls implements PartnersHotelService {
     private final PartnersRepository hotelPartnersRepository;
     private final TypeRoomRepository typeRoomRepository;
     private final RoomRepository roomRepository;
+    private final CreatePartnerRepository createPartnerRepository;
+    private final CreateHotelRepository createHotelRepository;
+    private final TouristAttractionRepsitory touristAttractionRepository;
+    private final ImageDesbriceRequestRepository imageDesbriceRequestRepository;
     @Override
     public List<HotelPartnersResponse> listPartnersByUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -146,6 +150,90 @@ public class PartnersHotelServiceImpls implements PartnersHotelService {
             responses.add(new InvoiceResponse(item));
         });
         return new HttpRespone(HttpStatus.OK.value(), "success", responses);
+    }
+
+    public void validateCreatePartnerRequest(CreatePartnerRequest request) {
+        if (request.getPartnerName() == null || request.getPartnerName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Tên đối tác không được để trống.");
+        }
+        if (request.getPartnerName().length() > 100) {
+            throw new IllegalArgumentException("Tên đối tác không được dài hơn 100 ký tự.");
+        }
+
+        if (request.getHotelName() == null || request.getHotelName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Tên khách sạn không được để trống.");
+        }
+        if (request.getHotelName().length() > 100) {
+            throw new IllegalArgumentException("Tên khách sạn không được dài hơn 100 ký tự.");
+        }
+
+        if (request.getPhone() == null || request.getPhone().trim().isEmpty()) {
+            throw new IllegalArgumentException("Số điện thoại không được để trống.");
+        }
+        if (!request.getPhone().matches("\\d{10,15}")) { // Kiểm tra số điện thoại (10-15 số)
+            throw new IllegalArgumentException("Số điện thoại phải từ 10 đến 15 chữ số.");
+        }
+
+        if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
+            throw new IllegalArgumentException("Email không được để trống.");
+        }
+        if (!request.getEmail().matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) { // Kiểm tra định dạng email
+            throw new IllegalArgumentException("Email không đúng định dạng.");
+        }
+
+        if (request.getRequestHotel() == null || request.getRequestHotel().isEmpty()) {
+            throw new IllegalArgumentException("Cần cung cấp ít nhất một yêu cầu khách sạn.");
+        }
+        for (CreateHotelRequest requestHotel : request.getRequestHotel()){
+            if (requestHotel.getImageDesbriceRequests().isEmpty()){
+                throw new IllegalArgumentException("Cần cung cấp ít nhất một hình mô tả.");
+            }
+            if (requestHotel.getAddRess().isEmpty()){
+                throw new IllegalArgumentException("vui lòng nhập địa chỉ.");
+            }
+            if (requestHotel.getDesbrice().isEmpty()){
+                throw new IllegalArgumentException("vui lòng nhập mô tả.");
+            }
+        }
+
+    }
+
+
+    @Override
+    public HttpRespone RequestCreatePartners(CreatePartnerRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userLogin = (User) authentication.getPrincipal();
+        validateCreatePartnerRequest(request);
+        RequesttoCreatePartner requestCreatePartner = new RequesttoCreatePartner();
+        requestCreatePartner.setPartnerName(request.getPartnerName());
+        requestCreatePartner.setHotelName(request.getHotelName());
+        requestCreatePartner.setEmail(request.getEmail());
+        requestCreatePartner.setUserRequest(userLogin);
+        requestCreatePartner.setPhone(request.getPhone());
+        requestCreatePartner.setRequestHotel(new ArrayList<>());
+        requestCreatePartner.setBusinessLicense(request.getBusinessLicense());
+        RequesttoCreatePartner requestSaved = createPartnerRepository.save(requestCreatePartner);
+        for (CreateHotelRequest item : request.getRequestHotel()) {
+            RequesttoCreateHotel requestHotel = new RequesttoCreateHotel();
+            requestHotel.setRequesttoCreatePartner(requestSaved);
+            requestHotel.setDesbrice(item.getDesbrice().toString());
+            requestHotel.setAddRess(item.getAddRess());
+            TouristAttraction touristAttraction = touristAttractionRepository
+                    .findById(item.getTouristAttraction())
+                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy địa điểm này"));
+            requestHotel.setTouristAttraction(touristAttraction);
+            RequesttoCreateHotel requestHotelSaved = createHotelRepository.save(requestHotel);
+            for (ImageDesbriceRequest imageDesbriceRequest : item.getImageDesbriceRequests()) {
+                ImageDescribeRequest imageRequest = new ImageDescribeRequest();
+                imageRequest.setImage(imageDesbriceRequest.getLink());
+                imageRequest.setHotelRequest(requestHotelSaved);
+                ImageDescribeRequest saved = imageDesbriceRequestRepository.save(imageRequest);
+                requestHotelSaved.getImageDesbrice().add(saved);
+            }
+            requestSaved.getRequestHotel().add(requestHotelSaved);
+
+        }
+        return new HttpRespone(HttpStatus.OK.value(), "success", requestSaved);
     }
 
 

@@ -1,6 +1,7 @@
 package com.example.BookingTravelBackend.service;
 
 import com.example.BookingTravelBackend.entity.HotelPartners;
+import com.example.BookingTravelBackend.payload.Request.CreatePartnerRequest;
 import com.example.BookingTravelBackend.payload.Request.TypeRoomRequest;
 import com.example.BookingTravelBackend.payload.respone.HotelPartnersResponse;
 import com.example.BookingTravelBackend.payload.respone.HttpRespone;
@@ -16,4 +17,5 @@ public interface PartnersHotelService {
     public HttpRespone GetAllPartners();
     public HttpRespone RoomReservationNumber (int hotelId);
     public HttpRespone FindAllInvoiceByHotelId (int hotelId);
+    public HttpRespone RequestCreatePartners (CreatePartnerRequest request);
 }
