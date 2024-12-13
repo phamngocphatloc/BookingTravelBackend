@@ -9,6 +9,7 @@ import com.example.BookingTravelBackend.payload.Request.TypeRoomRequest;
 import com.example.BookingTravelBackend.payload.respone.*;
 import com.example.BookingTravelBackend.service.PartnersHotelService;
 import jakarta.persistence.Tuple;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -29,6 +30,12 @@ public class PartnersHotelServiceImpls implements PartnersHotelService {
     private final CreateHotelRepository createHotelRepository;
     private final TouristAttractionRepsitory touristAttractionRepository;
     private final ImageDesbriceRequestRepository imageDesbriceRequestRepository;
+    private final UserRepository userRepository;
+    private final PartnersRepository partnersRepository;
+    private final ParnersManagerRepository parnersManagerRepository;
+    private final HotelRepository hotelRepository;
+    private final ImageDesbriceRepository imageDesbriceRepository;
+
     @Override
     public List<HotelPartnersResponse> listPartnersByUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -59,9 +66,7 @@ public class PartnersHotelServiceImpls implements PartnersHotelService {
     public List<TypeRoomResponse> selectAllTypeRoomByPartnersId(int partNerId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userLogin = (User) authentication.getPrincipal();
-        boolean partnerAdmin = userLogin.getListPartnersManager().stream()
-                .anyMatch(item -> item.getId() == partNerId);
-        if (!partnerAdmin){
+        if (hotelPartnersRepository.checkHotelPartnersByUser(userLogin.getId(), partNerId)==0){
             throw new IllegalArgumentException("Bạn Không Phải Đối Tác Này");
         }
         List<TypeRoomResponse> response = new ArrayList<>();
@@ -200,6 +205,7 @@ public class PartnersHotelServiceImpls implements PartnersHotelService {
 
 
     @Override
+    @Transactional
     public HttpRespone RequestCreatePartners(CreatePartnerRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userLogin = (User) authentication.getPrincipal();
@@ -234,6 +240,78 @@ public class PartnersHotelServiceImpls implements PartnersHotelService {
 
         }
         return new HttpRespone(HttpStatus.OK.value(), "success", requestSaved);
+    }
+
+    @Override
+    public HttpRespone GetAllRequestPartner() {
+        List<RequesttoCreatePartner> listRequest = createPartnerRepository.findAll();
+        List<CreatePartnerRespone> listRepone = new ArrayList<>();
+        for (RequesttoCreatePartner request : listRequest) {
+            listRepone.add(new CreatePartnerRespone(request));
+        }
+        return new HttpRespone(HttpStatus.OK.value(), "success", listRepone);
+    }
+
+    @Override
+    public HttpRespone GetRequestPartnerById(int id) {
+        RequesttoCreatePartner request = createPartnerRepository.findById(id).orElseThrow(()->{
+            throw new IllegalArgumentException("Không tìm thấy request này");
+        });
+        return new HttpRespone(HttpStatus.OK.value(), "success", new CreatePartnerRespone(request));
+    }
+
+    @Override
+    @Transactional
+    public HttpRespone PartnerCreationRequestProcessing(int id, String status) {
+        RequesttoCreatePartner request = createPartnerRepository.findById(id).orElseThrow(()->{
+            throw new IllegalArgumentException("Không tìm thấy request này");
+        });
+        if (!request.getStatus().equalsIgnoreCase("Pending")){
+            throw new IllegalArgumentException("Yêu cầu này đã được xử lý!!");
+        }
+        if (status.equalsIgnoreCase("Cancel")) {
+            request.setStatus("Cancel");
+        }else {
+            request.setStatus("Success");
+            HotelPartners hotelPartners = new HotelPartners();
+            hotelPartners.setHotelName(request.getHotelName());
+            hotelPartners.setEmail(request.getEmail());
+            hotelPartners.setPhone(request.getPhone());
+            hotelPartners.setListHotel(new ArrayList<>());
+            hotelPartners.setListManager(new ArrayList<>());
+            hotelPartners.setListTypeRooms(new ArrayList<>());
+            hotelPartners.setListReviews(new ArrayList<>());
+            HotelPartners saved = partnersRepository.save(hotelPartners);
+            User user = userRepository.findById(request.getUserRequest().getId()).orElseThrow(()->{
+                throw new IllegalArgumentException("Không tìm thấy user này");
+            });
+            PartnersManager partnersManager = new PartnersManager();
+            partnersManager.setHotelPartners(saved);
+            partnersManager.setUserManager(user);
+            partnersManager.setPosition("Owner");
+            parnersManagerRepository.save(partnersManager);
+
+            request.getRequestHotel().stream().forEach(item -> {
+                Hotel hotel = new Hotel();
+                hotel.setPartner(saved);
+                hotel.setDelete(false);
+                hotel.setImages(new ArrayList<>());
+                hotel.setAddress(item.getAddRess());
+                hotel.setTouristAttraction(item.getTouristAttraction());
+                hotel.setDescribe(item.getDesbrice());
+                hotel.setListRooms(new ArrayList<>());
+                hotel.setListService(new ArrayList<>());
+                hotel.setRestaurant(new Restaurant());
+                Hotel hotelSaved = hotelRepository.save(hotel);
+                for (ImageDescribeRequest img : item.getImageDesbrice()){
+                    ImageDesbrice imageDesbrice = new ImageDesbrice();
+                    imageDesbrice.setHotelImage(hotelSaved);
+                    imageDesbrice.setLink(img.getImage());
+                    imageDesbriceRepository.save(imageDesbrice);
+                }
+            });
+        }
+        return new HttpRespone(HttpStatus.OK.value(), "success", new CreatePartnerRespone(createPartnerRepository.save(request)));
     }
 
 

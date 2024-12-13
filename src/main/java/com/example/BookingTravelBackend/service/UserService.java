@@ -18,7 +18,6 @@ public interface UserService {
     void register(UserRequest userRequest);
 
     User findByEmail(String email);
-
     User findById (int id);
     Boolean changePassword(ChangePasswordRequest changePasswordRequest);
 
@@ -31,4 +30,6 @@ public interface UserService {
     public int Follow (int userId);
     public List<UserInfoResponse> AllFollowingByUser (int userId);
     public HttpRespone GetAllUser();
+
+
 }
