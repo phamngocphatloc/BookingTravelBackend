@@ -35,6 +35,7 @@ public class PartnersHotelServiceImpls implements PartnersHotelService {
     private final ParnersManagerRepository parnersManagerRepository;
     private final HotelRepository hotelRepository;
     private final ImageDesbriceRepository imageDesbriceRepository;
+    private final HotelPartnersRepository partnerRepository;
 
     @Override
     public List<HotelPartnersResponse> listPartnersByUserId() {
@@ -66,7 +67,7 @@ public class PartnersHotelServiceImpls implements PartnersHotelService {
     public List<TypeRoomResponse> selectAllTypeRoomByPartnersId(int partNerId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userLogin = (User) authentication.getPrincipal();
-        if (hotelPartnersRepository.checkHotelPartnersByUser(userLogin.getId(), partNerId)==0){
+        if (partnerRepository.isManagerOfPartner(userLogin.getId(), partNerId)==0){
             throw new IllegalArgumentException("Bạn Không Phải Đối Tác Này");
         }
         List<TypeRoomResponse> response = new ArrayList<>();
