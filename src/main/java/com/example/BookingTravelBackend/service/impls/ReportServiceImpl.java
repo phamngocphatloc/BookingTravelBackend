@@ -21,6 +21,7 @@ public class ReportServiceImpl implements ReportService {
         if (listReport != null) {
             for (Report report : listReport) {
                 ReportRespone reportRespone = new ReportRespone(report);
+                reportResponeList.add(reportRespone);
             }
         }
         return reportResponeList;
