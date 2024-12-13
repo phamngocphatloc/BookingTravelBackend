@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ReportService {
     public List<ReportRespone> getReport();
+    public ReportRespone ReportProcessing(int reportId,String status);
+
 }
