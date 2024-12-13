@@ -38,6 +38,7 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.12.3'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation 'org.imgscalr:imgscalr-lib:4.2'
 
 }
 
