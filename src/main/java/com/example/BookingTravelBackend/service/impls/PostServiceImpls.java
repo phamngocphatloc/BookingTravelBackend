@@ -34,6 +34,7 @@ public class PostServiceImpls implements PostService {
     private final CommentPostRepository commentPostRepository;
     private final CategoryRepository categoryRepository;
     private final LikeRepository likeRepository;
+    private final ReportRepository reportRepository;
     @Override
     public PaginationResponse findAllPost(String search, int pageNum, int pageSize) {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
@@ -235,6 +236,26 @@ public class PostServiceImpls implements PostService {
         });
         post.setDelete(true);
         postRepository.save(post);
+    }
+
+    @Override
+    public HttpRespone report(int postId) {
+        Report report = new Report();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User principal = (User) authentication.getPrincipal();
+        Post post = postRepository.findById(postId).orElseThrow(() -> {
+            throw new IllegalArgumentException("Không Tìm Thấy Bài Viết");
+        });
+
+        report.setReportType("POST");
+        report.setReportedAt(new Timestamp(System.currentTimeMillis()));
+        report.setPost(post);
+        report.setReportedBy(principal);
+        report.setDescription("Bao Cao Bai Viet");
+        report.setStatus("pending");
+        report.setReportedUser(post.getUserPost());
+        Report reportSaved = reportRepository.save(report);
+        return new HttpRespone(HttpStatus.OK.value(), "success", new ReportRespone(reportSaved));
     }
 
 

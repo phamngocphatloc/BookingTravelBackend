@@ -72,4 +72,9 @@ public class PostController {
         postService.DeletePost(postId);
         return ResponseEntity.ok("Xoá Bài Viết Thành Công ");
     }
+
+    @PostMapping ("report")
+    public ResponseEntity<HttpRespone> report (@RequestParam int postId){
+        return ResponseEntity.ok(postService.report(postId));
+    }
 }

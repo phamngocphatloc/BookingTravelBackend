@@ -24,4 +24,5 @@ public interface PostService {
     public int Like (int postId, String type);
     public HttpRespone GetAllPost();
     public void DeletePost (int id);
+    public HttpRespone report (int postId);
 }
