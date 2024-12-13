@@ -160,4 +160,9 @@ public class PartnersController {
         }
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", listResponse));
     }
+    @PostMapping("create_partner")
+    public ResponseEntity<HttpRespone> CreatePartner(@RequestBody CreatePartnerRequest request) {
+        partnersHotelService.RequestCreatePartners(request);
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", "thành công"));
+    }
 }
