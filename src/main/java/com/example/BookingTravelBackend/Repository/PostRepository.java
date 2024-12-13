@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -66,6 +67,22 @@ public interface PostRepository extends JpaRepository<Post,Integer> {
             "GROUP BY \n" +
             "    p.post_id", nativeQuery = true)
     public Tuple findPostStatusByPostId (int postId);
+
+    @Query(value = "SELECT " +
+            "    p.post_id, " +
+            "    COUNT(DISTINCT CASE WHEN l.type = 'like' THEN l.user_id END) AS total_likes, " +
+            "    COUNT(DISTINCT CASE WHEN l.type = 'dislike' THEN l.user_id END) AS total_dislikes, " +
+            "    COUNT(c.comment_post_id) AS total_comments " +
+            "FROM " +
+            "    post p " +
+            "LEFT JOIN " +
+            "    likes l ON p.post_id = l.post_id " +
+            "LEFT JOIN " +
+            "    comment_post c ON p.post_id = c.post_id " +
+            "WHERE p.post_id IN :postIds " +
+            "GROUP BY p.post_id", nativeQuery = true)
+    List<Tuple> findPostStatusesByPostIds(@Param("postIds") List<Integer> postIds);
+
 
     @Query (value = "select * from post where user_post = ?1", nativeQuery = true)
     public List<Post> findAllPostByUserId (int userId);

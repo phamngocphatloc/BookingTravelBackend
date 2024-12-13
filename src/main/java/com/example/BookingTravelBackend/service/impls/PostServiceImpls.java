@@ -19,10 +19,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -51,33 +49,46 @@ public class PostServiceImpls implements PostService {
     public PaginationResponse findTrending(int pageNum, int pageSize) {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
         Page<Post> pagePost = postRepository.findTrending(pageable);
-        List<PostResponse> listPostResponse = new ArrayList<>();
 
-        pagePost.getContent().stream().forEach(item -> {
-            // Lấy status của post từ repository
-            Tuple Tuplestatus = postRepository.findPostStatusByPostId(item.getPostId());
+        // Lấy danh sách tất cả các postId của các bài viết trong trang hiện tại
+        List<Integer> postIds = pagePost.getContent().stream()
+                .map(Post::getPostId)
+                .collect(Collectors.toList());
 
-            // Ép kiểu Tuple và lấy giá trị từ các trường
-            int totalLikes = (int) Tuplestatus.get("total_likes");
-            int totalDislikes = (int) Tuplestatus.get("total_dislikes");
-            int totalComments = (int) Tuplestatus.get("total_comments");
+        // Truy vấn lấy tất cả trạng thái của các bài viết một lần
+        List<Tuple> statusTuples = postRepository.findPostStatusesByPostIds(postIds);
 
-            // Tạo đối tượng PostStatusResponse với các thông tin lấy được
-            PostStatusResponse status = new PostStatusResponse(totalLikes, totalDislikes, totalComments);
+        // Tạo map để tra cứu nhanh trạng thái của từng bài viết
+        Map<Integer, PostStatusResponse> postStatusMap = statusTuples.stream()
+                .collect(Collectors.toMap(
+                        tuple -> (Integer) tuple.get("post_id"),  // Lấy postId từ Tuple
+                        tuple -> new PostStatusResponse(
+                                (int) tuple.get("total_likes"),
+                                (int) tuple.get("total_dislikes"),
+                                (int) tuple.get("total_comments")
+                        )
+                ));
 
-            // Tạo đối tượng PostResponse từ item và gắn status vào
+        // Tạo danh sách PostResponse
+        List<PostResponse> listPostResponse = new ArrayList<>(pageSize);
+
+        // Duyệt qua các bài viết và gắn trạng thái vào PostResponse
+        for (Post item : pagePost.getContent()) {
+            // Lấy trạng thái của bài viết từ map
+            PostStatusResponse status = postStatusMap.get(item.getPostId());
+
+            // Tạo đối tượng PostResponse và gắn trạng thái
             PostResponse response = new PostResponse(item);
             response.setPostStatusResponse(status);
 
-            // Thêm response đã được gắn status vào listPostResponse
+            // Thêm vào danh sách kết quả
             listPostResponse.add(response);
-        });
+        }
 
-// Sau khi lặp xong, listPostResponse sẽ chứa các đối tượng PostResponse đã được cập nhật status
-
-        PaginationResponse pagePostResponse = new PaginationResponse(pageNum,pageSize,pagePost.getTotalElements(),pagePost.isLast(),pagePost.getTotalPages(),listPostResponse);
-        return pagePostResponse;
+        // Trả về kết quả phân trang
+        return new PaginationResponse(pageNum, pageSize, pagePost.getTotalElements(), pagePost.isLast(),pagePost.getTotalPages(),listPostResponse);
     }
+
 
     @Override
     public Post findById(int id) {
