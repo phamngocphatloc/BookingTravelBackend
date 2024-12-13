@@ -34,5 +34,6 @@ public class RequesttoCreatePartner {
     @Column (name ="BusinessLicense" )
     private String businessLicense;
 
+    private String status;
 
 }

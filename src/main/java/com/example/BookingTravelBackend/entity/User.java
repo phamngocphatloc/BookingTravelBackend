@@ -66,4 +66,6 @@ public class User {
     @OneToOne (mappedBy = "user")
     private Wallet wallet;
 
+    @Column(name = "IsLocked")
+    private boolean isLocked;  // Thêm trường này để khóa tài khoản người dùng
 }

@@ -38,5 +38,5 @@ public class RequesttoCreateHotel {
     @JoinColumn (name = "PartnerId", nullable = true)
     private HotelPartners partner;
 
-
+    private String status;
 }

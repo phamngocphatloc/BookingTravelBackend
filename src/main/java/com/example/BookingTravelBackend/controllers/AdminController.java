@@ -57,5 +57,17 @@ public class AdminController {
     public ResponseEntity<HttpRespone> getReportProcessing(@RequestParam int id, String status){
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", reportService.ReportProcessing(id,status)));
     }
+    @GetMapping("get_all_request_create_partner")
+    public ResponseEntity<HttpRespone> getAllRequestCreatePartner(){
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", partnersHotelService.GetAllRequestPartner()));
+    }
+    @GetMapping("get_all_request_create_partner_by_id")
+    public ResponseEntity<HttpRespone> getAllRequestCreatePartnerById(@RequestParam int id){
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", partnersHotelService.GetRequestPartnerById(id)));
+    }
 
+    @PostMapping("partner_creation_request_processing")
+    public ResponseEntity<HttpRespone> PartnerCreationRequestProcessing(@RequestParam int id, @RequestParam String status){
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", partnersHotelService.PartnerCreationRequestProcessing(id,status)));
+    }
 }

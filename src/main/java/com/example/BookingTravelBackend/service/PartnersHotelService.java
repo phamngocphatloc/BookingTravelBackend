@@ -18,4 +18,7 @@ public interface PartnersHotelService {
     public HttpRespone RoomReservationNumber (int hotelId);
     public HttpRespone FindAllInvoiceByHotelId (int hotelId);
     public HttpRespone RequestCreatePartners (CreatePartnerRequest request);
+    public HttpRespone GetAllRequestPartner ( );
+    public HttpRespone GetRequestPartnerById (int id);
+    public HttpRespone PartnerCreationRequestProcessing(int id, String status);
 }
