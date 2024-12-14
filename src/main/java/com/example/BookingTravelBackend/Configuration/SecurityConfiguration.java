@@ -49,8 +49,6 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable()) // Vô hiệu hóa CSRF (thường dùng cho API)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless cho các API
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers(HttpMethod.GET, "/booking/bill/**").hasAnyRole(Constant.ROLE_ADMIN)
-                        .requestMatchers(HttpMethod.POST, "/hotel/**").hasRole(Constant.ROLE_ADMIN)
                         .requestMatchers("/admin/**").hasRole(Constant.ROLE_ADMIN)
                         .requestMatchers("/admin/**").hasRole(Constant.ROLE_HOTELMANAGER)
                         .requestMatchers("/auth/authorization").authenticated()
