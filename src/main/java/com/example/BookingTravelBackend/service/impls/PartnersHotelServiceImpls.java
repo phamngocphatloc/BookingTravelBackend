@@ -219,6 +219,7 @@ public class PartnersHotelServiceImpls implements PartnersHotelService {
         requestCreatePartner.setPhone(request.getPhone());
         requestCreatePartner.setRequestHotel(new ArrayList<>());
         requestCreatePartner.setBusinessLicense(request.getBusinessLicense());
+        requestCreatePartner.setStatus("pending");
         RequesttoCreatePartner requestSaved = createPartnerRepository.save(requestCreatePartner);
         for (CreateHotelRequest item : request.getRequestHotel()) {
             RequesttoCreateHotel requestHotel = new RequesttoCreateHotel();
