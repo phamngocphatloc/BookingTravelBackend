@@ -247,7 +247,9 @@ public class PartnersHotelServiceImpls implements PartnersHotelService {
         List<RequesttoCreatePartner> listRequest = createPartnerRepository.findAll();
         List<CreatePartnerRespone> listRepone = new ArrayList<>();
         for (RequesttoCreatePartner request : listRequest) {
-            listRepone.add(new CreatePartnerRespone(request));
+            if (request.getStatus().equalsIgnoreCase("pending")) {
+                listRepone.add(new CreatePartnerRespone(request));
+            }
         }
         return new HttpRespone(HttpStatus.OK.value(), "success", listRepone);
     }
