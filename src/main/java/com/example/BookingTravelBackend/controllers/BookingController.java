@@ -4,8 +4,11 @@ import com.example.BookingTravelBackend.Configuration.VnpayConfig;
 import com.example.BookingTravelBackend.Configuration.WebConfig;
 import com.example.BookingTravelBackend.entity.Booking;
 import com.example.BookingTravelBackend.payload.Request.BookingRequest;
+import com.example.BookingTravelBackend.payload.respone.BillResponse;
 import com.example.BookingTravelBackend.payload.respone.HttpRespone;
 import com.example.BookingTravelBackend.service.BillService;
+import com.example.BookingTravelBackend.service.EmailService;
+import com.example.BookingTravelBackend.util.TemplateEmail;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class BookingController {
     private final BillService billService;
+    private final EmailService emailService;
     @PostMapping ("/book")
     public ResponseEntity<HttpRespone> Booking (@RequestBody BookingRequest request){
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success",
@@ -90,10 +94,15 @@ public class BookingController {
         }
         if (vnp_SecureHash.equalsIgnoreCase(hash) && order.getId() == Integer.parseInt(txnref)) {
             if (status.equalsIgnoreCase("00")) {
-
                 billService.updateStatusBill(order,"active");
-
-
+                BillResponse billResponse = new BillResponse(order);
+                billResponse.setStatus("active");
+                String mailTemplate = TemplateEmail.getBookingDetailsEmail(billResponse);
+                try {
+                    emailService.sendEmail(order.getUserBooking().getEmail(), "Cảm ơn bạn đã đặt phong tại TravelBook", mailTemplate);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
                 return new RedirectView(WebConfig.url+"/#!/booking/"+id);
             } else {
                 billService.updateStatusBill(order,"Cancel");
