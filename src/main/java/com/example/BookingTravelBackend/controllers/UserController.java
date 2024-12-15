@@ -10,6 +10,7 @@ import com.example.BookingTravelBackend.service.BillService;
 import com.example.BookingTravelBackend.service.EmailService;
 import com.example.BookingTravelBackend.service.UserService;
 import com.example.BookingTravelBackend.service.VerificationTokenService;
+import com.example.BookingTravelBackend.util.TemplateEmail;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -133,11 +134,11 @@ public class UserController {
         User user = userService.findByEmail(email);
         VerificationToken token = tokenService.createVerificationToken(user);
         String recipientAddress = user.getEmail();
-        String subject = "Yêu Cầu Đặt Lại Mật Khẩu";
-        String confirmationUrl = "/" + token.getToken()+"/"+email;
-        String message = "Click the link to verify your account: " + WebConfig.url+"#!/forget_pass" + confirmationUrl;
+        String subject = "Account Verification";
+        String confirmationUrl = "/" + token.getToken()+"/"+user.getEmail();
+        String htmlContent = TemplateEmail.getResetPasswordEmail(user.getFullName(),WebConfig.url+"#!/forget_pass" + confirmationUrl);
         try {
-            emailService.sendEmail(recipientAddress, subject, message);
+            emailService.sendEmail(recipientAddress, subject, htmlContent);
         }catch (Exception e){
             e.printStackTrace();
         }

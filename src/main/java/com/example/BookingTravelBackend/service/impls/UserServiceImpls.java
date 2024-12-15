@@ -84,9 +84,83 @@ public class UserServiceImpls implements UserService {
         String recipientAddress = users.getEmail();
         String subject = "Account Verification";
         String confirmationUrl = "#!/verify?token=" + token.getToken();
+        String htmlContent = "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<head>\n" +
+                "    <style>\n" +
+                "        body {\n" +
+                "            font-family: Arial, sans-serif;\n" +
+                "            background-color: #f9f9f9;\n" +
+                "            margin: 0;\n" +
+                "            padding: 0;\n" +
+                "        }\n" +
+                "        .email-container {\n" +
+                "            max-width: 600px;\n" +
+                "            margin: 20px auto;\n" +
+                "            background-color: #ffffff;\n" +
+                "            border: 1px solid #dddddd;\n" +
+                "            border-radius: 8px;\n" +
+                "            overflow: hidden;\n" +
+                "            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);\n" +
+                "        }\n" +
+                "        .header {\n" +
+                "            background-color: #007BFF;\n" +
+                "            color: white;\n" +
+                "            text-align: center;\n" +
+                "            padding: 20px;\n" +
+                "            font-size: 24px;\n" +
+                "        }\n" +
+                "        .content {\n" +
+                "            padding: 20px;\n" +
+                "            line-height: 1.6;\n" +
+                "            color: #333333;\n" +
+                "        }\n" +
+                "        .content a {\n" +
+                "            color: #007BFF;\n" +
+                "            text-decoration: none;\n" +
+                "        }\n" +
+                "        .footer {\n" +
+                "            background-color: #f1f1f1;\n" +
+                "            text-align: center;\n" +
+                "            padding: 10px;\n" +
+                "            font-size: 14px;\n" +
+                "            color: #666666;\n" +
+                "        }\n" +
+                "        .button {\n" +
+                "            display: inline-block;\n" +
+                "            padding: 10px 20px;\n" +
+                "            margin: 20px 0;\n" +
+                "            background-color: #007BFF;\n" +
+                "            color: white;\n" +
+                "            text-decoration: none;\n" +
+                "            border-radius: 4px;\n" +
+                "            font-size: 16px;\n" +
+                "        }\n" +
+                "    </style>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "    <div class=\"email-container\">\n" +
+                "        <div class=\"header\">\n" +
+                "            Chào mừng đến với Travel Book!\n" +
+                "        </div>\n" +
+                "        <div class=\"content\">\n" +
+                "            <p>Xin chào <strong>{{name}}</strong>,</p>\n" +
+                    "            <p>Cảm ơn bạn đã đăng ký tài khoản! Để hoàn tất việc đăng ký, vui lòng xác minh địa chỉ email của bạn bằng cách nhấn vào nút dưới đây:</p>\n" +
+                    "            <p style=\"text-align: center;\">\n" +
+                    "                <a href=\""+WebConfig.url+"/" + confirmationUrl+"\" class=\"button\">Xác minh email</a>\n" +
+                    "            </p>\n" +
+                    "            <p>Nếu bạn không tạo tài khoản, hãy bỏ qua email này.</p>\n" +
+                    "            <p>Trân trọng,<br>Đội ngũ [Tên công ty/ứng dụng]</p>\n" +
+                    "        </div>\n" +
+                "        <div class=\"footer\">\n" +
+                "            &copy; 2024 Travelbook. Mọi quyền được bảo lưu.\n" +
+                "        </div>\n" +
+                "    </div>\n" +
+                "</body>\n" +
+                "</html>\n"; // Copy nội dung HTML template ở trên
         String message = "Click the link to verify your account: " + WebConfig.url+"/" + confirmationUrl;
         try {
-            emailService.sendEmail(recipientAddress, subject, message);
+            emailService.sendEmail(recipientAddress, subject, htmlContent);
         }catch (Exception e){
             e.printStackTrace();
         }
