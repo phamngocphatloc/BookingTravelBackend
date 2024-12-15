@@ -7,6 +7,7 @@ import com.example.BookingTravelBackend.payload.Request.CreatePartnerRequest;
 import com.example.BookingTravelBackend.payload.Request.ImageDesbriceRequest;
 import com.example.BookingTravelBackend.payload.Request.TypeRoomRequest;
 import com.example.BookingTravelBackend.payload.respone.*;
+import com.example.BookingTravelBackend.service.HotelService;
 import com.example.BookingTravelBackend.service.PartnersHotelService;
 import jakarta.persistence.Tuple;
 import jakarta.transaction.Transactional;
@@ -36,7 +37,6 @@ public class PartnersHotelServiceImpls implements PartnersHotelService {
     private final HotelRepository hotelRepository;
     private final ImageDesbriceRepository imageDesbriceRepository;
     private final HotelPartnersRepository partnerRepository;
-
     @Override
     public List<HotelPartnersResponse> listPartnersByUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -316,6 +316,40 @@ public class PartnersHotelServiceImpls implements PartnersHotelService {
             });
         }
         return new HttpRespone(HttpStatus.OK.value(), "success", new CreatePartnerRespone(createPartnerRepository.save(request)));
+    }
+
+    @Override
+    public HttpRespone HotelCreationRequestProcessing(int id, String status) {
+        RequesttoCreateHotel request = createHotelRepository.findById(id).orElseThrow(()->{
+            throw new IllegalArgumentException("Không tìm thấy request này");
+        });
+        if (!request.getStatus().equalsIgnoreCase("Pending")){
+            throw new IllegalArgumentException("Yêu cầu này đã được xử lý!!");
+        }
+        if (status.equalsIgnoreCase("Cancel")) {
+            request.setStatus("Cancel");
+        }else {
+            request.setStatus("Success");
+
+                Hotel hotel = new Hotel();
+                hotel.setPartner(request.getPartner());
+                hotel.setDelete(false);
+                hotel.setImages(new ArrayList<>());
+                hotel.setAddress(request.getAddRess());
+                hotel.setTouristAttraction(request.getTouristAttraction());
+                hotel.setDescribe(request.getDesbrice());
+                hotel.setListRooms(new ArrayList<>());
+                hotel.setListService(new ArrayList<>());
+                hotel.setRestaurant(new Restaurant());
+                Hotel hotelSaved = hotelRepository.save(hotel);
+                for (ImageDescribeRequest img : request.getImageDesbrice()){
+                    ImageDesbrice imageDesbrice = new ImageDesbrice();
+                    imageDesbrice.setHotelImage(hotelSaved);
+                    imageDesbrice.setLink(img.getImage());
+                    imageDesbriceRepository.save(imageDesbrice);
+                }
+        }
+        return new HttpRespone(HttpStatus.OK.value(), "success", new CreateHotelRespone(createHotelRepository.save(request)));
     }
 
 

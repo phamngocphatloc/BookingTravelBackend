@@ -2,6 +2,7 @@ package com.example.BookingTravelBackend.service;
 
 import com.example.BookingTravelBackend.entity.Hotel;
 import com.example.BookingTravelBackend.entity.TouristAttraction;
+import com.example.BookingTravelBackend.payload.Request.CreateHotelRequest;
 import com.example.BookingTravelBackend.payload.Request.HotelRequest;
 import com.example.BookingTravelBackend.payload.Request.HotelRequestEdit;
 import com.example.BookingTravelBackend.payload.Request.HotelServiceRequest;
@@ -27,4 +28,5 @@ public interface HotelService {
     public  HotelRespone selectHotelId (int hotelId);
     public List<String> findHotelNameByTour(String tour, String hotelNaneFind);
     public HttpRespone findHotelById (int hotelId);
+    public HttpRespone CreateHotelRequest (CreateHotelRequest createHotelRequest);
 }

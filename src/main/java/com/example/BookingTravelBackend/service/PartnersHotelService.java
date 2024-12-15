@@ -21,4 +21,5 @@ public interface PartnersHotelService {
     public HttpRespone GetAllRequestPartner ( );
     public HttpRespone GetRequestPartnerById (int id);
     public HttpRespone PartnerCreationRequestProcessing(int id, String status);
+    public HttpRespone HotelCreationRequestProcessing(int id, String status);
 }
