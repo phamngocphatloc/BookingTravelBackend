@@ -26,4 +26,6 @@ public interface HotelPartnersRepository extends JpaRepository<HotelPartners,Int
             "           ELSE 0 " +
             "       END AS is_manager", nativeQuery = true)
     int isManagerOfPartner(@Param("userId") int userId, @Param("partnerId") int partnerId);
+
+
 }

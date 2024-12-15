@@ -1,13 +1,8 @@
 package com.example.BookingTravelBackend.service.impls;
 
 import com.example.BookingTravelBackend.Repository.*;
-import com.example.BookingTravelBackend.entity.Hotel;
-import com.example.BookingTravelBackend.entity.ImageDesbrice;
-import com.example.BookingTravelBackend.entity.TouristAttraction;
-import com.example.BookingTravelBackend.entity.TypeRoom;
-import com.example.BookingTravelBackend.payload.Request.HotelRequest;
-import com.example.BookingTravelBackend.payload.Request.HotelRequestEdit;
-import com.example.BookingTravelBackend.payload.Request.HotelServiceRequest;
+import com.example.BookingTravelBackend.entity.*;
+import com.example.BookingTravelBackend.payload.Request.*;
 import com.example.BookingTravelBackend.payload.respone.*;
 import com.example.BookingTravelBackend.service.HotelService;
 import com.example.BookingTravelBackend.service.RoomService;
@@ -17,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -33,6 +30,9 @@ public class HotelServiceImpl implements HotelService {
     private final HotelPartnersRepository hotelPartnersRepository;
     private final TypeRoomRepository typeRoomRepository;
     private final RoomRepository roomRepository;
+    private final PartnersRepository partnersRepository;
+    private final CreateHotelRepository createHotelRepository;
+    private final ImageDesbriceRequestRepository imageDesbriceRequestRepository;
 
     @Override
     public PaginationResponse selectHotelByTour(TouristAttraction tour, int pageNum, int pageSize,String hotelName, Date checkIn, Date checkOut) {
@@ -203,6 +203,48 @@ public class HotelServiceImpl implements HotelService {
 
         // Tạo và trả về phản hồi với thông tin khách sạn
         return new HttpRespone(HttpStatus.OK.value(), "success", new HotelRespone(hotel));
+    }
+    public void validateCreateHotelRequest(CreateHotelRequest request) {
+
+            if (request.getImageDesbriceRequests().isEmpty()){
+                throw new IllegalArgumentException("Cần cung cấp ít nhất một hình mô tả.");
+            }
+            if (request.getAddRess().isEmpty()){
+                throw new IllegalArgumentException("vui lòng nhập địa chỉ.");
+            }
+            if (request.getDesbrice().isEmpty()){
+                throw new IllegalArgumentException("vui lòng nhập mô tả.");
+            }
+
+
+    }
+    @Override
+    public HttpRespone CreateHotelRequest(CreateHotelRequest createHotelRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userLogin = (User) authentication.getPrincipal();
+        validateCreateHotelRequest(createHotelRequest);
+        RequesttoCreateHotel requesttoCreateHotel = new RequesttoCreateHotel();
+        HotelPartners hotelPartners = partnersRepository.findById(createHotelRequest.getPartner()).orElseThrow(()->{
+            throw new IllegalArgumentException("không tìm thấy partners");
+
+        });
+        requesttoCreateHotel.setPartner(hotelPartners);
+        requesttoCreateHotel.setDesbrice(createHotelRequest.getDesbrice().toString());
+        requesttoCreateHotel.setAddRess(createHotelRequest.getAddRess());
+            requesttoCreateHotel.setStatus("pending");
+            TouristAttraction touristAttraction = touristAttractionRepsitory
+                    .findById(createHotelRequest.getTouristAttraction())
+                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy địa điểm này"));
+        requesttoCreateHotel.setTouristAttraction(touristAttraction);
+            RequesttoCreateHotel requestHotelSaved = createHotelRepository.save(requesttoCreateHotel);
+            for (ImageDesbriceRequest imageDesbriceRequest : createHotelRequest.getImageDesbriceRequests()) {
+                ImageDescribeRequest imageRequest = new ImageDescribeRequest();
+                imageRequest.setImage(imageDesbriceRequest.getLink());
+                imageRequest.setHotelRequest(requestHotelSaved);
+                ImageDescribeRequest saved = imageDesbriceRequestRepository.save(imageRequest);
+                requestHotelSaved.getImageDesbrice().add(saved);
+            }
+        return new HttpRespone(HttpStatus.OK.value(), "success", new CreateHotelRespone(requestHotelSaved));
     }
 
 }
