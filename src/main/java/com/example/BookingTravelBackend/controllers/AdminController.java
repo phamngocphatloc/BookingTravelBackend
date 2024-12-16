@@ -65,5 +65,15 @@ public class AdminController {
     public ResponseEntity<HttpRespone> HotelCreationRequestProcessing(@RequestParam int id, @RequestParam String status){
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", partnersHotelService.HotelCreationRequestProcessing(id,status)));
     }
+    @GetMapping ("get_all_request_hotel")
+    public ResponseEntity<HttpRespone> GetAllHotelRequest() {
 
+        return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", partnersHotelService.findAllRequestHotelPending()));
+    }
+
+    @PostMapping ("blocked_user")
+    public ResponseEntity<HttpRespone> BlockedUser (@RequestParam int userId){
+        HttpRespone respone = userService.BlookUser(userId);
+        return ResponseEntity.ok(respone);
+    }
 }

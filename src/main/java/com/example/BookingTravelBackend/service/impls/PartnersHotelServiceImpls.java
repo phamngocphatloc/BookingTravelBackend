@@ -2,13 +2,12 @@ package com.example.BookingTravelBackend.service.impls;
 
 import com.example.BookingTravelBackend.Repository.*;
 import com.example.BookingTravelBackend.entity.*;
-import com.example.BookingTravelBackend.payload.Request.CreateHotelRequest;
-import com.example.BookingTravelBackend.payload.Request.CreatePartnerRequest;
-import com.example.BookingTravelBackend.payload.Request.ImageDesbriceRequest;
-import com.example.BookingTravelBackend.payload.Request.TypeRoomRequest;
+import com.example.BookingTravelBackend.payload.Request.*;
 import com.example.BookingTravelBackend.payload.respone.*;
+import com.example.BookingTravelBackend.service.EmailService;
 import com.example.BookingTravelBackend.service.HotelService;
 import com.example.BookingTravelBackend.service.PartnersHotelService;
+import com.example.BookingTravelBackend.util.TemplateEmail;
 import jakarta.persistence.Tuple;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +36,7 @@ public class PartnersHotelServiceImpls implements PartnersHotelService {
     private final HotelRepository hotelRepository;
     private final ImageDesbriceRepository imageDesbriceRepository;
     private final HotelPartnersRepository partnerRepository;
+    private final EmailService emailService;
     @Override
     public List<HotelPartnersResponse> listPartnersByUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -275,8 +275,20 @@ public class PartnersHotelServiceImpls implements PartnersHotelService {
         }
         if (status.equalsIgnoreCase("Cancel")) {
             request.setStatus("Cancel");
+            String mailTemplate = TemplateEmail.getPartnerRejectionEmail(request);
+            try {
+                emailService.sendEmail(request.getEmail(), "Thông Báo Kết Quả Yêu Cầu Hợp Tác", mailTemplate);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }else {
             request.setStatus("Success");
+            String mailTemplate = TemplateEmail.getPartnerApprovalEmail(request);
+            try {
+                emailService.sendEmail(request.getEmail(), "Thông Báo Kết Quả Yêu Cầu Hợp Tác", mailTemplate);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
             HotelPartners hotelPartners = new HotelPartners();
             hotelPartners.setHotelName(request.getHotelName());
             hotelPartners.setEmail(request.getEmail());
@@ -293,6 +305,7 @@ public class PartnersHotelServiceImpls implements PartnersHotelService {
             partnersManager.setHotelPartners(saved);
             partnersManager.setUserManager(user);
             partnersManager.setPosition("Owner");
+            partnersManager.setDelete(true);
             parnersManagerRepository.save(partnersManager);
 
             request.getRequestHotel().stream().forEach(item -> {
@@ -328,9 +341,21 @@ public class PartnersHotelServiceImpls implements PartnersHotelService {
         }
         if (status.equalsIgnoreCase("Cancel")) {
             request.setStatus("Cancel");
+            String mailTemplate = TemplateEmail.getHotelRejectionEmail(request);
+            try {
+                emailService.sendEmail(request.getPartner().getEmail(), "Thông Báo Kết Quả Yêu Cầu Thêm Khách Sạn", mailTemplate);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
         }else {
             request.setStatus("Success");
-
+            String mailTemplate = TemplateEmail.getHotelApprovalEmail(request);
+            try {
+                emailService.sendEmail(request.getPartner().getEmail(), "Thông Báo Kết Quả Yêu Cầu Thêm Khách Sạn", mailTemplate);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
                 Hotel hotel = new Hotel();
                 hotel.setPartner(request.getPartner());
                 hotel.setDelete(false);
@@ -350,6 +375,123 @@ public class PartnersHotelServiceImpls implements PartnersHotelService {
                 }
         }
         return new HttpRespone(HttpStatus.OK.value(), "success", new CreateHotelRespone(createHotelRepository.save(request)));
+    }
+
+    public HttpRespone findAllRequestHotelPending (){
+        List<CreateHotelRespone> respones = new ArrayList<>();
+        List<RequesttoCreateHotel> listRequestHotel = createHotelRepository.findAll();
+        if (!listRequestHotel.isEmpty()){
+            listRequestHotel.forEach(item -> {
+                if ((item.getStatus() != null) && item.getStatus().equalsIgnoreCase("pending")){
+                    respones.add(new CreateHotelRespone(item));
+                }
+            });
+        }
+        return new HttpRespone(HttpStatus.OK.value(), "success", respones);
+    }
+
+    @Override
+    public HttpRespone findAllMangerByPartnerId(int partnerId) {
+        List<PartnersManager> listManager = parnersManagerRepository.GetAllManagerByPartner(partnerId);
+        List<partnerManagerResponse> responses = new ArrayList<>();
+        if (!listManager.isEmpty()){
+            listManager.stream().forEach(item -> {
+                partnerManagerResponse itemresponse = new partnerManagerResponse();
+                itemresponse.setUser(new UserInfoResponse(item.getUserManager()));
+                itemresponse.setId(item.getId());
+                itemresponse.setPostion(item.getPosition());
+                responses.add(itemresponse);
+            });
+        }
+        return new HttpRespone(HttpStatus.OK.value(), "success", responses);
+    }
+
+    @Override
+    public HttpRespone addManager(PartnerManagerRequest request) {
+        PartnersManager manager = new PartnersManager();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User principal = (User) authentication.getPrincipal();
+        User userLogin = userRepository.findById(principal.getId()).get();
+        HotelPartners managerCheck = hotelPartnersRepository.findById(request.getPartnerId()).orElseThrow(() -> {
+            throw new IllegalArgumentException("Không Thấy Partner này");
+        });
+        boolean check = false;
+        for(PartnersManager item : managerCheck.getListManager()) {
+
+            if (item.getUserManager().getId() == userLogin.getId()) {
+                if (!item.getPosition().equalsIgnoreCase("owner")) {
+                    throw new IllegalArgumentException("Bạn Không Phải Chủ Đối Tác Này");
+                }
+                check = true;
+            }
+            if (item.getUserManager().getEmail().equalsIgnoreCase(request.getEmail())) {
+                throw new IllegalArgumentException("Đã Tồn Tại Nhân Viên Này");
+            }
+            if (check == false) {
+                throw new IllegalArgumentException("Bạn Không Phải Đối Tác Này");
+            }
+        }
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(()->{
+            throw new IllegalArgumentException("Không Tìm Thấy User này");
+        });
+
+        manager.setUserManager(user);
+        manager.setHotelPartners(managerCheck);
+        manager.setPosition(request.getPosition());
+        PartnersManager managerSaved = parnersManagerRepository.save(manager);
+        partnerManagerResponse response = new partnerManagerResponse();
+        response.setPostion(managerSaved.getPosition());
+        response.setId(manager.getId());
+        response.setUser(new UserInfoResponse(managerSaved.getUserManager()));
+        return new HttpRespone(HttpStatus.OK.value(), "success", response);
+    }
+
+    @Override
+    public HttpRespone deleteManager(int id, int partnerId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User principal = (User) authentication.getPrincipal();
+        User userLogin = userRepository.findById(principal.getId()).get();
+        HotelPartners managerCheck = hotelPartnersRepository.findById(partnerId).orElseThrow(() -> {
+            throw new IllegalArgumentException("Không Thấy Partner này");
+        });
+        boolean check = false;
+        for(PartnersManager item : managerCheck.getListManager()) {
+
+            if (item.getUserManager().getId() == userLogin.getId()) {
+                if (!item.getPosition().equalsIgnoreCase("owner")) {
+                    throw new IllegalArgumentException("Bạn Không Phải Chủ Đối Tác Này");
+                }
+                check = true;
+            }
+            if (check == false) {
+                throw new IllegalArgumentException("Bạn Không Phải Đối Tác Này");
+            }
+        }
+        PartnersManager managerGet = parnersManagerRepository.findById(id).orElseGet(()->{
+            throw new IllegalArgumentException("Không Tìm Thấy Nhân Viên Này");
+        });
+
+        managerGet.setDelete(true);
+        PartnersManager saved = parnersManagerRepository.save(managerGet);
+        partnerManagerResponse response = new partnerManagerResponse();
+        response.setPostion(saved.getPosition());
+        response.setId(saved.getId());
+        response.setUser(new UserInfoResponse(saved.getUserManager()));
+        return new HttpRespone(HttpStatus.OK.value(), "success", response);
+    }
+
+    @Override
+    public HttpRespone findManagerByUserLoginAndPartnerId(int partnerId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User principal = (User) authentication.getPrincipal();
+        PartnersManager manager = parnersManagerRepository.findManagerByPartnerAndUser(partnerId,principal.getId()).orElseThrow(()->{
+            throw new IllegalArgumentException("Không tìm thấy partner");
+        });
+        partnerManagerResponse response = new partnerManagerResponse();
+        response.setPostion(manager.getPosition());
+        response.setId(manager.getId());
+        response.setUser(new UserInfoResponse(manager.getUserManager()));
+        return new HttpRespone(HttpStatus.OK.value(), "success", response);
     }
 
 

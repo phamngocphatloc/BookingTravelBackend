@@ -41,6 +41,10 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             if (user.isVerify()==false){
                 throw new RuntimeException("Tài Khoản Chưa Xác Minh");
             }
+            System.out.println("Đình Chỉ: "+ user.isLocked());
+            if (user.isLocked()==true){
+                throw new RuntimeException("Tài Khoản Đã Bị Đình Chỉ Vì Vi Phạm Chính Sách");
+            }
             return token;
         }
         throw new RuntimeException("Sai Tài Khoản Hoặc Mật Khẩu");

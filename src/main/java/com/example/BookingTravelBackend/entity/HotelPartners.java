@@ -28,7 +28,7 @@ public class HotelPartners {
     @OneToMany (mappedBy = "Partner", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Hotel> listHotel;
 
-    @OneToMany (mappedBy = "hotelPartners", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToMany (mappedBy = "hotelPartners", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<PartnersManager> listManager;
 
     @OneToMany (mappedBy = "partnerReview", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
