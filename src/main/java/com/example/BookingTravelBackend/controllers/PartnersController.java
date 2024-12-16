@@ -170,4 +170,24 @@ public class PartnersController {
         hotelService.CreateHotelRequest(request);
         return ResponseEntity.ok(new HttpRespone(HttpStatus.OK.value(), "success", "thành công"));
     }
+
+    @GetMapping("get_manager")
+    public ResponseEntity<HttpRespone> GetManager(@RequestParam int id) {
+        return ResponseEntity.ok(partnersHotelService.findAllMangerByPartnerId(id));
+    }
+
+    @PostMapping("add_manager")
+    public ResponseEntity<HttpRespone> CreatePartner(@RequestBody PartnerManagerRequest request) {
+        return ResponseEntity.ok(partnersHotelService.addManager(request));
+    }
+    @DeleteMapping("delete_manager")
+    public ResponseEntity<HttpRespone> DeleteManager(@RequestParam int managerId, @RequestParam int partnerId) {
+        return ResponseEntity.ok(partnersHotelService.deleteManager(managerId,partnerId));
+    }
+
+    @GetMapping("get_manager_login")
+    public ResponseEntity<HttpRespone> GetManagerById(@RequestParam int id) {
+        return ResponseEntity.ok(partnersHotelService.findManagerByUserLoginAndPartnerId(id));
+    }
+
 }

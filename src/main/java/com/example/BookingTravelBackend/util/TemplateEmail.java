@@ -1,9 +1,9 @@
 package com.example.BookingTravelBackend.util;
 
 import com.example.BookingTravelBackend.Configuration.WebConfig;
-import com.example.BookingTravelBackend.payload.respone.BillResponse;
-import com.example.BookingTravelBackend.payload.respone.BookingResponse;
-import com.example.BookingTravelBackend.payload.respone.UserInfoResponse;
+import com.example.BookingTravelBackend.entity.RequesttoCreateHotel;
+import com.example.BookingTravelBackend.entity.RequesttoCreatePartner;
+import com.example.BookingTravelBackend.payload.respone.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -251,6 +251,207 @@ public class TemplateEmail {
 
         return emailContent.toString();
     }
+
+    public static String getPartnerApprovalEmail(RequesttoCreatePartner partnerResponse) {
+        // Lấy thông tin từ PartnerResponse
+        String partnerName = partnerResponse.getHotelName();
+        String email = partnerResponse.getEmail();
+        String phone = "0352 207 847";
+        Date approvedDate = new Date();
+
+        // Định dạng ngày tháng
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String approvedDateFormatted = dateFormat.format(approvedDate);
+
+        // Tạo nội dung email
+        StringBuilder emailContent = new StringBuilder();
+        emailContent.append("<!DOCTYPE html>")
+                .append("<html lang=\"vi\">")
+                .append("<head>")
+                .append("    <meta charset=\"UTF-8\">")
+                .append("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")
+                .append("    <title>Chúc Mừng Đối Tác</title>")
+                .append("    <style>")
+                .append("        body { font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0; }")
+                .append("        .email-container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border: 1px solid #dddddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }")
+                .append("        .header { background-color: #28a745; color: white; text-align: center; padding: 20px; font-size: 24px; }")
+                .append("        .content { padding: 20px; line-height: 1.6; color: #333333; }")
+                .append("        .footer { background-color: #f1f1f1; text-align: center padding: 10px; font-size: 14px; color: #666666; }")
+                .append("    </style>")
+                .append("</head>")
+                .append("<body>")
+                .append("    <div class=\"email-container\">")
+                .append("        <div class=\"header\">")
+                .append("            Chúc Mừng Quý Đối Tác!")
+                .append("        </div>")
+                .append("        <div class=\"content\">")
+                .append("            <p>Kính gửi <strong>").append(partnerName).append("</strong>,</p>")
+                .append("            <p>Chúng tôi rất vui mừng thông báo rằng yêu cầu hợp tác của quý công ty đã được chấp thuận thành công vào ngày ").append(approvedDateFormatted).append(".</p>")
+                .append("            <p>Quý công ty hiện đã trở thành đối tác chính thức của chúng tôi. Chúng tôi cam kết hỗ trợ quý công ty trong mọi hoạt động hợp tác để cùng nhau phát triển bền vững.</p>")
+                .append("            <p>Vui lòng liên hệ qua số điện thoại <strong>").append(phone).append("</strong> hoặc email <strong>").append(email).append("</strong> nếu cần thêm thông tin.</p>")
+                .append("            <p>Trân trọng,</p>")
+                .append("            <p><strong>Đội ngũ quản lý đối tác</strong></p>")
+                .append("        </div>")
+                .append("        <div class=\"footer\">")
+                .append("            <p>© 2024 Công Ty Của Bạn. Mọi quyền được bảo lưu.</p>")
+                .append("        </div>")
+                .append("    </div>")
+                .append("</body>")
+                .append("</html>");
+
+        return emailContent.toString();
+    }
+
+    public static String getPartnerRejectionEmail(RequesttoCreatePartner partnerResponse) {
+        // Lấy thông tin từ PartnerResponse
+        String partnerName = partnerResponse.getHotelName();
+        String email = partnerResponse.getEmail();
+        String phone = "0352 207 847";
+        Date requestDate = new Date();
+
+        // Định dạng ngày tháng
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String requestDateFormatted = dateFormat.format(requestDate);
+
+        // Tạo nội dung email
+        StringBuilder emailContent = new StringBuilder();
+        emailContent.append("<!DOCTYPE html>")
+                .append("<html lang=\"vi\">")
+                .append("<head>")
+                .append("    <meta charset=\"UTF-8\">")
+                .append("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")
+                .append("    <title>Thông Báo Từ Chối Đối Tác</title>")
+                .append("    <style>")
+                .append("        body { font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0; }")
+                .append("        .email-container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border: 1px solid #dddddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }")
+                .append("        .header { background-color: #dc3545; color: white; text-align: center; padding: 20px; font-size: 24px; }")
+                .append("        .content { padding: 20px; line-height: 1.6; color: #333333; }")
+                .append("        .footer { background-color: #f1f1f1; text-align: center; padding: 10px; font-size: 14px; color: #666666; }")
+                .append("    </style>")
+                .append("</head>")
+                .append("<body>")
+                .append("    <div class=\"email-container\">")
+                .append("        <div class=\"header\">")
+                .append("            Thông Báo Từ Chối Yêu Cầu Hợp Tác")
+                .append("        </div>")
+                .append("        <div class=\"content\">")
+                .append("            <p>Kính gửi <strong>").append(partnerName).append("</strong>,</p>")
+                .append("            <p>Chúng tôi rất tiếc phải thông báo rằng yêu cầu hợp tác của quý công ty, gửi ngày ").append(requestDateFormatted).append(", không được chấp thuận.</p>")
+                .append("            <p>Lý do từ chối: <em>").append("Chúng Tôi Chưa Đủ Cơ Sỡ Hợp Tác Với Bạn").append("</em></p>")
+                .append("            <p>Chúng tôi hy vọng có thể hợp tác với quý công ty trong tương lai. Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ qua số điện thoại <strong>").append(phone).append("</strong> hoặc email <strong>").append(email).append("</strong>.</p>")
+                .append("            <p>Trân trọng,</p>")
+                .append("            <p><strong>Đội ngũ quản lý đối tác</strong></p>")
+                .append("        </div>")
+                .append("        <div class=\"footer\">")
+                .append("            <p>© 2024 Công Ty Của Bạn. Mọi quyền được bảo lưu.</p>")
+                .append("        </div>")
+                .append("    </div>")
+                .append("</body>")
+                .append("</html>");
+
+        return emailContent.toString();
+    }
+
+    public static String getHotelApprovalEmail(RequesttoCreateHotel partnerResponse) {
+        // Lấy thông tin từ PartnerResponse
+        String partnerName = partnerResponse.getPartner().getHotelName();
+        String email = partnerResponse.getPartner().getEmail();
+        String phone = "0352 207 847";
+        Date approvedDate = new Date();
+
+        // Định dạng ngày tháng
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String approvedDateFormatted = dateFormat.format(approvedDate);
+
+        // Tạo nội dung email
+        StringBuilder emailContent = new StringBuilder();
+        emailContent.append("<!DOCTYPE html>")
+                .append("<html lang=\"vi\">")
+                .append("<head>")
+                .append("    <meta charset=\"UTF-8\">")
+                .append("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")
+                .append("    <title>Chúc Mừng Đối Tác</title>")
+                .append("    <style>")
+                .append("        body { font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0; }")
+                .append("        .email-container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border: 1px solid #dddddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }")
+                .append("        .header { background-color: #28a745; color: white; text-align: center; padding: 20px; font-size: 24px; }")
+                .append("        .content { padding: 20px; line-height: 1.6; color: #333333; }")
+                .append("        .footer { background-color: #f1f1f1; text-align: center padding: 10px; font-size: 14px; color: #666666; }")
+                .append("    </style>")
+                .append("</head>")
+                .append("<body>")
+                .append("    <div class=\"email-container\">")
+                .append("        <div class=\"header\">")
+                .append("            Chúc Mừng Quý Đối Tác Thêm Khách Sạn Thành Công!")
+                .append("        </div>")
+                .append("        <div class=\"content\">")
+                .append("            <p>Kính gửi <strong>").append(partnerName).append("</strong>,</p>")
+                .append("            <p>Chúng tôi rất vui mừng thông báo rằng yêu cầu hợp tác của quý công ty đã được chấp thuận thành công vào ngày ").append(approvedDateFormatted).append(".</p>")
+                .append("            <p>Quý công ty hiện đã trở thành đối tác chính thức của chúng tôi. Chúng tôi cam kết hỗ trợ quý công ty trong mọi hoạt động hợp tác để cùng nhau phát triển bền vững.</p>")
+                .append("            <p>Vui lòng liên hệ qua số điện thoại <strong>").append(phone).append("</strong> hoặc email <strong>").append(email).append("</strong> nếu cần thêm thông tin.</p>")
+                .append("            <p>Trân trọng,</p>")
+                .append("            <p><strong>Đội ngũ quản lý đối tác</strong></p>")
+                .append("        </div>")
+                .append("        <div class=\"footer\">")
+                .append("            <p>© 2024 Công Ty Của Bạn. Mọi quyền được bảo lưu.</p>")
+                .append("        </div>")
+                .append("    </div>")
+                .append("</body>")
+                .append("</html>");
+
+        return emailContent.toString();
+    }
+
+    public static String getHotelRejectionEmail(RequesttoCreateHotel partnerResponse) {
+        // Lấy thông tin từ PartnerResponse
+        String partnerName = partnerResponse.getPartner().getHotelName();
+        String email = partnerResponse.getPartner().getEmail();
+        String phone = "0352 207 847";
+        Date requestDate = new Date();
+
+        // Định dạng ngày tháng
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String requestDateFormatted = dateFormat.format(requestDate);
+
+        // Tạo nội dung email
+        StringBuilder emailContent = new StringBuilder();
+        emailContent.append("<!DOCTYPE html>")
+                .append("<html lang=\"vi\">")
+                .append("<head>")
+                .append("    <meta charset=\"UTF-8\">")
+                .append("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")
+                .append("    <title>Thông Báo Từ Chối Thêm Khách Sạn</title>")
+                .append("    <style>")
+                .append("        body { font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0; }")
+                .append("        .email-container { max-width: 600px; margin: 20px auto; background-color: #ffffff; border: 1px solid #dddddd; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }")
+                .append("        .header { background-color: #dc3545; color: white; text-align: center; padding: 20px; font-size: 24px; }")
+                .append("        .content { padding: 20px; line-height: 1.6; color: #333333; }")
+                .append("        .footer { background-color: #f1f1f1; text-align: center; padding: 10px; font-size: 14px; color: #666666; }")
+                .append("    </style>")
+                .append("</head>")
+                .append("<body>")
+                .append("    <div class=\"email-container\">")
+                .append("        <div class=\"header\">")
+                .append("            Thông Báo Từ Chối Yêu Cầu Thêm Khách Sạn")
+                .append("        </div>")
+                .append("        <div class=\"content\">")
+                .append("            <p>Kính gửi <strong>").append(partnerName).append("</strong>,</p>")
+                .append("            <p>Chúng tôi rất tiếc phải thông báo rằng yêu cầu hợp tác của quý công ty, gửi ngày ").append(requestDateFormatted).append(", không được chấp thuận.</p>")
+                .append("            <p>Lý do từ chối: <em>").append("Chúng Tôi Chưa Đủ Cơ Sỡ Hợp Tác Với Bạn").append("</em></p>")
+                .append("            <p>Chúng tôi hy vọng có thể hợp tác với quý công ty trong tương lai. Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ qua số điện thoại <strong>").append(phone).append("</strong> hoặc email <strong>").append(email).append("</strong>.</p>")
+                .append("            <p>Trân trọng,</p>")
+                .append("            <p><strong>Đội ngũ quản lý đối tác</strong></p>")
+                .append("        </div>")
+                .append("        <div class=\"footer\">")
+                .append("            <p>© 2024 Công Ty Của Bạn. Mọi quyền được bảo lưu.</p>")
+                .append("        </div>")
+                .append("    </div>")
+                .append("</body>")
+                .append("</html>");
+
+        return emailContent.toString();
+    }
+
 
 
 }

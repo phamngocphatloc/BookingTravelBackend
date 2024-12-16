@@ -185,7 +185,7 @@ public class UserServiceImpls implements UserService {
     public User findByEmail(String email) {
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty())
-            throw new NotFoundException("No user with this email");
+            throw new NotFoundException("Không Tìm Thấy Email Này Trên Hệ Thống");
         return optionalUser.get();
     }
 
@@ -312,5 +312,16 @@ public class UserServiceImpls implements UserService {
             });
         }
         return new HttpRespone(HttpStatus.OK.value(), "success", listReponse);
+    }
+
+    @Override
+    public HttpRespone BlookUser(int userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> {
+            throw new IllegalArgumentException("Không Tìm Thấy User này");
+        });
+        user.setLocked(true);
+        User userSaved = userRepository.save(user);
+
+        return new HttpRespone(HttpStatus.OK.value(), "Success", new UserInfoResponse(user));
     }
 }

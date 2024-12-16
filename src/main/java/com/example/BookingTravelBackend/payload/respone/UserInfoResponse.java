@@ -16,6 +16,7 @@ public class UserInfoResponse {
 
     private boolean authentic;
     private String phone;
+    private boolean blocked = false;
 
     public UserInfoResponse(User user) {
         this.userId = user.getId();
@@ -24,5 +25,6 @@ public class UserInfoResponse {
         this.avatar = user.getAvatar();
         this.authentic = user.isAuthentic();
         this.phone = user.getPhone();
+        this.setBlocked(user.isLocked());
     }
 }

@@ -9,10 +9,12 @@ import java.util.List;
 
 @Repository
 public interface PartnersRepository extends JpaRepository<HotelPartners, Integer> {
-    @Query (value = "select hotel_partners.* \n" +
-            "from hotel_partners join partners_manger \n" +
-            "on hotel_partners.partners_id = partners_manger.partners_id \n" +
-            "where partners_manger.user_id = ?1", nativeQuery = true)
+    @Query (value = "SELECT hotel_partners.* \n" +
+            "FROM hotel_partners \n" +
+            "JOIN partners_manger \n" +
+            "    ON hotel_partners.partners_id = partners_manger.partners_id \n" +
+            "WHERE partners_manger.user_id = ?1 \n" +
+            "    AND partners_manger.is_delete = 0;\n", nativeQuery = true)
     public List<HotelPartners> ListAllHotelPartnersByUser (int userId);
 
     @Query (value = "SELECT \n" +

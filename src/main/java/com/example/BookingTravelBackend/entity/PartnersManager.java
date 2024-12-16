@@ -24,4 +24,7 @@ public class PartnersManager {
 
     @Column (name = "Position")
     private String Position;
+
+    @Column (name = "IsDelete")
+    private boolean isDelete;
 }

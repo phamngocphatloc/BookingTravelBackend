@@ -2,6 +2,7 @@ package com.example.BookingTravelBackend.service;
 
 import com.example.BookingTravelBackend.entity.HotelPartners;
 import com.example.BookingTravelBackend.payload.Request.CreatePartnerRequest;
+import com.example.BookingTravelBackend.payload.Request.PartnerManagerRequest;
 import com.example.BookingTravelBackend.payload.Request.TypeRoomRequest;
 import com.example.BookingTravelBackend.payload.respone.HotelPartnersResponse;
 import com.example.BookingTravelBackend.payload.respone.HttpRespone;
@@ -22,4 +23,9 @@ public interface PartnersHotelService {
     public HttpRespone GetRequestPartnerById (int id);
     public HttpRespone PartnerCreationRequestProcessing(int id, String status);
     public HttpRespone HotelCreationRequestProcessing(int id, String status);
+    public HttpRespone findAllRequestHotelPending ();
+    public HttpRespone findAllMangerByPartnerId (int partnerId);
+    public HttpRespone addManager (PartnerManagerRequest request);
+    public HttpRespone deleteManager (int id, int partnerId);
+    public HttpRespone findManagerByUserLoginAndPartnerId (int partnerId);
 }

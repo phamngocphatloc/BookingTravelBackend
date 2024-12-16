@@ -30,6 +30,7 @@ public interface UserService {
     public int Follow (int userId);
     public List<UserInfoResponse> AllFollowingByUser (int userId);
     public HttpRespone GetAllUser();
+    public HttpRespone BlookUser(int userId);
 
 
 }

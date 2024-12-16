@@ -51,7 +51,7 @@ public class GlobalHandler {
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
             errors.put(error.getField(), error.getDefaultMessage());
         }
-        HttpRespone response = new HttpRespone(HttpStatus.BAD_REQUEST.value(), "Validation failed", errors);
+        HttpRespone response = new HttpRespone(HttpStatus.BAD_REQUEST.value(), "Vui Lòng Nhập Đủ Thông Tin", errors);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }
