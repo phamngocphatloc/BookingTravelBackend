@@ -305,7 +305,7 @@ public class PartnersHotelServiceImpls implements PartnersHotelService {
             partnersManager.setHotelPartners(saved);
             partnersManager.setUserManager(user);
             partnersManager.setPosition("Owner");
-            partnersManager.setDelete(true);
+            partnersManager.setDelete(false);
             parnersManagerRepository.save(partnersManager);
 
             request.getRequestHotel().stream().forEach(item -> {
